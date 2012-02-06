@@ -192,10 +192,10 @@ echo "Enter how much to resize barcode by: ";
 $resizenum = trim(fgets(STDIN), "\x00..\x1F"); }
 if(isset($argv[5])) { $resizenum = $argv[5]; }
 $upc_pieces = null; $supplement = null;
-if($bartype=="upca"&&strlen($barcode)==15) { $upc_pieces = explode(" ", $barcode); }
-if($bartype=="upca"&&strlen($barcode)==18) { $upc_pieces = explode(" ", $barcode); }
-if($bartype=="upca"&&count($upc_pieces)>1) { $barcode = $upc_pieces[0]; $supplement = $upc_pieces[1]; }
-if(strlen($supplement)!=2&&strlen($supplement)!=5) { $supplement = null; }
+if(preg_match("/([0-9]+) ([0-9]{2})$/", $barcode, $upc_pieces)) {
+$barcode = $upc_pieces[1]; $supplement = $upc_pieces[2]; }
+if(preg_match("/([0-9]+) ([0-9]{5})$/", $barcode, $upc_pieces)) {
+$barcode = $upc_pieces[1]; $supplement = $upc_pieces[2]; }
 if($bartype=="upca"&&validate_upca($barcode, false)===true) {
 echo "Creating Barcode: ".$barcode." to file ".$filename."\n";
 ob_start();
@@ -211,16 +211,15 @@ fclose($handle); }
 if($bartype=="upce"&&validate_upce($barcode, false)===true) {
 echo "Creating Barcode: ".$barcode." to file ".$filename."\n";
 ob_start();
-create_upce($barcode,$imagetypeext,true,$resizenum);
+if(strlen($supplement)==0) {
+create_upce($barcode,$imagetypeext,true,$resizenum); }
+if(strlen($supplement)>0) { 
+create_upce($barcode." ".$supplement,$imagetypeext,true,$resizenum); }
 $bufsize = ob_get_length();
 $buffer = ob_get_clean();
 $handle = fopen($filename,"w+b");
 fwrite($handle,$buffer,$bufsize);
 fclose($handle); }
-$upc_pieces = null; $supplement = null;
-if($bartype=="ean13"&&strlen($barcode)==16) { $upc_pieces = explode(" ", $barcode); }
-if($bartype=="ean13"&&strlen($barcode)==19) { $upc_pieces = explode(" ", $barcode); }
-if($bartype=="ean13"&&count($upc_pieces)>1) { $barcode = $upc_pieces[0]; $supplement = $upc_pieces[1]; }
 if(strlen($supplement)!=2&&strlen($supplement)!=5) { $supplement = null; }
 if($bartype=="ean13"&&validate_ean13($barcode, false)===true) {
 echo "Creating Barcode: ".$barcode." to file ".$filename."\n";
@@ -237,7 +236,10 @@ fclose($handle); }
 if($bartype=="ean8"&&validate_ean8($barcode, false)===true) {
 echo "Creating Barcode: ".$barcode." to file ".$filename."\n";
 ob_start();
-create_ean8($barcode,$imagetypeext,true,$resizenum);
+if(strlen($supplement)==0) {
+create_ean8($barcode,$imagetypeext,true,$resizenum); }
+if(strlen($supplement)>0) {
+create_ean8($barcode." ".$supplement,$imagetypeext,true,$resizenum); }
 $bufsize = ob_get_length();
 $buffer = ob_get_clean();
 $handle = fopen($filename,"w+b");
