@@ -12,7 +12,7 @@
     Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: barcode.php - Last Update: 02/05/2012 Ver. 2.1.7 RC 2 - Author: cooldude2k $
+    $FileInfo: barcode.php - Last Update: 02/09/2012 Ver. 2.1.7 RC 2 - Author: cooldude2k $
 */
 
 /*
@@ -313,13 +313,13 @@ $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
 if(isset($argv[4])) { $barcode = $argv[4]; }
 if($confrom=="upce"&&$conto=="upca"&&validate_upce($barcode, false)===true) { echo convert_upce_to_upca($barcode)."\n"; }
 if($confrom=="upca"&&$conto=="upce"&&validate_upca($barcode, false)===true) { echo convert_upca_to_upce($barcode)."\n"; }
-if($confrom=="upce"&&$conto=="itf14"&&validate_upce($barcode, false)===true) { echo convert_ean13_to_itf14(convert_upce_to_ean13($barcode))."\n"; }
+if($confrom=="upce"&&$conto=="itf14"&&validate_upce($barcode, false)===true) { echo convert_upce_to_itf14($barcode)."\n"; }
 if($confrom=="itf14"&&$conto=="upce"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upce($barcode)."\n"; }
 if($confrom=="upca"&&$conto=="ean13"&&validate_upca($barcode, false)===true) { echo convert_upca_to_ean13($barcode)."\n"; }
 if($confrom=="ean13"&&$conto=="upca"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_upca($barcode)."\n"; }
 if($confrom=="upce"&&$conto=="ean13"&&validate_upce($barcode, false)===true) { echo convert_upce_to_ean13($barcode)."\n"; }
 if($confrom=="ean13"&&$conto=="upce"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_upce($barcode)."\n"; }
-if($confrom=="upca"&&$conto=="itf14"&&validate_upca($barcode, false)===true) { echo convert_ean13_to_itf14(convert_upca_to_ean13($barcode))."\n"; }
+if($confrom=="upca"&&$conto=="itf14"&&validate_upca($barcode, false)===true) { echo convert_upca_to_itf14($barcode)."\n"; }
 if($confrom=="itf14"&&$conto=="upca"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upca($barcode)."\n"; }
 if($confrom=="ean13"&&$conto=="itf14"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_itf14($barcode)."\n"; }
 if($confrom=="itf14"&&$conto=="ean13"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_ean13($barcode)."\n"; } }
