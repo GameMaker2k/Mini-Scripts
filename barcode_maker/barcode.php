@@ -52,32 +52,33 @@ function str_split($text, $split = 1){
     return $array;
 } }
 
+$scriptpath = addslashes(str_replace("\\","/",dirname(__FILE__)."/"));
 // Code for validating UPC/EAN by Kazuki Przyborowski
-require("./inc/validate.php");
+require($scriptpath."inc/validate.php");
 // Code for converting UPC/EAN by Kazuki Przyborowski
-require("./inc/convert.php");
+require($scriptpath."inc/convert.php");
 // Code for making EAN-2 supplement by Kazuki Przyborowski
-require("./inc/ean2.php");
+require($scriptpath."inc/ean2.php");
 // Code for making EAN-5 supplement by Kazuki Przyborowski
-require("./inc/ean5.php");
+require($scriptpath."inc/ean5.php");
 // Code for making UPC-A by Kazuki Przyborowski
-require("./inc/upca.php");
+require($scriptpath."inc/upca.php");
 // Code for making UPC-E by Kazuki Przyborowski
-require("./inc/upce.php");
+require($scriptpath."inc/upce.php");
 // Code for making EAN-13 by Kazuki Przyborowski
-require("./inc/ean13.php");
+require($scriptpath."inc/ean13.php");
 // Code for making EAN-8 by Kazuki Przyborowski
-require("./inc/ean8.php");
+require($scriptpath."inc/ean8.php");
 // Code for making Interleaved 2 of 5 by Kazuki Przyborowski
-require("./inc/itf.php");
+require($scriptpath."inc/itf.php");
 // Code for making ITF-14 by Kazuki Przyborowski
-require("./inc/itf14.php");
+require($scriptpath."inc/itf14.php");
 // Code for making Code 39 by Kazuki Przyborowski
-require("./inc/code39.php");
+require($scriptpath."inc/code39.php");
 // Code for making Code 93 by Kazuki Przyborowski
-require("./inc/code93.php");
+require($scriptpath."inc/code93.php");
 // Code for decoding CueCat codes by Neil McNab
-require("./inc/cuecat.php");
+require($scriptpath."inc/cuecat.php");
 // Shortcut Codes by Kazuki Przyborowski
 function validate_barcode($upc,$return_check=false) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }

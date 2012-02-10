@@ -7,5 +7,5 @@ fi
 if  [ "$phpexe" == "" ]; then
 	export phpexe="/usr/bin/php"
 fi
-$phpexe -f "`pwd`/barcode.php" $*
+$phpexe -f "`dirname $0`/barcode.php" $*
 export phpexe=""
