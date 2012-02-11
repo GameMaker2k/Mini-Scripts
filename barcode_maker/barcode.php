@@ -12,7 +12,7 @@
     Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: barcode.php - Last Update: 02/09/2012 Ver. 2.1.7 RC 2 - Author: cooldude2k $
+    $FileInfo: barcode.php - Last Update: 02/11/2012 Ver. 2.1.7 RC 2 - Author: cooldude2k $
 */
 
 /*
@@ -123,14 +123,24 @@ if(!isset($argv[3])) {
 echo "Enter barcode: ";
 $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
 if(isset($argv[3])) { $barcode = $argv[3]; }
+if($bartype=="upca"&&strlen($barcode)>12) { 
+preg_match("/^(\d{12})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="upca"&&validate_upca($barcode, false)===true) { echo $barcode." is valid.\n"; }
 if($bartype=="upca"&&validate_upca($barcode, false)===false) { echo $barcode." is invalid.\n"; }
+if($bartype=="upce"&&strlen($barcode)>8) { 
+preg_match("/^(\d{8})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="upce"&&validate_upce($barcode, false)===true) { echo $barcode." is valid.\n"; }
 if($bartype=="upce"&&validate_upce($barcode, false)===false) { echo $barcode." is invalid.\n"; }
+if($bartype=="ean13"&&strlen($barcode)>13) { 
+preg_match("/^(\d{13})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="ean13"&&validate_ean13($barcode, false)===true) { echo $barcode." is valid.\n"; }
 if($bartype=="ean13"&&validate_ean13($barcode, false)===false) { echo $barcode." is invalid.\n"; }
+if($bartype=="ean8"&&strlen($barcode)>8) { 
+preg_match("/^(\d{8})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="ean8"&&validate_ean8($barcode, false)===true) { echo $barcode." is valid.\n"; }
 if($bartype=="ean8"&&validate_ean8($barcode, false)===false) { echo $barcode." is invalid.\n"; }
+if($bartype=="itf14"&&strlen($barcode)>14) { 
+preg_match("/^(\d{14})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="itf14"&&validate_itf14($barcode, false)===true) { echo $barcode." is valid.\n"; }
 if($bartype=="itf14"&&validate_itf14($barcode, false)===false) { echo $barcode." is invalid.\n"; } }
 if($act=="check") {
@@ -148,10 +158,20 @@ if(!isset($argv[3])) {
 echo "Enter barcode: ";
 $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
 if(isset($argv[3])) { $barcode = $argv[3]; }
+if($bartype=="upca"&&strlen($barcode)>11) { 
+preg_match("/^(\d{11})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="upca"&&strlen($barcode)==11) { echo $barcode.validate_upca($barcode, true)."\n"; }
+if($bartype=="upce"&&strlen($barcode)>7) { 
+preg_match("/^(\d{7})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="upce"&&strlen($barcode)==7) { echo $barcode.validate_upce($barcode, true)."\n"; }
+if($bartype=="ean13"&&strlen($barcode)>12) { 
+preg_match("/^(\d{12})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="ean13"&&strlen($barcode)==12) { echo $barcode.validate_ean13($barcode, true)."\n"; }
+if($bartype=="ean8"&&strlen($barcode)>7) { 
+preg_match("/^(\d{7})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="ean8"&&strlen($barcode)==7) { echo $barcode.validate_ean8($barcode, true)."\n"; }
+if($bartype=="itf14"&&strlen($barcode)>13) { 
+preg_match("/^(\d{13})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="itf14"&&strlen($barcode)==13) { echo $barcode.validate_itf14($barcode, true)."\n"; } }
 if($act=="create") {
 if(!isset($argv[2])) {
@@ -312,16 +332,24 @@ if(!isset($argv[4])) {
 echo "Enter barcode: ";
 $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
 if(isset($argv[4])) { $barcode = $argv[4]; }
-if($confrom=="upce"&&$conto=="upca"&&validate_upce($barcode, false)===true) { echo convert_upce_to_upca($barcode)."\n"; }
+if($confrom=="upca"&&strlen($barcode)>12) { 
+preg_match("/^(\d{12})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($confrom=="upca"&&$conto=="upce"&&validate_upca($barcode, false)===true) { echo convert_upca_to_upce($barcode)."\n"; }
-if($confrom=="upce"&&$conto=="itf14"&&validate_upce($barcode, false)===true) { echo convert_upce_to_itf14($barcode)."\n"; }
-if($confrom=="itf14"&&$conto=="upce"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upce($barcode)."\n"; }
 if($confrom=="upca"&&$conto=="ean13"&&validate_upca($barcode, false)===true) { echo convert_upca_to_ean13($barcode)."\n"; }
-if($confrom=="ean13"&&$conto=="upca"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_upca($barcode)."\n"; }
-if($confrom=="upce"&&$conto=="ean13"&&validate_upce($barcode, false)===true) { echo convert_upce_to_ean13($barcode)."\n"; }
-if($confrom=="ean13"&&$conto=="upce"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_upce($barcode)."\n"; }
 if($confrom=="upca"&&$conto=="itf14"&&validate_upca($barcode, false)===true) { echo convert_upca_to_itf14($barcode)."\n"; }
-if($confrom=="itf14"&&$conto=="upca"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upca($barcode)."\n"; }
+if($confrom=="upce"&&strlen($barcode)>8) { 
+preg_match("/^(\d{8})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($confrom=="upce"&&$conto=="upca"&&validate_upce($barcode, false)===true) { echo convert_upce_to_upca($barcode)."\n"; }
+if($confrom=="upce"&&$conto=="ean13"&&validate_upce($barcode, false)===true) { echo convert_upce_to_ean13($barcode)."\n"; }
+if($confrom=="upce"&&$conto=="itf14"&&validate_upce($barcode, false)===true) { echo convert_upce_to_itf14($barcode)."\n"; }
+if($confrom=="ean13"&&strlen($barcode)>13) { 
+preg_match("/^(\d{13})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($confrom=="ean13"&&$conto=="upca"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_upca($barcode)."\n"; }
+if($confrom=="ean13"&&$conto=="upce"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_upce($barcode)."\n"; }
 if($confrom=="ean13"&&$conto=="itf14"&&validate_ean13($barcode, false)===true) { echo convert_ean13_to_itf14($barcode)."\n"; }
+if($confrom=="itf14"&&strlen($barcode)>14) { 
+preg_match("/^(\d{14})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($confrom=="itf14"&&$conto=="upca"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upca($barcode)."\n"; }
+if($confrom=="itf14"&&$conto=="upce"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upce($barcode)."\n"; }
 if($confrom=="itf14"&&$conto=="ean13"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_ean13($barcode)."\n"; } }
 ?>
