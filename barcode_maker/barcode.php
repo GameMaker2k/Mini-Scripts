@@ -208,6 +208,8 @@ if($imagetypeext!="png"&&
 	$imagetypeext!="wbmp"&&
 	$imagetypeext!="xbm") {
 		$imagetypeext="png"; }*/
+if(file_exists($filename)&&!is_writable($filename)) { 
+	echo "Error could not write to file ".$filename."\n"; exit(); }
 if(!isset($argv[5])) {
 echo "Enter how much to resize barcode by: ";
 $resizenum = trim(fgets(STDIN), "\x00..\x1F"); }

@@ -1,4 +1,20 @@
 <?php
+/*
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the Revised BSD License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    Revised BSD License for more details.
+
+    Copyright 2011-2012 Cool Dude 2k - http://idb.berlios.de/
+    Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
+    Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
+
+    $FileInfo: pxd_convert.php - Last Update: 02/11/2012 Ver. 1.0.0 RC 1 - Author: cooldude2k $
+*/
+
 function txt_draw_image($text, $imgtype="png", $outputimage=true, $resize=1, $resizetype="resize", $outfile=NULL) {
 if(!isset($resize)||!is_numeric($resize)||$resize<1) { $resize = 1; }
 if($resizetype!="resample"&&$resizetype!="resize") { $resizetype = "resize"; }
@@ -121,17 +137,12 @@ imagejpeg($txt_img); }
 if($outfile!=null) {
 imagejpeg($txt_img,$outfile); } } 
 return true; }
-if(!isset($_GET['pic'])) { $_GET['pic'] = null; }
-if(!preg_match("/([A-Za-z0-9\.\-_]+)\.pxd/is", $_GET['pic'])) { $_GET['pic'] = null; }
-if(!isset($_GET['pic'])||$_GET['pic']===null||$_GET['pic']=="") { 
-foreach (glob("*.pxd") as $filename) { $_GET['pic'] = $filename; } }
-if(!isset($_GET['imgtype'])) { $_GET['imgtype'] = "png"; }
-if($_GET['imgtype']!="png"&&$_GET['imgtype']!="gif"&&$_GET['imgtype']!="jpg"&&
-$_GET['imgtype']!="jpeg") { $_GET['imgtype'] = "png"; }
 if(!isset($argv[1])) {
 echo "Enter name of file to convert: ";
 $infile = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
 if(isset($argv[1])) { $infile = $argv[1]; }
+if (!file_exists($infile)) { 
+	echo "Error could not find file ".$infile."\n"; exit(); }
 if(!isset($argv[2])) {
 echo "Enter name of converted file: ";
 $outfile = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
@@ -139,8 +150,11 @@ if(isset($argv[2])) { $outfile = $argv[2]; }
 $imagetypeext = strtolower(trim(pathinfo($outfile, PATHINFO_EXTENSION)));
 if($imagetypeext!="png"&&
 	$imagetypeext!="gif"&&
-	$imagetypeext!="jpg") {
+	$imagetypeext!="jpg"&&
+	$imagetypeext!="jpeg") {
 		$imagetypeext="png"; }
+if(file_exists($outfile)&&!is_writable($outfile)) { 
+	echo "Error could not write to file ".$infile."\n"; exit(); }
 if(isset($infile)&&isset($outfile)&&isset($imagetypeext)) {
 echo "Converting file ".$infile." to ".$outfile."\n";
 ob_start();
