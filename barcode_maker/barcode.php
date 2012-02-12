@@ -57,6 +57,8 @@ $scriptpath = addslashes(str_replace("\\","/",dirname(__FILE__)."/"));
 require($scriptpath."inc/validate.php");
 // Code for converting UPC/EAN by Kazuki Przyborowski
 require($scriptpath."inc/convert.php");
+// Code for getting GS1 Prefix EAN-8/EAN-13/ITF-14 by Kazuki Przyborowski
+require($scriptpath."inc/gs1_prefix.php");
 // Code for making EAN-2 supplement by Kazuki Przyborowski
 require($scriptpath."inc/ean2.php");
 // Code for making EAN-5 supplement by Kazuki Przyborowski
