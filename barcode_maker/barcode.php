@@ -12,7 +12,7 @@
     Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: barcode.php - Last Update: 02/11/2012 Ver. 2.1.7 RC 2 - Author: cooldude2k $
+    $FileInfo: barcode.php - Last Update: 02/12/2012 Ver. 2.2.2 RC 1 - Author: cooldude2k $
 */
 
 /*
@@ -102,13 +102,14 @@ function create_barcode($upc,$imgtype="png",$outputimage=true,$resize=1,$resizet
 	return false; }
 
 if(!isset($argv[1])) {
-echo "action list: \nvalidate: validate barcode\ncheck: get check digit\ncreate: create barcode\nconvert: convert barcode\nEnter action to do: ";
+echo "action list: \nvalidate: validate barcode\ncheck: get check digit\ncreate: create barcode\nconvert: convert barcode\ncountry: get issuing country\nEnter action to do: ";
 $act = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
 if(isset($argv[1])) { $act = $argv[1]; }
 if($act!="validate"&&
 	$act!="check"&&
 	$act!="create"&&
-	$act!="convert") {
+	$act!="convert"&&
+	$act!="country") {
 		$act="create"; }
 if($act=="validate") {
 if(!isset($argv[2])) {
@@ -120,7 +121,7 @@ if($bartype!="upca"&&
 	$bartype!="ean13"&&
 	$bartype!="ean8"&&
 	$bartype!="itf14") {
-		$bartype="upcae"; }
+		$bartype="upca"; }
 if(!isset($argv[3])) {
 echo "Enter barcode: ";
 $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
@@ -155,7 +156,7 @@ if($bartype!="upca"&&
 	$bartype!="ean13"&&
 	$bartype!="ean8"&&
 	$bartype!="itf14") {
-		$bartype="upcae"; }
+		$bartype="upca"; }
 if(!isset($argv[3])) {
 echo "Enter barcode: ";
 $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
@@ -188,7 +189,7 @@ if($bartype!="upca"&&
 	$bartype!="itf14"&&
 	$bartype!="code39"&&
 	$bartype!="code93") {
-		$bartype="upcae"; }
+		$bartype="upca"; }
 if(!isset($argv[3])) {
 echo "Enter barcode: ";
 $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
@@ -356,4 +357,39 @@ preg_match("/^(\d{14})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($confrom=="itf14"&&$conto=="upca"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upca($barcode)."\n"; }
 if($confrom=="itf14"&&$conto=="upce"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_upce($barcode)."\n"; }
 if($confrom=="itf14"&&$conto=="ean13"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_ean13($barcode)."\n"; } }
+if($act=="country") {
+if(!isset($argv[2])) {
+echo "barcode types\nupca: UPC-A\nupce: UPC-E\nean13: EAN-13\nean8: EAN-8\nitf14: ITF-14\nEnter barcode type to validate: ";
+$bartype = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
+if(isset($argv[2])) { $bartype = $argv[2]; }
+if($bartype!="upca"&&
+	$bartype!="upce"&&
+	$bartype!="ean13"&&
+	$bartype!="ean8"&&
+	$bartype!="itf14") {
+		$bartype="upca"; }
+if(!isset($argv[3])) {
+echo "Enter barcode: ";
+$barcode = trim(fgets(STDIN), "\x00..\x1F"); }
+if(isset($argv[3])) { $barcode = $argv[3]; }
+if($bartype=="upca"&&strlen($barcode)>12) { 
+preg_match("/^(\d{12})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($bartype=="upca"&&validate_upca($barcode, false)===true) { 
+	echo "Issuing Country: ".get_gs1_prefix(convert_upca_to_ean13($barcode))."\n"; }
+if($bartype=="upce"&&strlen($barcode)>8) { 
+preg_match("/^(\d{8})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($bartype=="upce"&&validate_upce($barcode, false)===true) { 
+	echo "Issuing Country: ".get_gs1_prefix(convert_upce_to_ean13($barcode))."\n"; }
+if($bartype=="ean13"&&strlen($barcode)>13) { 
+preg_match("/^(\d{13})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($bartype=="ean13"&&validate_ean13($barcode, false)===true) { 
+	echo "Issuing Country: ".get_gs1_prefix($barcode)."\n"; }
+if($bartype=="ean8"&&strlen($barcode)>8) { 
+preg_match("/^(\d{8})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($bartype=="ean8"&&validate_ean8($barcode, false)===true) { 
+	echo "Issuing Country: ".get_gs1_prefix($barcode)."\n"; }
+if($bartype=="itf14"&&strlen($barcode)>14) { 
+preg_match("/^(\d{14})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
+if($bartype=="itf14"&&validate_itf14($barcode, false)===true) { 
+	echo "Issuing Country: ".get_gs1_prefix(convert_itf14_to_ean13($barcode))."\n"; } }
 ?>

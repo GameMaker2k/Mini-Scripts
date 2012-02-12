@@ -12,7 +12,7 @@
     Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: code39.php - Last Update: 02/05/2012 Ver. 2.1.7 RC 2 - Author: cooldude2k $
+    $FileInfo: code39.php - Last Update: 02/12/2012 Ver. 2.2.2 RC 1 - Author: cooldude2k $
 */
 
 function create_code39($upc,$imgtype="png",$outputimage=true,$resize=1,$resizetype="resize",$outfile=NULL,$hidecd=false) {
