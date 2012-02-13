@@ -102,9 +102,14 @@ function create_barcode($upc,$imgtype="png",$outputimage=true,$resize=1,$resizet
 	return false; }
 
 if(!isset($argv[1])) {
-echo "action list: \nvalidate: validate barcode\ncheck: get check digit\ncreate: create barcode\nconvert: convert barcode\ncountry: get issuing country\nEnter action to do: ";
+echo "action list: \n1.) validate: validate barcode\n2.) check: get check digit\n3.) create: create barcode\n4.) convert: convert barcode\n5.) country: get issuing country\nEnter action to do: ";
 $act = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
 if(isset($argv[1])) { $act = $argv[1]; }
+if($act=="1") { $act = "validate"; }
+if($act=="2") { $act = "check"; }
+if($act=="3") { $act = "create"; }
+if($act=="4") { $act = "convert"; }
+if($act=="5") { $act = "country"; }
 if($act!="validate"&&
 	$act!="check"&&
 	$act!="create"&&
@@ -113,9 +118,14 @@ if($act!="validate"&&
 		$act="create"; }
 if($act=="validate") {
 if(!isset($argv[2])) {
-echo "barcode types\nupca: UPC-A\nupce: UPC-E\nean13: EAN-13\nean8: EAN-8\nitf14: ITF-14\nEnter barcode type to validate: ";
+echo "barcode types\n1.) upca: UPC-A\n2.) upce: UPC-E\n3.) ean13: EAN-13\n4.) ean8: EAN-8\n5.) itf14: ITF-14\nEnter barcode type to validate: ";
 $bartype = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
 if(isset($argv[2])) { $bartype = $argv[2]; }
+if($bartype=="1") { $bartype = "upca"; }
+if($bartype=="2") { $bartype = "upce"; }
+if($bartype=="3") { $bartype = "ean13"; }
+if($bartype=="4") { $bartype = "ean8"; }
+if($bartype=="5") { $bartype = "itf14"; }
 if($bartype!="upca"&&
 	$bartype!="upce"&&
 	$bartype!="ean13"&&
@@ -147,9 +157,14 @@ preg_match("/^(\d{14})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
 if($bartype=="itf14"&&validate_itf14($barcode, false)===true) { echo $barcode." is valid.\n"; }
 if($bartype=="itf14"&&validate_itf14($barcode, false)===false) { echo $barcode." is invalid.\n"; } }
 if($act=="check") {
-echo "barcode types\nupca: UPC-A\nupce: UPC-E\nean13: EAN-13\nean8: EAN-8\nitf14: ITF-14\nEnter barcode type to validate: ";
+echo "barcode types\n1.) upca: UPC-A\n2.) upce: UPC-E\n3.) ean13: EAN-13\n4.) ean8: EAN-8\n5.) itf14: ITF-14\nEnter barcode type to check: ";
 if(!isset($argv[2])) {
 $bartype = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
+if($bartype=="1") { $bartype = "upca"; }
+if($bartype=="2") { $bartype = "upce"; }
+if($bartype=="3") { $bartype = "ean13"; }
+if($bartype=="4") { $bartype = "ean8"; }
+if($bartype=="5") { $bartype = "itf14"; }
 if(isset($argv[2])) { $bartype = $argv[2]; }
 if($bartype!="upca"&&
 	$bartype!="upce"&&
@@ -161,25 +176,23 @@ if(!isset($argv[3])) {
 echo "Enter barcode: ";
 $barcode = trim(fgets(STDIN), "\x00..\x1F"); }
 if(isset($argv[3])) { $barcode = $argv[3]; }
-if($bartype=="upca"&&strlen($barcode)>11) { 
-preg_match("/^(\d{11})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
-if($bartype=="upca"&&strlen($barcode)==11) { echo $barcode.validate_upca($barcode, true)."\n"; }
-if($bartype=="upce"&&strlen($barcode)>7) { 
-preg_match("/^(\d{7})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
-if($bartype=="upce"&&strlen($barcode)==7) { echo $barcode.validate_upce($barcode, true)."\n"; }
-if($bartype=="ean13"&&strlen($barcode)>12) { 
-preg_match("/^(\d{12})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
-if($bartype=="ean13"&&strlen($barcode)==12) { echo $barcode.validate_ean13($barcode, true)."\n"; }
-if($bartype=="ean8"&&strlen($barcode)>7) { 
-preg_match("/^(\d{7})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
-if($bartype=="ean8"&&strlen($barcode)==7) { echo $barcode.validate_ean8($barcode, true)."\n"; }
-if($bartype=="itf14"&&strlen($barcode)>13) { 
-preg_match("/^(\d{13})/", $barcode, $fix_matches); $barcode = $fix_matches[1]; }
-if($bartype=="itf14"&&strlen($barcode)==13) { echo $barcode.validate_itf14($barcode, true)."\n"; } }
+if($bartype=="upca") { echo fix_upca_checksum($barcode, true)."\n"; }
+if($bartype=="upce") { echo fix_upce_checksum($barcode, true)."\n"; }
+if($bartype=="ean13") { echo fix_ean13_checksum($barcode, true)."\n"; }
+if($bartype=="ean8") { echo fix_ean8_checksum($barcode, true)."\n"; }
+if($bartype=="itf14") { echo fix_itf14_checksum($barcode, true)."\n"; } }
 if($act=="create") {
 if(!isset($argv[2])) {
-echo "barcode types\nupca: UPC-A\nupce: UPC-E\nean13: EAN-13\nean8: EAN-8\nitf14: ITF-14\nitf: ITF\ncode39: CODE39\ncode93: CODE93\nEnter barcode type to create: ";
+echo "barcode types\n1.) upca: UPC-A\n2.) upce: UPC-E\n3.) ean13: EAN-13\n4.) ean8: EAN-8\n5.) itf14: ITF-14\n6.) itf: ITF\n7.) code39: CODE39\n8.) code93: CODE93\nEnter barcode type to create: ";
 $bartype = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
+if($bartype=="1") { $bartype = "upca"; }
+if($bartype=="2") { $bartype = "upce"; }
+if($bartype=="3") { $bartype = "ean13"; }
+if($bartype=="4") { $bartype = "ean8"; }
+if($bartype=="5") { $bartype = "itf"; }
+if($bartype=="6") { $bartype = "itf14"; }
+if($bartype=="7") { $bartype = "code39"; }
+if($bartype=="8") { $bartype = "code93"; }
 if(isset($argv[2])) { $bartype = $argv[2]; }
 if($bartype!="upca"&&
 	$bartype!="upce"&&
@@ -315,8 +328,12 @@ fwrite($handle,$buffer,$bufsize);
 fclose($handle); } }
 if($act=="convert") {
 if(!isset($argv[2])) {
-echo "barcode types\nupca: UPC-A\nupce: UPC-E\nean13: EAN-13\nitf14: ITF-14\nEnter barcode type to convert from: ";
+echo "barcode types\n1.) upca: UPC-A\n2.) upce: UPC-E\n3.) ean13: EAN-13\n4.) itf14: ITF-14\nEnter barcode type to convert from: ";
 $confrom = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
+if($confrom=="1") { $confrom = "upca"; }
+if($confrom=="2") { $confrom = "upce"; }
+if($confrom=="3") { $confrom = "ean13"; }
+if($confrom=="4") { $confrom = "itf14"; }
 if(isset($argv[2])) { $confrom = $argv[2]; }
 if($confrom!="upca"&&
 	$confrom!="upce"&&
@@ -324,8 +341,12 @@ if($confrom!="upca"&&
 	$confrom!="itf14") {
 		$confrom="upca"; }
 if(!isset($argv[3])) {
-echo "barcode types\nupca: UPC-A\nupce: UPC-E\nean13: EAN-13\nitf14: ITF-14\nEnter barcode type to convert to: ";
+echo "barcode types\n1.) upca: UPC-A\n2.) upce: UPC-E\n3.) ean13: EAN-13\n4.) itf14: ITF-14\nEnter barcode type to convert to: ";
 $conto = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
+if($conto=="1") { $conto = "upca"; }
+if($conto=="2") { $conto = "upce"; }
+if($conto=="3") { $conto = "ean13"; }
+if($conto=="4") { $conto = "itf14"; }
 if(isset($argv[3])) { $conto = $argv[3]; }
 if($conto!="upca"&&
 	$conto!="upce"&&
@@ -359,8 +380,13 @@ if($confrom=="itf14"&&$conto=="upce"&&validate_itf14($barcode, false)===true) { 
 if($confrom=="itf14"&&$conto=="ean13"&&validate_itf14($barcode, false)===true) { echo convert_itf14_to_ean13($barcode)."\n"; } }
 if($act=="country") {
 if(!isset($argv[2])) {
-echo "barcode types\nupca: UPC-A\nupce: UPC-E\nean13: EAN-13\nean8: EAN-8\nitf14: ITF-14\nEnter barcode type to validate: ";
+echo "barcode types\n1.) upca: UPC-A\n2.) upce: UPC-E\n3.) ean13: EAN-13\n4.) ean8: EAN-8\n5.) itf14: ITF-14\nEnter barcode type to get country from: ";
 $bartype = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
+if($bartype=="1") { $bartype = "upca"; }
+if($bartype=="2") { $bartype = "upce"; }
+if($bartype=="3") { $bartype = "ean13"; }
+if($bartype=="4") { $bartype = "ean8"; }
+if($bartype=="5") { $bartype = "itf14"; }
 if(isset($argv[2])) { $bartype = $argv[2]; }
 if($bartype!="upca"&&
 	$bartype!="upce"&&
