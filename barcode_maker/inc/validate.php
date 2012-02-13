@@ -18,6 +18,7 @@
 function validate_upca($upc,$return_check=false) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }
 	if(strlen($upc)>12||strlen($upc)<11) { return false; }
+	if(strlen($upc)>12) { preg_match("/^(\d{12})/", $upc, $fix_matches); $upc = $fix_matches[1]; }
 	if(strlen($upc)==11) {
 	preg_match("/^(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})/", $upc, $upc_matches); }
 	if(strlen($upc)==12) {
@@ -35,6 +36,7 @@ function validate_upca($upc,$return_check=false) {
 	if(strlen($upc)==11) { return $CheckSum; } }
 function validate_ean13($upc,$return_check=false) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }
+	if(strlen($upc)>13) { preg_match("/^(\d{13})/", $upc, $fix_matches); $upc = $fix_matches[1]; }
 	if(strlen($upc)>13||strlen($upc)<12) { return false; }
 	if(strlen($upc)==12) {
 	preg_match("/^(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})/", $upc, $upc_matches); }
@@ -53,6 +55,7 @@ function validate_ean13($upc,$return_check=false) {
 	if(strlen($upc)==12) { return $CheckSum; } }
 function validate_itf14($upc,$return_check=false) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }
+	if(strlen($upc)>14) { preg_match("/^(\d{14})/", $upc, $fix_matches); $upc = $fix_matches[1]; }
 	if(strlen($upc)>14||strlen($upc)<13) { return false; }
 	if(strlen($upc)==13) {
 	preg_match("/^(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})/", $upc, $upc_matches); }
@@ -71,6 +74,7 @@ function validate_itf14($upc,$return_check=false) {
 	if(strlen($upc)==13) { return $CheckSum; } }
 function validate_ean8($upc,$return_check=false) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }
+	if(strlen($upc)>8) { preg_match("/^(\d{8})/", $upc, $fix_matches); $upc = $fix_matches[1]; }
 	if(strlen($upc)>8||strlen($upc)<7) { return false; }
 	if(strlen($upc)==7) {
 	preg_match("/^(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})(\d{1})/", $upc, $upc_matches); }
@@ -89,6 +93,7 @@ function validate_ean8($upc,$return_check=false) {
 	if(strlen($upc)==7) { return $CheckSum; } }
 function validate_upce($upc,$return_check=false) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }
+	if(strlen($upc)>8) { preg_match("/^(\d{8})/", $upc, $fix_matches); $upc = $fix_matches[1]; }
 	if(strlen($upc)>8||strlen($upc)<7) { return false; }
 	if(!preg_match("/^0/", $upc)) { return false; }
 	$CheckDigit = null;
