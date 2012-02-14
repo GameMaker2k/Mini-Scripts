@@ -12,8 +12,14 @@
     Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: barcode.php - Last Update: 02/12/2012 Ver. 2.2.2 RC 1 - Author: cooldude2k $
+    $FileInfo: barcode.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
 */
+
+$appname = htmlspecialchars("UPC/EAN Barcode Generator");
+$appmakerurl = "https://github.com/KazukiPrzyborowski/UPC-A-EAN-13-Maker";
+$appmaker = htmlspecialchars("Game Maker 2k");
+$appver = array(2,2,5,"RC 1");
+$upcdatabase = "http://www.upcdatabase.com/item/%s";
 
 /*
 UPC Resources and Info
@@ -51,6 +57,14 @@ function str_split($text, $split = 1){
     }
     return $array;
 } }
+
+function version_info($proname,$subver,$ver,$supver,$reltype,$svnver,$showsvn) {
+	$return_var = $proname." ".$reltype." ".$subver.".".$ver.".".$supver;
+	if($showsvn==false) { $showsvn = null; }
+	if($showsvn==true) { $return_var .= " SVN ".$svnver; }
+	if($showsvn!=true&&$showsvn!=null) { $return_var .= " ".$showsvn." ".$svnver; }
+	return $return_var; }
+$appversion = version_info($appname,$appver[0],$appver[1],$appver[2],$appver[3]." Ver.",null,false);
 
 $scriptpath = addslashes(str_replace("\\","/",dirname(__FILE__)."/"));
 // Code for validating UPC/EAN by Kazuki Przyborowski
