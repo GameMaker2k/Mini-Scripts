@@ -245,10 +245,10 @@ echo "Enter how much to resize barcode by: ";
 $resizenum = trim(fgets(STDIN), "\x00..\x1F"); }
 if(isset($argv[5])) { $resizenum = $argv[5]; }
 $upc_pieces = null; $supplement = null;
-if(preg_match("/([0-9]+) ([0-9]{2})$/", $barcode, $upc_pieces)) {
-$barcode = $upc_pieces[1]; $supplement = $upc_pieces[2]; }
-if(preg_match("/([0-9]+) ([0-9]{5})$/", $barcode, $upc_pieces)) {
-$barcode = $upc_pieces[1]; $supplement = $upc_pieces[2]; }
+if(preg_match("/([0-9]+)([ |\|]{1})([0-9]{2})$/", $barcode, $upc_pieces)) {
+$barcode = $upc_pieces[1]; $supplement = $upc_pieces[3]; }
+if(preg_match("/([0-9]+)([ |\|]){1}([0-9]{5})$/", $barcode, $upc_pieces)) {
+$barcode = $upc_pieces[1]; $supplement = $upc_pieces[3]; }
 if($bartype=="upca"&&validate_upca($barcode, false)===true) {
 echo "Creating Barcode: ".$barcode." to file ".$filename."\n";
 ob_start();
