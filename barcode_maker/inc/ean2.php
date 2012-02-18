@@ -15,6 +15,9 @@
     $FileInfo: ean2.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
 */
 
+if(!isset($upcfunctions)) { $upcfunctions = array(); }
+if(!is_array($upcfunctions)) { $upcfunctions = array(); }
+array_push($upcfunctions, "create_ean2");
 function create_ean2($upc,$offsetadd,$imgres) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }
 	if(strlen($upc)>2||strlen($upc)<2) { return false; }

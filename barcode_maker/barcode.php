@@ -67,6 +67,7 @@ function version_info($proname,$subver,$ver,$supver,$reltype,$svnver,$showsvn) {
 $appversion = version_info($appname,$appver[0],$appver[1],$appver[2],$appver[3]." Ver.",null,false);
 
 $scriptpath = addslashes(str_replace("\\","/",dirname(__FILE__)."/"));
+$upcfunctions = array();
 // Code for validating UPC/EAN by Kazuki Przyborowski
 require($scriptpath."inc/validate.php");
 // Code for converting UPC/EAN by Kazuki Przyborowski
@@ -95,6 +96,9 @@ require($scriptpath."inc/code39.php");
 require($scriptpath."inc/code93.php");
 // Code for decoding CueCat codes by Neil McNab
 require($scriptpath."inc/cuecat.php");
+if(!isset($upcfunctions)) { $upcfunctions = array(); }
+if(!is_array($upcfunctions)) { $upcfunctions = array(); }
+array_push($upcfunctions, "validate_barcode", "create_barcode");
 // Shortcut Codes by Kazuki Przyborowski
 function validate_barcode($upc,$return_check=false) {
 	if(!isset($upc)||!is_numeric($upc)) { return false; }
@@ -114,7 +118,7 @@ function create_barcode($upc,$imgtype="png",$outputimage=true,$resize=1,$resizet
 	if(strlen($upc)==13) { return create_ean13($upc,$imgtype,$outputimage,$resize,$resizetype,$outfile,$hidecd); } 
 	if(strlen($upc)==14) { return create_itf14($upc,$imgtype,$outputimage,$resize,$resizetype,$outfile,$hidecd); } 
 	return false; }
-
+var_dump($upcfunctions);
 if(!isset($argv[1])) {
 echo "action list: \n1.) validate: validate barcode\n2.) check: get check digit\n3.) create: create barcode\n4.) convert: convert barcode\n5.) country: get issuing country\nEnter action to do: ";
 $act = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }

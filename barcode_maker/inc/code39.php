@@ -15,6 +15,9 @@
     $FileInfo: code39.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
 */
 
+if(!isset($upcfunctions)) { $upcfunctions = array(); }
+if(!is_array($upcfunctions)) { $upcfunctions = array(); }
+array_push($upcfunctions, "create_code39");
 function create_code39($upc,$imgtype="png",$outputimage=true,$resize=1,$resizetype="resize",$outfile=NULL,$hidecd=false) {
 	if(!isset($upc)) { return false; }
 	if(strlen($upc) < 1) { return false; }
