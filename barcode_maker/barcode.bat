@@ -6,4 +6,3 @@ IF ("%phpexe%")==("") set phpexe="C:\PHP5\php.exe"
 %phpexe% -f "%~dp0\barcode.php" %*
 set phpexe=
 pause
-exit

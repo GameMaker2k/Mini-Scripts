@@ -72,7 +72,7 @@ require($scriptpath."inc/validate.php");
 // Code for converting UPC/EAN by Kazuki Przyborowski
 require($scriptpath."inc/convert.php");
 // Code for getting GS1 Prefix EAN-8/EAN-13/ITF-14 by Kazuki Przyborowski
-require($scriptpath."inc/gs1_prefix.php");
+require($scriptpath."inc/getprefix.php");
 // Code for making EAN-2 supplement by Kazuki Przyborowski
 require($scriptpath."inc/ean2.php");
 // Code for making EAN-5 supplement by Kazuki Przyborowski
@@ -128,8 +128,11 @@ if($act!="validate"&&
 	$act!="check"&&
 	$act!="create"&&
 	$act!="convert"&&
-	$act!="country") {
+	$act!="country"&&
+	$act!="version") {
 		$act="create"; }
+if($act=="version") {
+echo $appname." ver. ".$appver[0].".".$appver[1].".".$appver[2]." ".$appver[3]." by ".$appmaker."\n"; }
 if($act=="validate") {
 if(!isset($argv[2])) {
 echo "barcode types\n1.) upca: UPC-A\n2.) upce: UPC-E\n3.) ean13: EAN-13\n4.) ean8: EAN-8\n5.) itf14: ITF-14\nEnter barcode type to validate: ";
