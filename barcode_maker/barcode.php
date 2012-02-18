@@ -118,7 +118,7 @@ function create_barcode($upc,$imgtype="png",$outputimage=true,$resize=1,$resizet
 	if(strlen($upc)==13) { return create_ean13($upc,$imgtype,$outputimage,$resize,$resizetype,$outfile,$hidecd); } 
 	if(strlen($upc)==14) { return create_itf14($upc,$imgtype,$outputimage,$resize,$resizetype,$outfile,$hidecd); } 
 	return false; }
-var_dump($upcfunctions);
+
 if(!isset($argv[1])) {
 echo "action list: \n1.) validate: validate barcode\n2.) check: get check digit\n3.) create: create barcode\n4.) convert: convert barcode\n5.) country: get issuing country\nEnter action to do: ";
 $act = strtolower(trim(fgets(STDIN), "\x00..\x1F")); }
