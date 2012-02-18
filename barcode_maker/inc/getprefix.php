@@ -12,7 +12,7 @@
     Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: gs1_prefix.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
+    $FileInfo: getprefix.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
 */
 
 // Get GS1 Prefix for EAN-13 EAN-9 barcodes
