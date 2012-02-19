@@ -356,7 +356,7 @@ $findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_members\" WHE
 $getuserinfo = sql_fetch_assoc($findusrinfo); 
 $getuserinfop['numitems'] = $getuserinfop['numitems'] + 1;
 sqlite3_query($slite3, "UPDATE \"upcdatabase_members\" SET \"lastactive\"='".time()."',numitems=".$getuserinfop['numitems']." WHERE \"name\"='".$_COOKIE['MemberName']."' AND \"id\"='".$_COOKIE['MemberID']."';");
-sqlite3_query($slite3, "INSERT INTO \"upcdatabase_items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, htmlspecialchars($_POST['description']))."', '".sqlite3_escape_string($slite3, htmlspecialchars($_POST['sizeweight']))."', 'yes', 1, '".htmlspecialchars("Kazuki")."', ".time().", ".time().", 1, '".htmlspecialchars("Kazuki")."', '127.0.0.1', '127.0.0.1');"); $_GET['act'] = "lookup"; } 
+sqlite3_query($slite3, "INSERT INTO \"upcdatabase_items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); $_GET['act'] = "lookup"; } 
 if($_GET['act']=="lookup") { 
 if(isset($_POST['upc'])) {
 $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"upcdatabase_items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
@@ -396,7 +396,8 @@ $upcinfo = sql_fetch_assoc($findupc); } }
    <?php } if($ean13!==null&&validate_ean13($ean13)===true) { ?>
    <tr><td>EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url; ?>barcode.php?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
    <?php } ?>
-   <tr><td>Description</td><td width="50"></td><td><?php echo $upcinfo['description']; ?></td></tr>
+   <tr><td>Description</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['description']); ?></td></tr>
+   <tr><td>Size/Weight</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['sizeweight']); ?></td></tr>
    <tr><td>Issuing Country</td><td width="50"></td><td><?php echo get_gs1_prefix($ean13); ?></td></tr>
    <tr><td>Last Modified</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td></tr>
    <tr><td>Last Modified By</td><td width="50"></td><td><?php echo $upcinfo['username']; ?></td></tr>
