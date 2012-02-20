@@ -518,6 +518,10 @@ $upcinfo['validated'] = "no"; } } }
 	(!preg_match("/^02/", $_POST['upc'])&&preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
   <title> <?php echo $sitename; ?>: Dummy UPC </title>
+  <?php } if(isset($_POST['upc'])&&
+	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc']))&&
+	(preg_match("/^05/", $_POST['upc'])||preg_match("/^09/", $_POST['upc']))) { ?>
+  <title> <?php echo $sitename; ?>: Coupon Decode </title>
   <?php } ?>
 <?php echo $metatags; ?>
  </head>
@@ -525,8 +529,10 @@ $upcinfo['validated'] = "no"; } } }
  <body>
   <center>
    <?php echo $navbar; ?>
-   <?php if(isset($_POST['upc'])&&preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])) { 
-   $RandWeight = get_upca_vw_info("207362401432");
+   <?php if(isset($_POST['upc'])&&
+	(preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { 
+   $RandWeight = get_upca_vw_info($upca);
    $price_split = str_split($RandWeight['price'], 2);
    $RandWeight['price'] = ltrim($price_split[0].".".$price_split[1], "0"); 
    ?>
@@ -536,6 +542,20 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td width="125">UPC-A</td><td width="50"><img src="<?php echo $website_url; ?>barcode.php?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
    <tr><td width="125">Product Code</td><td width="50"><?php echo $RandWeight['code']; ?></td></tr>
    <tr><td width="125">Price</td><td width="50"><?php echo $RandWeight['price']; ?></td></tr>
+   </table>
+   <div><br /></div>
+   <?php } if(isset($_POST['upc'])&&
+	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc']))&&
+	(preg_match("/^05/", $_POST['upc'])||preg_match("/^09/", $_POST['upc']))) {
+   $CouponInfo = get_upca_coupon_info($upca);
+   ?>
+   <h2>Coupon Decode</h2>
+   <div>Manufacturer: <?php echo $CouponInfo['manufacturer']; ?><br /><br /></div>
+   <div>Coupon Family: <?php echo $CouponInfo['family']; ?><br /><br /></div>
+   <div>Coupon Value: <?php echo $CouponInfo['value']; ?><br /><br /></div>
+   <div>Coupon UPCs are not unique to coupons as other UPCs are to items.<br />  The coupon UPC has its meaning embedded in it.<br />  Therefore, there's no need to store coupon UPCs in the database.</div>
+   <table>
+   <tr><td width="125">UPC-A</td><td width="50"><img src="<?php echo $website_url; ?>barcode.php?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
    </table>
    <div><br /></div>
    <?php } if(isset($_POST['upc'])&&preg_match("/^04/", $_POST['upc'])&&!preg_match("/^02/", $_POST['upc'])) { 
