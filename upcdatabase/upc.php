@@ -38,6 +38,7 @@ $basecheck = parse_url($iDBURLCHK);
 $basedir = $basecheck['path'];
 $cbasedir = $basedir;
 $cookieDomain = $basecheck['host'];
+$metatags = "  <meta name=\"generator\" content=\"".$sitename."\" />\n  <meta name=\"author\" content=\"".$siteauthor."\" />\n  <meta name=\"keywords\" content=\"".$sitekeywords."\" />\n  <meta name=\"description\" content=\"".$sitedescription."\" />\n";
 
 function sqlite3_open($filename, $mode = 0666) {
    $handle = new SQLite3($filename);
@@ -196,7 +197,14 @@ if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['S
 $adminlink = null;
 if($usersiteinfo['admin']=="yes") { $adminlink = " | <a href=\"".$website_url.$url_admin_file."\">AdminCP</a>"; }
 if($usersiteinfo['admin']=="yes") { $usersiteinfo['validated'] = "yes"; }
+$navbar = "<div><a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | ";
+if(isset($_COOKIE['MemberName'])) { 
+	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink."<br />"; }
+if(!isset($_COOKIE['MemberName'])) { 
+	$navbar = $navbar."Welcome: Guest | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a><br />"; }
+$navbar = $navbar."</div>";
 $upce = null; $upca = null; $ean13 = null;
+if(!isset($_GET['act'])&&isset($_POST['act'])) { $_GET['act'] = $_POST['act']; }
 if(!isset($_GET['act'])) { $_GET['act'] = "lookup"; 
 	header("Location: ".$website_url.$url_file."?act=lookup"); }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
@@ -399,15 +407,12 @@ if($_GET['act']=="join"||$_GET['act']=="signup") { ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title> <?php echo $sitename; ?>: Create an Account </title>
-  <meta name="generator" content="<?php echo $sitename; ?>" />
-  <meta name="author" content="<?php echo $siteauthor; ?>" />
-  <meta name="keywords" content="<?php echo $sitekeywords; ?>" />
-  <meta name="description" content="<?php echo $sitedescription; ?>" />
+<?php echo $metatags; ?>
  </head>
 
  <body>
   <center>
-   <div><a href="<?php echo $website_url.$url_file."?act=lookup"; ?>">Index Page</a> | <?php if(isset($_COOKIE['MemberName'])) { echo "Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink."<br />"; } if(!isset($_COOKIE['MemberName'])) { echo "Welcome: Guest | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a><br />"; } ?></div>
+   <?php echo $navbar; ?>
    <h2>Create an Account</h2>
    <form action="<?php echo $website_url.$url_file; ?>?act=join" method="post">
     <table>
@@ -426,15 +431,12 @@ if($_GET['act']=="join"||$_GET['act']=="signup") { ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title> <?php echo $sitename; ?>: Log In </title>
-  <meta name="generator" content="<?php echo $sitename; ?>" />
-  <meta name="author" content="<?php echo $siteauthor; ?>" />
-  <meta name="keywords" content="<?php echo $sitekeywords; ?>" />
-  <meta name="description" content="<?php echo $sitedescription; ?>" />
+<?php echo $metatags; ?>
  </head>
 
  <body>
   <center>
-   <div><a href="<?php echo $website_url.$url_file."?act=lookup"; ?>">Index Page</a> | <?php if(isset($_COOKIE['MemberName'])) { echo "Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink."<br />"; } if(!isset($_COOKIE['MemberName'])) { echo "Welcome: Guest | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a><br />"; } ?></div>
+   <?php echo $navbar; ?>
    <h2>Log In</h2>
    <form action="<?php echo $website_url.$url_file; ?>?act=login" method="post">
     <table>
@@ -506,15 +508,12 @@ $upcinfo['validated'] = "no"; } } }
   <?php } if(isset($_POST['upc'])&&preg_match("/^02/", $_POST['upc'])) { ?>
   <title> <?php echo $sitename; ?>: Random Weight UPC </title>
   <?php } ?>
-  <meta name="generator" content="<?php echo $sitename; ?>" />
-  <meta name="author" content="<?php echo $siteauthor; ?>" />
-  <meta name="keywords" content="<?php echo $sitekeywords; ?>" />
-  <meta name="description" content="<?php echo $sitedescription; ?>" />
+<?php echo $metatags; ?>
  </head>
 
  <body>
   <center>
-   <div><a href="<?php echo $website_url.$url_file."?act=lookup"; ?>">Index Page</a> | <?php if(isset($_COOKIE['MemberName'])) { echo "Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink."<br />"; } if(!isset($_COOKIE['MemberName'])) { echo "Welcome: Guest | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a><br />"; } ?></div>
+   <?php echo $navbar; ?>
    <?php if(isset($_POST['upc'])&&preg_match("/^02/", $_POST['upc'])) { 
    $RandWeight = get_upca_vw_info("207362401432");
    $price_split = str_split($RandWeight['price'], 2);
@@ -600,14 +599,11 @@ $upcinfo['validated'] = "no"; } } }
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title> <?php echo $sitename; ?>: Add New Entry </title>
-  <meta name="generator" content="<?php echo $sitename; ?>" />
-  <meta name="author" content="<?php echo $siteauthor; ?>" />
-  <meta name="keywords" content="<?php echo $sitekeywords; ?>" />
-  <meta name="description" content="<?php echo $sitedescription; ?>" />
+<?php echo $metatags; ?>
  </head>
  <body>
   <center>
-   <div><a href="<?php echo $website_url.$url_file."?act=lookup"; ?>">Index Page</a> | <?php if(isset($_COOKIE['MemberName'])) { echo "Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink."<br />"; } if(!isset($_COOKIE['MemberName'])) { echo "Welcome: Guest | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a><br />"; } ?></div>
+   <?php echo $navbar; ?>
    <h2>Add New Entry</h2>
    <table>
    <?php if($upce!==null&&validate_upce($upce)===true) { ?>
@@ -627,6 +623,51 @@ $upcinfo['validated'] = "no"; } } }
    <input type="hidden" name="upc" value="<?php echo $_POST['upc']; ?>" />
    <div><br /><input type="submit" value="Save New Entry" /> <input type="reset" value="Clear" /></div>
    </form>
+  </center>
+ </body>
+</html>
+<?php } if($_GET['act']=="check"||$_GET['act']=="checkdigit") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title> <?php echo $sitename; ?>: Check Digit Calculator </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>Check Digit Calculator</h2>
+   <form method="post" action="<?php echo $website_url.$url_file."?act=checkdigit"; ?>">
+   <b>EAN/UCC</b>: <input type="text" name="checkupc" size="15" maxlength="12" /><div><br /></div>
+   <div><input type="submit" value="Calculate Check Digit" /></div>
+   </form>
+   <div><br /></div>
+   <?php if(isset($_POST['checkupc'])&&is_numeric($_POST['checkupc'])&&
+   (strlen($_POST['checkupc'])==7||strlen($_POST['checkupc'])==11||strlen($_POST['checkupc'])==12)) { 
+   if(strlen($_POST['checkupc'])==7) {
+   $check_upce = fix_upce_checksum($_POST['checkupc']);
+   $check_upca = convert_upce_to_upca($check_upce);
+   $check_ean13 = convert_upca_to_ean13($check_upca); }
+   if(strlen($_POST['checkupc'])==11) {
+   $check_upca = fix_upca_checksum($_POST['checkupc']);
+   $check_upce = convert_upca_to_upce($check_upca);
+   $check_ean13 = convert_upca_to_ean13($check_upca); }
+   if(strlen($_POST['checkupc'])==12) {
+   $check_ean13 = fix_ean13_checksum($_POST['checkupc']);
+   $check_upca = convert_ean13_to_upca($check_ean13);
+   $check_upce = convert_upca_to_upce($check_upca); }
+   ?>
+   <table>
+   <?php if($check_ean13!==null&&validate_ean13($check_ean13)===true) { ?>
+   <tr><td>EAN/UCC-13:</td><td><?php echo $check_ean13; ?></td></tr>
+   <?php } if($check_upca!==null&&validate_upca($check_upca)===true) { ?>
+   <tr><td>UPC-A:</td><td><?php echo $check_upca; ?></td></tr>
+   <?php } if($check_upce!==null&&validate_upce($check_upce)===true) { ?>
+   <tr><td>UPC-E:</td><td><?php echo $check_upce; ?></td></tr>
+   <?php } ?>
+   <tr><td colspan="2"><a href="<?php echo $website_url.$url_file."?act=lookup&amp;upc=".$check_ean13; ?>">Click here</a> to look up this UPC in the database.</td></tr>
+   </table>
+   <?php } ?>
   </center>
  </body>
 </html>
