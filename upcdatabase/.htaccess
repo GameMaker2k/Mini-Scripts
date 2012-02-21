@@ -1,0 +1,8 @@
+#RewriteEngine on
+#RewriteBase   /~cooldude2k/sqlite3/
+#RewriteRule   ^item/([0-9]{7,12})$    upc.php?act=lookup&upc=$1
+#RewriteRule   ^barcode/upce/([0-9]{7,8})$    upc.php?act=lookup&upc=$1
+#RewriteRule   ^barcode/upc/([0-9]{11,12})$    upc.php?act=lookup&upc=$1
+#RewriteRule   ^barcode/upca/([0-9]{11,12})$    upc.php?act=lookup&upc=$1
+#RewriteRule   ^barcode/ean/([0-9]{12,13})$    upc.php?act=lookup&upc=$1
+#RewriteRule   ^barcode/ean13/([0-9]{12,13})$    upc.php?act=lookup&upc=$1
