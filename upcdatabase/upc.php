@@ -14,199 +14,14 @@
 
     $FileInfo: upc.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
 */
-$website_url = "http://localhost/upcdatabase/";
-$url_file = "upc.php";
-$url_admin_file = "admin.php";
-$sdb_file = "upcdatabase.sdb";
-$usehashtype = "sha256";
-$validate_items = true;
-$validate_members = true;
-$sitename = "UPC Database";
-$appname = htmlspecialchars("UPC/EAN Barcode Generator");
-$appmakerurl = "https://github.com/KazukiPrzyborowski/UPC-A-EAN-13-Maker";
-$appmaker = htmlspecialchars("Game Maker 2k");
-$appver = array(2,2,5,"RC 1");
-$upcdatabase = "http://www.upcdatabase.com/item/%s";
-@ob_start();
-@ini_set("date.timezone","UTC");
-@error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-if(function_exists("date_default_timezone_set")) { 
-	@date_default_timezone_set("UTC"); }
 
-$usersip = $_SERVER['REMOTE_ADDR'];
-$basecheck = parse_url($iDBURLCHK);
-$basedir = $basecheck['path'];
-$cbasedir = $basedir;
-$cookieDomain = $basecheck['host'];
-$metatags = "  <meta name=\"generator\" content=\"".$sitename."\" />\n  <meta name=\"author\" content=\"".$siteauthor."\" />\n  <meta name=\"keywords\" content=\"".$sitekeywords."\" />\n  <meta name=\"description\" content=\"".$sitedescription."\" />\n";
+require("./settings.php");
 
-function sqlite3_open($filename, $mode = 0666) {
-   $handle = new SQLite3($filename);
-   return $handle; }
-
-function sqlite3_close($dbhandle) {
-   $dbhandle->close();
-   return true; }
-
-function sqlite3_escape_string($dbhandle, $string) {
-   $string = $dbhandle->escapeString($string);
-   return $string; }
-
-function sqlite3_query($dbhandle, $query) {
-   $results = $dbhandle->query($query);
-   return $results; }
-
-function sqlite3_fetch_array($result,$result_type=SQLITE3_BOTH) {
-	$row = $result->fetchArray($result_type);
-	return $row; }
-
-function sql_fetch_assoc($result) {
-	$row = $result->fetchArray(SQLITE3_ASSOC);
-	return $row; }
-
-function sqlite3_last_insert_rowid($dbhandle) {
-	$rowid = $dbhandle->lastInsertRowID();
-	return $rowid; }
-
-function sqlite3_libversion($dbhandle) {
-	$dbversion = $dbhandle->version();
-	return $dbversion['versionString']; }
-
-function version_info($proname,$subver,$ver,$supver,$reltype,$svnver,$showsvn) {
-	$return_var = $proname." ".$reltype." ".$subver.".".$ver.".".$supver;
-	if($showsvn==false) { $showsvn = null; }
-	if($showsvn==true) { $return_var .= " SVN ".$svnver; }
-	if($showsvn!=true&&$showsvn!=null) { $return_var .= " ".$showsvn." ".$svnver; }
-	return $return_var; }
-$appversion = version_info($appname,$appver[0],$appver[1],$appver[2],$appver[3]." Ver.",null,false);
-require("./functions.php");
-
-$slite3 = sqlite3_open($sdb_file);
-$tablecheck1 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_members\""); 
-if($tablecheck1===false) {
-sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
-sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_members\" (\n".
-"  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
-"  \"name\" VARCHAR(150) UNIQUE NOT NULL default '',\n".
-"  \"password\" VARCHAR(250) NOT NULL default '',\n".
-"  \"hashtype\" VARCHAR(50) NOT NULL default '',\n".
-"  \"email\" VARCHAR(256) UNIQUE NOT NULL default '',\n".
-"  \"timestamp\" INTEGER NOT NULL default '0',\n".
-"  \"lastactive\" INTEGER NOT NULL default '0',\n".
-"  \"validated\" VARCHAR(20) NOT NULL default '',\n".
-"  \"numitems\" INTEGER NOT NULL default '0',\n".
-"  \"numpending\" INTEGER NOT NULL default '0',\n".
-"  \"admin\" VARCHAR(20) NOT NULL default '',\n".
-"  \"ip\" VARCHAR(50) NOT NULL default '',\n".
-"  \"salt\" VARCHAR(50) NOT NULL default ''\n".
-");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
-$tablecheck2 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_items\""); 
-if($tablecheck2===false) {
-sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
-sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_items\" (\n".
-"  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
-"  \"upc\" TEXT UNIQUE NOT NULL,\n".
-"  \"description\" TEXT NOT NULL,\n".
-"  \"sizeweight\" TEXT NOT NULL,\n".
-"  \"validated\" VARCHAR(20) NOT NULL default '',\n".
-"  \"delrequest\" VARCHAR(20) NOT NULL default '',\n".
-"  \"userid\" INTEGER NOT NULL default '0',\n".
-"  \"username\" VARCHAR(150) NOT NULL default '',\n".
-"  \"timestamp\" INTEGER NOT NULL default '0',\n".
-"  \"lastupdate\" INTEGER NOT NULL default '0',\n".
-"  \"edituserid\" INTEGER NOT NULL default '0',\n".
-"  \"editname\" VARCHAR(150) NOT NULL default '',\n".
-"  \"ip\" VARCHAR(50) NOT NULL default '',\n".
-"  \"editip\" VARCHAR(50) NOT NULL default ''\n".
-");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
-$tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_pending\""); 
-if($tablecheck3===false) {
-sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
-sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_pending\" (\n".
-"  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
-"  \"upc\" TEXT UNIQUE NOT NULL,\n".
-"  \"description\" TEXT NOT NULL,\n".
-"  \"sizeweight\" TEXT NOT NULL,\n".
-"  \"validated\" VARCHAR(20) NOT NULL default '',\n".
-"  \"delrequest\" VARCHAR(20) NOT NULL default '',\n".
-"  \"userid\" INTEGER NOT NULL default '0',\n".
-"  \"username\" VARCHAR(150) NOT NULL default '',\n".
-"  \"timestamp\" INTEGER NOT NULL default '0',\n".
-"  \"lastupdate\" INTEGER NOT NULL default '0',\n".
-"  \"ip\" VARCHAR(50) NOT NULL default ''\n".
-");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
-$tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_modupc\""); 
-if($tablecheck3===false) {
-sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
-sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_modupc\" (\n".
-"  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
-"  \"upc\" TEXT UNIQUE NOT NULL,\n".
-"  \"description\" TEXT NOT NULL,\n".
-"  \"sizeweight\" TEXT NOT NULL,\n".
-"  \"validated\" VARCHAR(20) NOT NULL default '',\n".
-"  \"delrequest\" VARCHAR(20) NOT NULL default '',\n".
-"  \"userid\" INTEGER NOT NULL default '0',\n".
-"  \"username\" VARCHAR(150) NOT NULL default '',\n".
-"  \"timestamp\" INTEGER NOT NULL default '0',\n".
-"  \"lastupdate\" INTEGER NOT NULL default '0',\n".
-"  \"ip\" VARCHAR(50) NOT NULL default ''\n".
-");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
-
-if(isset($_COOKIE['MemberName'])&&!isset($_COOKIE['MemberID'])&&!isset($_COOKIE['SessPass'])) {
-	unset($_COOKIE['MemberName']); 
-	setcookie("MemberName", NULL, -1, $cbasedir, $cookieDomain); }
-if(!isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&!isset($_COOKIE['SessPass'])) {
-	unset($_COOKIE['MemberID']); 
-	setcookie("MemberID", NULL, -1, $cbasedir, $cookieDomain); }
-if(!isset($_COOKIE['MemberName'])&&!isset($_COOKIE['MemberID'])&&isset($_COOKIE['SessPass'])) {
-	unset($_COOKIE['SessPass']); 
-	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain); }
-if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['SessPass'])) {
-	$findme = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"upcdatabase_members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';");
-	$numfindme = sql_fetch_assoc($findme);
-	$numfmrows = $numfindme['COUNT'];
-	if($numfmrows<1) {
-	unset($_COOKIE['MemberName']); 
-	setcookie("MemberName", NULL, -1, $cbasedir, $cookieDomain);
-	unset($_COOKIE['MemberID']); 
-	setcookie("MemberID", NULL, -1, $cbasedir, $cookieDomain);
-	unset($_COOKIE['SessPass']); 
-	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain); }
-	if($numfmrows>0) {
-	$findme = sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';"); 
-	$userinfo = sql_fetch_assoc($findme); $usersiteinfo = $userinfo;
-	if($userinfo['password']!=$_COOKIE['SessPass']) {
-	unset($_COOKIE['MemberName']); 
-	setcookie("MemberName", NULL, -1, $cbasedir, $cookieDomain);
-	unset($_COOKIE['MemberID']); 
-	setcookie("MemberID", NULL, -1, $cbasedir, $cookieDomain);
-	unset($_COOKIE['SessPass']); 
-	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain); } } }
-$adminlink = null;
-if($usersiteinfo['admin']=="yes") { $adminlink = " | <a href=\"".$website_url.$url_admin_file."\">AdminCP</a>"; }
-if($usersiteinfo['admin']=="yes") { $usersiteinfo['validated'] = "yes"; }
-$navbar = "<div><a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | ";
-if(isset($_COOKIE['MemberName'])) { 
-	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink."<br />"; }
-if(!isset($_COOKIE['MemberName'])) { 
-	$navbar = $navbar."Welcome: Guest | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a><br />"; }
-$navbar = $navbar."</div>";
 $upce = null; $upca = null; $ean13 = null;
 if(!isset($_GET['act'])&&isset($_POST['act'])) { $_GET['act'] = $_POST['act']; }
 if(!isset($_GET['act'])) { $_GET['act'] = "lookup"; 
 	header("Location: ".$website_url.$url_file."?act=lookup"); }
+if(isset($_GET['act'])&&$_GET['act']=="view") { $_GET['act'] = "lookup"; }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
 if(isset($_POST['upc'])) {
 if(strlen($_POST['upc'])==13&&validate_ean13($_POST['upc'])===true&&
@@ -278,8 +93,10 @@ if($_GET['act']=="add"&&isset($_POST['upc'])&&strlen($_POST['upc'])==13&&
 	validate_ean13($_POST['upc'])===false) { 
 	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); }
 if($_GET['act']=="add"&&isset($_POST['upc'])&&
-	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { 
+	(preg_match("/^02/", $_POST['upc'])||preg_match("/^04/", $_POST['upc'])||
+	preg_match("/^05/", $_POST['upc'])||preg_match("/^09/", $_POST['upc'])||
+	preg_match("/^(98[1-3])/", $_POST['upc'])||preg_match("/^(99[0-9])/", $_POST['upc'])||
+	preg_match("/^2/", $_POST['upc']))) { 
 	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup&upc=".$_POST['upc']); }
 if($_GET['act']=="add"&&!isset($_COOKIE['MemberName'])&&!isset($_COOKIE['MemberID'])&&
 	!isset($_COOKIE['SessPass'])) { $_GET['act'] = "lookup"; 
@@ -408,7 +225,7 @@ if($_GET['act']=="join"||$_GET['act']=="signup") { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title> <?php echo $sitename; ?>: Create an Account </title>
+<title> <?php echo $sitename; ?>: Create an Account </title>
 <?php echo $metatags; ?>
  </head>
 
@@ -432,7 +249,7 @@ if($_GET['act']=="join"||$_GET['act']=="signup") { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title> <?php echo $sitename; ?>: Log In </title>
+<title> <?php echo $sitename; ?>: Log In </title>
 <?php echo $metatags; ?>
  </head>
 
@@ -497,31 +314,37 @@ $upcinfo['validated'] = "no"; } } }
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <?php if(!isset($_POST['upc'])) { ?>
-  <title> <?php echo $sitename; ?>: Item Lookup </title>
+<title> <?php echo $sitename; ?>: Item Lookup </title>
   <?php } if(isset($_POST['upc'])&&$numrows>0&&$upcinfo['validated']=="yes"&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
-  <title> <?php echo $sitename; ?>: Item Record </title>
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
+	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
+	!preg_match("/^2/", $_POST['upc']))) { ?>
+<title> <?php echo $sitename; ?>: Item Record </title>
   <?php } if(isset($_POST['upc'])&&$numrows>0&&$upcinfo['validated']=="no"&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
-  <title> <?php echo $sitename; ?>: Item Found </title>
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
+	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
+	!preg_match("/^2/", $_POST['upc']))) { ?>
+<title> <?php echo $sitename; ?>: Item Found </title>
   <?php } if(isset($_POST['upc'])&&$numrows===0&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
-  <title> <?php echo $sitename; ?>: Item Not Found </title>
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
+	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
+	!preg_match("/^2/", $_POST['upc']))) { ?>
+<title> <?php echo $sitename; ?>: Item Not Found </title>
+  <?php } if(isset($_POST['upc'])&&preg_match("/^02/", $_POST['upc'])) { ?>
+<title> <?php echo $sitename; ?>: Random Weight UPC </title>
+  <?php } if(isset($_POST['upc'])&&preg_match("/^04/", $_POST['upc'])) { ?>
+<title> <?php echo $sitename; ?>: Dummy UPC </title>
+  <?php } if(isset($_POST['upc'])&&preg_match("/^2/", $_POST['upc'])) { ?>
+<title> <?php echo $sitename; ?>: Dummy UPC </title>
   <?php } if(isset($_POST['upc'])&&
-	(preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
-  <title> <?php echo $sitename; ?>: Random Weight UPC </title>
-  <?php } if(isset($_POST['upc'])&&
-	(!preg_match("/^02/", $_POST['upc'])&&preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
-  <title> <?php echo $sitename; ?>: Dummy UPC </title>
-  <?php } if(isset($_POST['upc'])&&
-	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc']))&&
 	(preg_match("/^05/", $_POST['upc'])||preg_match("/^09/", $_POST['upc']))) { ?>
-  <title> <?php echo $sitename; ?>: Coupon Decode </title>
+<title> <?php echo $sitename; ?>: Coupon Decode </title>
+  <?php } if(isset($_POST['upc'])&&
+	(preg_match("/^(98[1-3])/", $_POST['upc'])||preg_match("/^(99[0-9])/", $_POST['upc']))) { ?>
+<title> <?php echo $sitename; ?>: Coupon Decode </title>
   <?php } ?>
 <?php echo $metatags; ?>
  </head>
@@ -529,9 +352,7 @@ $upcinfo['validated'] = "no"; } } }
  <body>
   <center>
    <?php echo $navbar; ?>
-   <?php if(isset($_POST['upc'])&&
-	(preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { 
+   <?php if(isset($_POST['upc'])&&preg_match("/^02/", $_POST['upc'])) { 
    $RandWeight = get_upca_vw_info($upca);
    $price_split = str_split($RandWeight['price'], 2);
    $RandWeight['price'] = ltrim($price_split[0].".".$price_split[1], "0"); 
@@ -545,7 +366,6 @@ $upcinfo['validated'] = "no"; } } }
    </table>
    <div><br /></div>
    <?php } if(isset($_POST['upc'])&&
-	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc']))&&
 	(preg_match("/^05/", $_POST['upc'])||preg_match("/^09/", $_POST['upc']))) {
    $CouponInfo = get_upca_coupon_info($upca);
    ?>
@@ -558,7 +378,16 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td width="125">UPC-A</td><td width="50"><img src="<?php echo $website_url; ?>barcode.php?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
    </table>
    <div><br /></div>
-   <?php } if(isset($_POST['upc'])&&preg_match("/^04/", $_POST['upc'])&&!preg_match("/^02/", $_POST['upc'])) { 
+   <?php } if(isset($_POST['upc'])&&
+	(preg_match("/^(98[1-3])/", $_POST['upc'])||preg_match("/^(99[0-9])/", $_POST['upc']))) {
+   ?>
+   <h2>Coupon Decode</h2>
+   <div>Coupon UPCs are not unique to coupons as other UPCs are to items.<br />  The coupon UPC has its meaning embedded in it.<br />  Therefore, there's no need to store coupon UPCs in the database.</div>
+   <table>
+   <tr><td width="125">EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url; ?>barcode.php?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
+   </table>
+   <div><br /></div>
+   <?php } if(isset($_POST['upc'])&&preg_match("/^04/", $_POST['upc'])) { 
    ?>
    <h2>Dummy UPC</h2>
    <div>Dummy (number system 4) UPCs are for private use.<br />  This means anybody (typically a retailer) that needs to assign a UPC to an item that doesn't already have one, can use any number system 4 UPC it chooses.<br />  Most importantly, they can know that by doing so, they won't pick one that may already be used.<br />  So, such a UPC can and does mean something different depending on who you ask, and there's no reason to try to keep track of what products these correspond to.</div>
@@ -566,13 +395,25 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td width="125">UPC-A</td><td width="50"><img src="<?php echo $website_url; ?>barcode.php?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
    </table>
    <div><br /></div>
+   <?php } if(isset($_POST['upc'])&&preg_match("/^2/", $_POST['upc'])) { 
+   ?>
+   <h2>Dummy UPC</h2>
+   <div>Dummy (number system 2) UPCs are for private use.<br />  This means anybody (typically a retailer) that needs to assign a UPC to an item that doesn't already have one, can use any number system 2 UPC it chooses.<br />  Most importantly, they can know that by doing so, they won't pick one that may already be used.<br />  So, such a UPC can and does mean something different depending on who you ask, and there's no reason to try to keep track of what products these correspond to.</div>
+   <table>
+   <tr><td width="125">EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url; ?>barcode.php?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
+   </table>
+   <div><br /></div>
    <?php } if(!isset($_POST['upc'])&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
+	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
+	!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Lookup</h2>
    <?php } if(isset($_POST['upc'])&&$numrows>0&&$upcinfo['validated']=="yes"&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
+	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
+	!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Record</h2>
    <table>
    <?php if($upce!==null&&validate_upce($upce)===true) { ?>
@@ -596,7 +437,9 @@ $upcinfo['validated'] = "no"; } } }
    <div><br /></div>
    <?php } if(isset($_POST['upc'])&&$numrows>0&&$upcinfo['validated']=="no"&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
+	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
+	!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Found</h2>
    <div>The UPC you were looking for currently is in the database but has not been validated yet.<br /><br /></div>
    <table>
@@ -611,7 +454,9 @@ $upcinfo['validated'] = "no"; } } }
    <div><br />Please try coming back later.<br /><br /></div>
    <?php } if(isset($_POST['upc'])&&$numrows===0&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
-	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc']))) { ?>
+	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
+	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
+	!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Not Found</h2>
    <div>The UPC you were looking for currently has no record in the database.<br /><br /></div>
    <table>
@@ -643,7 +488,7 @@ $upcinfo['validated'] = "no"; } } }
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title> <?php echo $sitename; ?>: Add New Entry </title>
+<title> <?php echo $sitename; ?>: Add New Entry </title>
 <?php echo $metatags; ?>
  </head>
  <body>
@@ -675,7 +520,7 @@ $upcinfo['validated'] = "no"; } } }
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title> <?php echo $sitename; ?>: Check Digit Calculator </title>
+<title> <?php echo $sitename; ?>: Check Digit Calculator </title>
 <?php echo $metatags; ?>
  </head>
  <body>
