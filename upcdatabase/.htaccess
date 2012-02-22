@@ -6,3 +6,15 @@
 #RewriteRule   ^barcode/upc/([0-9]{12})$    barcode.php?act=upca&upc=$1
 #RewriteRule   ^barcode/ean13/([0-9]{13})$    barcode.php?act=ean13&upc=$1
 #RewriteRule   ^barcode/ean/([0-9]{13})$    barcode.php?act=ean13&upc=$1
+
+ <Files "settings.php">
+    Order Deny,Allow
+    Deny from all
+    Satisfy All
+ </Files>
+
+ <Files "*.sdb">
+    Order Deny,Allow
+    Deny from all
+    Satisfy All
+ </Files>

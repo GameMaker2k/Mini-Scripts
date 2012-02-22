@@ -17,21 +17,23 @@
 
 $website_url = "http://localhost/upcdatabase/";
 $url_file = "upc.php";
+$barcode_file = "barcode.php";
 $url_admin_file = "admin.php";
-$table_prefix = "upcdatabase_";
-$sdb_file = "upcdatabase.sdb";
+$sqlitedatabase = "upcdatabase";
 $usehashtype = "sha256";
-$validate_items = true;
-$validate_members = true;
 $appname = htmlspecialchars("UPC Database");
 $appmakerurl = "https://github.com/KazukiPrzyborowski/UPC-A-EAN-13-Maker";
 $appmaker = htmlspecialchars("Game Maker 2k");
+$validate_items = true;
+$validate_members = true;
 $appver = array(2,2,5,"RC 1");
 $upcdatabase = "http://www.upcdatabase.com/item/%s";
 $sitename = $appname;
 $siteauthor = $appmaker;
 $sitekeywords = null;
 $sitedescription = null;
+$table_prefix = $sqlitedatabase."_";
+$sdb_file = $sqlitedatabase.".sdb";
 
 @ob_start();
 
@@ -249,11 +251,52 @@ if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['S
 $adminlink = null;
 if($usersiteinfo['admin']=="yes") { $adminlink = " | <a href=\"".$website_url.$url_admin_file."\">AdminCP</a>"; }
 if($usersiteinfo['admin']=="yes") { $usersiteinfo['validated'] = "yes"; }
-$navbar = "<h1><big>".$sitename."</big></h1>\n   <div>";
+$navbar = "<h1><big><a style=\"text-decoration: none;\" href=\"".$website_url.$url_file."?act=lookup\">".$sitename."</a></big></h1>\n   <div>";
 if(isset($_COOKIE['MemberName'])) { 
 	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink; }
 if(!isset($_COOKIE['MemberName'])) { 
 	$navbar = $navbar."Welcome: Guest | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a>"; }
 $navbar = $navbar." | <a href=\"".$website_url.$url_file."?act=latest&amp;page=1\">Latest</a><br /></div>";
+
+// Removes the bad stuff
+function remove_bad_entities($Text) {
+//HTML Entities Dec Version
+$Text = preg_replace("/&#8238;/isU","",$Text);
+$Text = preg_replace("/&#8194;/isU","",$Text);
+$Text = preg_replace("/&#8195;/isU","",$Text);
+$Text = preg_replace("/&#8201;/isU","",$Text);
+$Text = preg_replace("/&#8204;/isU","",$Text);
+$Text = preg_replace("/&#8205;/isU","",$Text);
+$Text = preg_replace("/&#8206;/isU","",$Text);
+$Text = preg_replace("/&#8207;/isU","",$Text);
+//HTML Entities Hex Version
+$Text = preg_replace("/&#x202e;/isU","",$Text);
+$Text = preg_replace("/&#x2002;/isU","",$Text);
+$Text = preg_replace("/&#x2003;/isU","",$Text);
+$Text = preg_replace("/&#x2009;/isU","",$Text);
+$Text = preg_replace("/&#x200c;/isU","",$Text);
+$Text = preg_replace("/&#x200d;/isU","",$Text);
+$Text = preg_replace("/&#x200e;/isU","",$Text);
+$Text = preg_replace("/&#x200f;/isU","",$Text);
+//HTML Entities Name Version
+$Text = preg_replace("/&ensp;/isU","",$Text);
+$Text = preg_replace("/&emsp;/isU","",$Text);
+$Text = preg_replace("/&thinsp;/isU","",$Text);
+$Text = preg_replace("/&zwnj;/isU","",$Text);
+$Text = preg_replace("/&zwj;/isU","",$Text);
+$Text = preg_replace("/&lrm;/isU","",$Text);
+$Text = preg_replace("/&rlm;/isU","",$Text);
+return $Text; }
+// Remove the bad stuff
+function remove_spaces($Text) {
+$Text = preg_replace("/(^\t+|\t+$)/","",$Text);
+$Text = preg_replace("/(^\n+|\n+$)/","",$Text);
+$Text = preg_replace("/(^\r+|\r+$)/","",$Text);
+$Text = preg_replace("/(\r|\n|\t)+/"," ",$Text);
+$Text = preg_replace("/\s\s+/"," ",$Text);
+$Text = preg_replace("/(^\s+|\s+$)/","",$Text);
+$Text = trim($Text, "\x00..\x1F");
+$Text = remove_bad_entities($Text);
+return $Text; }
 
 ?>
