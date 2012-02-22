@@ -100,7 +100,7 @@ if($_GET['act']=="add"&&isset($_POST['upc'])&&
 	(preg_match("/^02/", $_POST['upc'])||preg_match("/^04/", $_POST['upc'])||
 	preg_match("/^05/", $_POST['upc'])||preg_match("/^09/", $_POST['upc'])||
 	preg_match("/^(98[1-3])/", $_POST['upc'])||preg_match("/^(99[0-9])/", $_POST['upc'])||
-	preg_match("/^2/", $_POST['upc']))) { 
+	preg_match("/^(97[7-9])/", $_POST['upc'])||preg_match("/^2/", $_POST['upc']))) { 
 	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup&upc=".$_POST['upc']); exit(); }
 if($_GET['act']=="add"&&!isset($_COOKIE['MemberName'])&&!isset($_COOKIE['MemberID'])&&
 	!isset($_COOKIE['SessPass'])) { $_GET['act'] = "lookup"; 
@@ -125,6 +125,14 @@ if(isset($_POST['upc'])&&!is_numeric($_POST['upc'])) { $lookupupc = null; }
 if(!isset($_POST['upc'])) { $lookupupc = null; } }
 if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	isset($_POST['username'])&&isset($_POST['password'])) {
+    $_POST['username'] = trim($_POST['username']);
+    $_POST['username'] = remove_spaces($_POST['username']);
+    if($_POST['username']=="") {
+    header("Location: ".$website_url.$url_file."?act=login"); exit(); }
+    if(strlen($_POST['username'])>30) {
+    header("Location: ".$website_url.$url_file."?act=login"); exit(); }
+    if(strlen($_POST['password'])>60||$_POST['password']==""||$_POST['password']==null) {
+    header("Location: ".$website_url.$url_file."?act=login"); exit(); }
 	$findme = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_POST['username'])."';");
 	$numfindme = sql_fetch_assoc($findme);
 	$numfmrows = $numfindme['COUNT'];
@@ -180,6 +188,18 @@ if(($_GET['act']=="join"||$_GET['act']=="signup")&&
 	isset($_POST['username'])&&isset($_POST['email'])&&
 	isset($_POST['password'])&&isset($_POST['passwordcheck'])&&
 	$_POST['password']==$_POST['passwordcheck']) {
+    $_POST['username'] = trim($_POST['username']);
+    $_POST['username'] = remove_spaces($_POST['username']);
+    $_POST['email'] = trim($_POST['email']);
+    $_POST['email'] = remove_spaces($_POST['email']);
+    if($_POST['username']==""||$_POST['username']==null) {
+    header("Location: ".$website_url.$url_file."?act=join"); exit(); }
+    if($_POST['email']==""||$_POST['email']==null) {
+    header("Location: ".$website_url.$url_file."?act=join"); exit(); }
+    if(strlen($_POST['username'])>30) {
+    header("Location: ".$website_url.$url_file."?act=join"); exit(); }
+    if(strlen($_POST['password'])>60||$_POST['password']==""||$_POST['password']==null) {
+    header("Location: ".$website_url.$url_file."?act=join"); exit(); }
 $UserJoined = time(); $HashSalt = salt_hmac();
 if($usehashtype=="md2") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"md2"); }
@@ -335,19 +355,19 @@ $upcinfo['validated'] = "no"; } } }
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
 	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
-	!preg_match("/^2/", $_POST['upc']))) { ?>
+	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
 <title> <?php echo $sitename; ?>: Item Record </title>
   <?php } if(isset($_POST['upc'])&&$numrows>0&&$upcinfo['validated']=="no"&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
 	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
-	!preg_match("/^2/", $_POST['upc']))) { ?>
+	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
 <title> <?php echo $sitename; ?>: Item Found </title>
   <?php } if(isset($_POST['upc'])&&$numrows===0&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
 	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
-	!preg_match("/^2/", $_POST['upc']))) { ?>
+	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
 <title> <?php echo $sitename; ?>: Item Not Found </title>
   <?php } if(isset($_POST['upc'])&&preg_match("/^02/", $_POST['upc'])) { ?>
 <title> <?php echo $sitename; ?>: Random Weight UPC </title>
@@ -361,6 +381,9 @@ $upcinfo['validated'] = "no"; } } }
   <?php } if(isset($_POST['upc'])&&
 	(preg_match("/^(98[1-3])/", $_POST['upc'])||preg_match("/^(99[0-9])/", $_POST['upc']))) { ?>
 <title> <?php echo $sitename; ?>: Coupon Decode </title>
+  <?php } if(isset($_POST['upc'])&&
+	(preg_match("/^(97[7-9])/", $_POST['upc']))) { ?>
+<title> <?php echo $sitename; ?>: Bookland ISBN/ISMN/ISSN </title>
   <?php } ?>
 <?php echo $metatags; ?>
  </head>
@@ -419,17 +442,35 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td width="125">EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
    </table>
    <div><br /></div>
+   <?php } if(isset($_POST['upc'])&&preg_match("/^(97[7-9])/", $_POST['upc'])) {
+   if(validate_isbn13($ean13)===true) {
+   $eantype = "ISBN"; $eanprefix = "978";
+   $eanprint = print_convert_isbn13_to_isbn10($ean13); }
+   if(validate_ismn13($ean13)===true) {
+   $eantype = "ISMN"; $eanprefix = "977";
+   $eanprint = print_convert_ismn13_to_ismn10($ean13); }
+   if(validate_issn13($ean13)===true) {
+   $eantype = "ISSN"; $eanprefix = "979";
+   $eanprint = print_convert_issn13_to_issn8($ean13); }
+   ?>
+   <h2>Bookland ISBN/ISMN/ISSN</h2>
+   <div>This is a Bookland <?php echo $eantype; ?> code, which means it's an <?php echo $eantype; ?> number encoded as an EAN/UCC-13.<br /> You can tell this by the first three digits of the EAN/UCC-13 (<?php echo $eanprefix; ?>). The numbers after that are the <?php echo $eantype; ?>.<br /> You'll notice the last digits differ, though -- EAN/UCC-13 and <?php echo $eantype; ?> calculate their check digits differently<br /> (in fact, the check 'digit' on an <?php echo $eantype; ?> can be a digit or the letter X).</div>
+   <table>
+   <tr><td width="125">EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
+   <tr><td width="125"><?php echo $eantype; ?></td><td width="50"></td><td><?php echo $eanprint; ?></td></tr>
+   </table>
+   <div><br /></div>
    <?php } if(!isset($_POST['upc'])&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
 	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
-	!preg_match("/^2/", $_POST['upc']))) { ?>
+	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Lookup</h2>
    <?php } if(isset($_POST['upc'])&&$numrows>0&&$upcinfo['validated']=="yes"&&
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
 	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
-	!preg_match("/^2/", $_POST['upc']))) { ?>
+	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Record</h2>
    <table>
    <?php if($upce!==null&&validate_upce($upce)===true) { ?>
@@ -455,7 +496,7 @@ $upcinfo['validated'] = "no"; } } }
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
 	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
-	!preg_match("/^2/", $_POST['upc']))) { ?>
+	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Found</h2>
    <div>The UPC you were looking for currently is in the database but has not been validated yet.<br /><br /></div>
    <table>
@@ -472,7 +513,7 @@ $upcinfo['validated'] = "no"; } } }
 	(!preg_match("/^02/", $_POST['upc'])&&!preg_match("/^04/", $_POST['upc'])&&
 	!preg_match("/^05/", $_POST['upc'])&&!preg_match("/^09/", $_POST['upc'])&&
 	!preg_match("/^(98[1-3])/", $_POST['upc'])&&!preg_match("/^(99[0-9])/", $_POST['upc'])&&
-	!preg_match("/^2/", $_POST['upc']))) { ?>
+	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Not Found</h2>
    <div>The UPC you were looking for currently has no record in the database.<br /><br /></div>
    <table>
@@ -601,7 +642,7 @@ $upcinfo['validated'] = "no"; } } }
    if($pagestart<0) { $pagestart = 0; }
    $pagestartshow = $pagestart + 1;
    $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\" DESC LIMIT ".$pagestart.", ".$maxpage.";"); 
-   if($pagestart>20&&$_GET['page']>1) {
+   if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
    echo "<a href=\"".$website_url.$url_file."?act=latest&amp;page=".$backpage."\">Prev</a> --\n"; }
    echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
@@ -624,7 +665,7 @@ $upcinfo['validated'] = "no"; } } }
    <?php } echo "   </table>   <div><br /></div>"; } ?>
    <?php
    if($numrows>0) {
-   if($pagestart>20&&$_GET['page']>1) {
+   if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
    echo "<a href=\"".$website_url.$url_file."?act=latest&amp;page=".$backpage."\">Prev</a> --\n"; }
    echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
@@ -668,7 +709,7 @@ $upcinfo['validated'] = "no"; } } }
    if($pagestart<0) { $pagestart = 0; }
    $pagestartshow = $pagestart + 1;
    $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%';"); 
-   if($pagestart>20&&$_GET['page']>1) {
+   if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
    echo "<a href=\"".$website_url.$url_file."?act=latest&amp;page=".$backpage."\">Prev</a> --\n"; }
    echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
@@ -691,7 +732,7 @@ $upcinfo['validated'] = "no"; } } }
    <?php } echo "   </table>   <div><br /></div>"; } ?>
    <?php
    if($numrows>0) {
-   if($pagestart>20&&$_GET['page']>1) {
+   if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
    echo "<a href=\"".$website_url.$url_file."?act=latest&amp;page=".$backpage."\">Prev</a> --\n"; }
    echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
