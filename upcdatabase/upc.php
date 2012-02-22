@@ -17,11 +17,13 @@
 
 require("./settings.php");
 
-$upce = null; $upca = null; $ean13 = null;
+$upce = NULL; $upca = NULL; $ean13 = NULL;
 if(!isset($_GET['act'])&&isset($_POST['act'])) { $_GET['act'] = $_POST['act']; }
 if(!isset($_GET['act'])) { $_GET['act'] = "lookup"; 
 	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if(isset($_GET['act'])&&$_GET['act']=="view") { $_GET['act'] = "lookup"; }
+if(!isset($_GET['subact'])&&isset($_POST['subact'])) { $_POST['subact'] = $_GET['subact']; }
+if(!isset($_GET['subact'])) { $_GET['subact'] = NULL; }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
 if(($_GET['act']=="upca"||$_GET['act']=="upce"||$_GET['act']=="ean8"||
 	$_GET['act']=="ean13"||$_GET['act']=="itf14")&&isset($_GET['upc'])) {
@@ -122,10 +124,10 @@ if($_GET['act']=="logout"||$_GET['act']=="signout") {
 	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain);
 	$_GET['act'] = "login"; header("Location: ".$website_url.$url_file."?act=login"); exit(); }
 if($_GET['act']=="lookup") { 
-$lookupupc = null;
+$lookupupc = NULL;
 if(isset($_POST['upc'])&&is_numeric($_POST['upc'])) { $lookupupc = $_POST['upc']; }
-if(isset($_POST['upc'])&&!is_numeric($_POST['upc'])) { $lookupupc = null; }
-if(!isset($_POST['upc'])) { $lookupupc = null; } }
+if(isset($_POST['upc'])&&!is_numeric($_POST['upc'])) { $lookupupc = NULL; }
+if(!isset($_POST['upc'])) { $lookupupc = NULL; } }
 if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	isset($_POST['username'])&&isset($_POST['password'])) {
     $_POST['username'] = trim($_POST['username']);
@@ -134,7 +136,7 @@ if(($_GET['act']=="login"||$_GET['act']=="signin")&&
     header("Location: ".$website_url.$url_file."?act=login"); exit(); }
     if(strlen($_POST['username'])>30) {
     header("Location: ".$website_url.$url_file."?act=login"); exit(); }
-    if(strlen($_POST['password'])>60||$_POST['password']==""||$_POST['password']==null) {
+    if(strlen($_POST['password'])>60||$_POST['password']==""||$_POST['password']==NULL) {
     header("Location: ".$website_url.$url_file."?act=login"); exit(); }
 	$findme = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_POST['username'])."';");
 	$numfindme = sql_fetch_assoc($findme);
@@ -235,13 +237,13 @@ if(($_GET['act']=="join"||$_GET['act']=="signup")&&
     $_POST['username'] = remove_spaces($_POST['username']);
     $_POST['email'] = trim($_POST['email']);
     $_POST['email'] = remove_spaces($_POST['email']);
-    if($_POST['username']==""||$_POST['username']==null) {
+    if($_POST['username']==""||$_POST['username']==NULL) {
     header("Location: ".$website_url.$url_file."?act=join"); exit(); }
-    if($_POST['email']==""||$_POST['email']==null) {
+    if($_POST['email']==""||$_POST['email']==NULL) {
     header("Location: ".$website_url.$url_file."?act=join"); exit(); }
     if(strlen($_POST['username'])>30) {
     header("Location: ".$website_url.$url_file."?act=join"); exit(); }
-    if(strlen($_POST['password'])>60||$_POST['password']==""||$_POST['password']==null) {
+    if(strlen($_POST['password'])>60||$_POST['password']==""||$_POST['password']==NULL) {
     header("Location: ".$website_url.$url_file."?act=join"); exit(); }
 $UserJoined = time(); $HashSalt = salt_hmac();
 	if($usehashtype=="md2") { 
@@ -344,9 +346,9 @@ if(strlen($_POST['description'])>150) {
 header("Location: ".$website_url.$url_file."?act=add&upc=".$_GET['upc']); exit(); }
 if(strlen($_POST['sizeweight'])>30) {
 header("Location: ".$website_url.$url_file."?act=add&upc=".$_GET['upc']); exit(); }
-if($_POST['description']==""||$_POST['description']==null) {
+if($_POST['description']==""||$_POST['description']==NULL) {
 header("Location: ".$website_url.$url_file."?act=add&upc=".$_GET['upc']); exit(); }
-if($_POST['sizeweight']==""||$_POST['sizeweight']==null) {
+if($_POST['sizeweight']==""||$_POST['sizeweight']==NULL) {
 header("Location: ".$website_url.$url_file."?act=add&upc=".$_GET['upc']); exit(); }
 $findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';"); 
 $getuserinfo = sql_fetch_assoc($findusrinfo); 
@@ -523,11 +525,11 @@ $upcinfo['validated'] = "no"; } } }
 	!preg_match("/^(97[7-9])/", $_POST['upc'])&&!preg_match("/^2/", $_POST['upc']))) { ?>
    <h2>Item Record</h2>
    <table>
-   <?php if($upce!==null&&validate_upce($upce)===true) { ?>
+   <?php if($upce!==NULL&&validate_upce($upce)===true) { ?>
    <tr><td>UPC-E</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upce&amp;upc=<?php echo $upce; ?>" alt="<?php echo $upce; ?>" title="<?php echo $upce; ?>" /></td></tr>
-   <?php } if($upca!==null&&validate_upca($upca)===true) { ?>
+   <?php } if($upca!==NULL&&validate_upca($upca)===true) { ?>
    <tr><td>UPC-A</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
-   <?php } if($ean13!==null&&validate_ean13($ean13)===true) { ?>
+   <?php } if($ean13!==NULL&&validate_ean13($ean13)===true) { ?>
    <tr><td>EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
    <?php } ?>
    <tr><td>Description</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td></tr>
@@ -555,11 +557,11 @@ $upcinfo['validated'] = "no"; } } }
    <h2>Item Found</h2>
    <div>The UPC you were looking for currently is in the database but has not been validated yet.<br /><br /></div>
    <table>
-   <?php if($upce!==null&&validate_upce($upce)===true) { ?>
+   <?php if($upce!==NULL&&validate_upce($upce)===true) { ?>
    <tr><td>UPC-E</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upce&amp;upc=<?php echo $upce; ?>" alt="<?php echo $upce; ?>" title="<?php echo $upce; ?>" /></td></tr>
-   <?php } if($upca!==null&&validate_upca($upca)===true) { ?>
+   <?php } if($upca!==NULL&&validate_upca($upca)===true) { ?>
    <tr><td>UPC-A</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
-   <?php } if($ean13!==null&&validate_ean13($ean13)===true) { ?>
+   <?php } if($ean13!==NULL&&validate_ean13($ean13)===true) { ?>
    <tr><td>EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
    <?php } ?>
    </table>
@@ -572,11 +574,11 @@ $upcinfo['validated'] = "no"; } } }
    <h2>Item Not Found</h2>
    <div>The UPC you were looking for currently has no record in the database.<br /><br /></div>
    <table>
-   <?php if($upce!==null&&validate_upce($upce)===true) { ?>
+   <?php if($upce!==NULL&&validate_upce($upce)===true) { ?>
    <tr><td>UPC-E</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upce&amp;upc=<?php echo $upce; ?>" alt="<?php echo $upce; ?>" title="<?php echo $upce; ?>" /></td></tr>
-   <?php } if($upca!==null&&validate_upca($upca)===true) { ?>
+   <?php } if($upca!==NULL&&validate_upca($upca)===true) { ?>
    <tr><td>UPC-A</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
-   <?php } if($ean13!==null&&validate_ean13($ean13)===true) { ?>
+   <?php } if($ean13!==NULL&&validate_ean13($ean13)===true) { ?>
    <tr><td>EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
    <?php } ?>
    </table>
@@ -608,11 +610,11 @@ $upcinfo['validated'] = "no"; } } }
    <?php echo $navbar; ?>
    <h2>Add New Entry</h2>
    <table>
-   <?php if($upce!==null&&validate_upce($upce)===true) { ?>
+   <?php if($upce!==NULL&&validate_upce($upce)===true) { ?>
    <tr><td>UPC-E</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upce&amp;upc=<?php echo $upce; ?>" alt="<?php echo $upce; ?>" title="<?php echo $upce; ?>" /></td></tr>
-   <?php } if($upca!==null&&validate_upca($upca)===true) { ?>
+   <?php } if($upca!==NULL&&validate_upca($upca)===true) { ?>
    <tr><td>UPC-A</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=upca&amp;upc=<?php echo $upca; ?>" alt="<?php echo $upca; ?>" title="<?php echo $upca; ?>" /></td></tr>
-   <?php } if($ean13!==null&&validate_ean13($ean13)===true) { ?>
+   <?php } if($ean13!==NULL&&validate_ean13($ean13)===true) { ?>
    <tr><td>EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
    <?php } ?>
    </table>
@@ -660,11 +662,11 @@ $upcinfo['validated'] = "no"; } } }
    $check_upce = convert_upca_to_upce($check_upca); }
    ?>
    <table>
-   <?php if($check_ean13!==null&&validate_ean13($check_ean13)===true) { ?>
+   <?php if($check_ean13!==NULL&&validate_ean13($check_ean13)===true) { ?>
    <tr><td>EAN/UCC-13:</td><td><?php echo $check_ean13; ?></td></tr>
-   <?php } if($check_upca!==null&&validate_upca($check_upca)===true) { ?>
+   <?php } if($check_upca!==NULL&&validate_upca($check_upca)===true) { ?>
    <tr><td>UPC-A:</td><td><?php echo $check_upca; ?></td></tr>
-   <?php } if($check_upce!==null&&validate_upce($check_upce)===true) { ?>
+   <?php } if($check_upce!==NULL&&validate_upce($check_upce)===true) { ?>
    <tr><td>UPC-E:</td><td><?php echo $check_upce; ?></td></tr>
    <?php } ?>
    <tr><td colspan="2"><a href="<?php echo $website_url.$url_file."?act=lookup&amp;upc=".$check_ean13; ?>">Click here</a> to look up this UPC in the database.</td></tr>
@@ -809,13 +811,35 @@ header("Content-Disposition: attachment; filename=\"".$sqlitedatabase.".csv\"");
 ?>
 "upc", "description", "sizeweight"
 <?php
-$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+if($_GET['subact']=="neighbor"||$_GET['subact']=="neighbors") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+preg_match("/^(\d{7})/", $_GET['upc'], $fix_matches); 
+$findprefix = $fix_matches[1];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="lookup") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']==NULL) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); } 
+if($_GET['subact']=="latest") {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); } 
+if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
 $upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
 $upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
 ?>
 "<?php echo $upcinfo['upc']; ?>", "<?php echo $upcinfo['description']; ?>", "<?php echo $upcinfo['sizeweight']; ?>"
-<?php } } if($_GET['act']=="xml"||$_GET['act']=="dumpxml") { 
+<?php } } } if($_GET['act']=="xml"||$_GET['act']=="dumpxml") { 
 @header("Content-Type: text/xml; charset=UTF-8"); 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>
@@ -830,7 +854,31 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 <<?php echo $sqlitedatabase; ?>>
 
 <?php
-$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+if($_GET['subact']=="neighbor"||$_GET['subact']=="neighbors") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+preg_match("/^(\d{7})/", $_GET['upc'], $fix_matches); 
+$findprefix = $fix_matches[1];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="lookup") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']==NULL) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); } 
+if($_GET['subact']=="latest") {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); } 
+if($dumpupc==NULL) {
+echo "<item>\n</item>\n\n"; }
+if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
 $upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
 $upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
@@ -841,6 +889,6 @@ $upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
 <sizeweight><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_XML1, "UTF-8"); ?></sizeweight>
 </item>
 
-<?php } ?>
+<?php } } ?>
 </<?php echo $sqlitedatabase; ?>>
 <?php } sqlite3_close($slite3); ?>
