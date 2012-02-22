@@ -530,13 +530,18 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td>Description</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['description']); ?></td></tr>
    <tr><td>Size/Weight</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['sizeweight']); ?></td></tr>
    <tr><td>Issuing Country</td><td width="50"></td><td><?php echo get_gs1_prefix($ean13); ?></td></tr>
+   <?php if($upcinfo['timestamp']<=$upcinfo['lastupdate']) { ?>
+   <tr><td>Created</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['timestamp']); ?></td></tr>
+   <tr><td>Created By</td><td width="50"></td><td><?php echo $upcinfo['username']; ?></td></tr>
+   <?php } if($upcinfo['timestamp']>$upcinfo['lastupdate']) { ?>
    <tr><td>Last Modified</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td></tr>
-   <tr><td>Last Modified By</td><td width="50"></td><td><?php echo $upcinfo['username']; ?></td></tr>
+   <tr><td>Last Modified By</td><td width="50"></td><td><?php echo $upcinfo['editname']; ?></td></tr>
+   <?php } ?>
    </table>
    <div><br /></div>
-   <a href="<?php echo $website_url.$url_file; ?>?act=neighbors&amp;upc=<?php echo $ean13; ?>">List Neighboring Items</a><br/>
-   <!--<a href="/editform.asp?upc=0012345000065">Submit Modification Request</a><br/>-->
-   <!--<a href="/deleteform.asp?upc=0012345000065">Submit Deletion Request</a><br/>-->
+   <a href="<?php echo $website_url.$url_file; ?>?act=neighbors&amp;upc=<?php echo $ean13; ?>">List Neighboring Items</a><br />
+   <!--<a href="/editform.asp?upc=0012345000065">Submit Modification Request</a><br />-->
+   <!--<a href="/deleteform.asp?upc=0012345000065">Submit Deletion Request</a><br />-->
    <!--<br /><br /></div>-->
    <div><br /></div>
    <?php } if(isset($_POST['upc'])&&$numrows>0&&$upcinfo['validated']=="no"&&
