@@ -148,6 +148,7 @@ $query = "CREATE TABLE \"".$table_prefix."members\" (\n".
 "  \"email\" VARCHAR(256) UNIQUE NOT NULL default '',\n".
 "  \"timestamp\" INTEGER NOT NULL default '0',\n".
 "  \"lastactive\" INTEGER NOT NULL default '0',\n".
+"  \"validateitems\" VARCHAR(20) NOT NULL default '',\n".
 "  \"validated\" VARCHAR(20) NOT NULL default '',\n".
 "  \"numitems\" INTEGER NOT NULL default '0',\n".
 "  \"numpending\" INTEGER NOT NULL default '0',\n".

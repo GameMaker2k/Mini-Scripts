@@ -277,7 +277,7 @@ $UserJoined = time(); $HashSalt = salt_hmac();
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"gost"); }
 	if($usehashtype=="joaat") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"joaat"); }
-sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."members\" (\"name\", \"password\", \"hashtype\", \"email\", \"timestamp\", \"lastactive\", \"validated\", \"numitems\", \"numpending\", \"admin\", \"ip\", \"salt\") VALUES ('".sqlite3_escape_string($slite3, $_POST['username'])."', '".sqlite3_escape_string($slite3, $NewPassword)."', '".sqlite3_escape_string($slite3, $usehashtype)."', '".sqlite3_escape_string($slite3, $_POST['email'])."', ".sqlite3_escape_string($slite3, $UserJoined).", ".sqlite3_escape_string($slite3, $UserJoined).", 'no', 0, 0, 'no', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $HashSalt)."');"); 
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."members\" (\"name\", \"password\", \"hashtype\", \"email\", \"timestamp\", \"lastactive\", \"validateitems\", \"validated\", \"numitems\", \"numpending\", \"admin\", \"ip\", \"salt\") VALUES ('".sqlite3_escape_string($slite3, $_POST['username'])."', '".sqlite3_escape_string($slite3, $NewPassword)."', '".sqlite3_escape_string($slite3, $usehashtype)."', '".sqlite3_escape_string($slite3, $_POST['email'])."', ".sqlite3_escape_string($slite3, $UserJoined).", ".sqlite3_escape_string($slite3, $UserJoined).", 'yes', 'no', 0, 0, 'no', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $HashSalt)."');"); 
 $usersid = sqlite3_last_insert_rowid($slite3);
 if($usersid>1&&$validate_members===false) { sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"validated\"='yes' WHERE \"name\"='".$_POST['username']."' AND \"id\"=".$usersid.";"); }
 if($usersid==1) { sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"validated\"='yes',\"admin\"='yes' WHERE \"name\"='".$_POST['username']."' AND \"id\"=1;"); }
@@ -351,8 +351,10 @@ $newnumitems = $getuserinfo['numitems'];
 $newnumpending = $getuserinfo['numpending'];
 if($usersiteinfo['admin']=="yes") {
 $newnumitems = $getuserinfo['numitems'] + 1; }
-if($usersiteinfo['admin']=="no"&&$validate_items===true) {
+if($usersiteinfo['admin']=="no"&&$validate_items===true&&$usersiteinfo['validateitems']=="yes") {
 $newnumpending = $getuserinfo['numpending'] + 1; }
+if($usersiteinfo['admin']=="no"&&$validate_items===true&&$usersiteinfo['validateitems']=="no") {
+$newnumitems = $getuserinfo['numitems'] + 1; }
 if($usersiteinfo['admin']=="no"&&$validate_items===false) {
 $newnumitems = $getuserinfo['numitems'] + 1; }
 sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"numitems\"=".$newnumitems.", \"numpending\"=".$newnumpending.",\"ip\"='".$usersip."' WHERE \"name\"='".$_COOKIE['MemberName']."' AND \"id\"='".$_COOKIE['MemberID']."';");
@@ -360,13 +362,18 @@ $itemvalidated = "no";
 if($_COOKIE['MemberID']==1) { $itemvalidated = "yes"; }
 if($usersiteinfo['admin']=="yes") { $itemvalidated = "yes"; }
 if($usersiteinfo['admin']=="no"&&$_COOKIE['MemberID']>1&&$validate_items===false) { $itemvalidated = "yes"; }
-if($usersiteinfo['admin']=="no"&&$_COOKIE['MemberID']>1&&$validate_items===true) { $itemvalidated = "no"; }
+if($usersiteinfo['admin']=="no"&&$_COOKIE['MemberID']>1&&$validate_items===true&&
+	$usersiteinfo['validateitems']=="yes") { $itemvalidated = "no"; }
+if($usersiteinfo['admin']=="no"&&$_COOKIE['MemberID']>1&&$validate_items===true&&
+	$usersiteinfo['validateitems']=="no") { $itemvalidated = "yes"; }
 if($usersiteinfo['admin']=="yes") {
 sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); }
 if($usersiteinfo['admin']=="no"&&$validate_items===false) {
 sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); }
-if($usersiteinfo['admin']=="no"&&$validate_items===true) {
+if($usersiteinfo['admin']=="no"&&$validate_items===true&&$usersiteinfo['validateitems']=="yes") {
 sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."pending\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"ip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", '".sqlite3_escape_string($slite3, $usersip)."');"); }
+if($usersiteinfo['admin']=="no"&&$validate_items===true&&$usersiteinfo['validateitems']=="no") {
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); }
 $_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup&upc=".$_POST['upc']); exit(); }
 if($_GET['act']=="lookup") { 
 if(isset($_POST['upc'])) {
