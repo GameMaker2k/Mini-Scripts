@@ -23,6 +23,9 @@ if(!isset($_GET['act'])) { $_GET['act'] = "lookup";
 	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if(isset($_GET['act'])&&$_GET['act']=="view") { $_GET['act'] = "lookup"; }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
+if(($_GET['act']=="upca"||$_GET['act']=="upce"||$_GET['act']=="ean8"||
+	$_GET['act']=="ean13"||$_GET['act']=="itf14")&&isset($_GET['upc'])) {
+	header("Location: ".$website_url.$barcode_file."?act=".$_GET['act']."&upc=".$_GET['upc']); exit(); }
 if(isset($_POST['upc'])) {
 if(strlen($_POST['upc'])==13&&validate_ean13($_POST['upc'])===true&&
 	validate_upca(convert_ean13_to_upca($_POST['upc']))===true) {
@@ -63,9 +66,9 @@ if(isset($_GET['upc'])&&!is_numeric($_GET['upc'])) {
 	unset($_GET['upc']); }
 if(isset($_GET['upc'])&&strlen($_GET['upc'])>13) {
 	unset($_GET['upc']); }
-if(($_GET['act']=="upca"||$_GET['act']=="upce"||$_GET['act']=="ean13")&&
-	!isset($_GET['upc'])) { $_GET['act'] = "lookup"; 
-	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
+if(($_GET['act']=="upca"||$_GET['act']=="upce"||$_GET['act']=="ean8"||
+	$_GET['act']=="ean13"||$_GET['act']=="itf14")&&!isset($_GET['upc'])) {
+	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if($_GET['act']=="add"&&isset($_POST['upc'])) {
 $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
 $numupc = sql_fetch_assoc($findupc);
@@ -504,7 +507,7 @@ $upcinfo['validated'] = "no"; } } }
    <div>This is a Bookland <?php echo $eantype; ?> code, which means it's an <?php echo $eantype; ?> number encoded as an EAN/UCC-13.<br /> You can tell this by the first three digits of the EAN/UCC-13 (<?php echo $eanprefix; ?>). The numbers after that are the <?php echo $eantype; ?>.<br /> You'll notice the last digits differ, though -- EAN/UCC-13 and <?php echo $eantype; ?> calculate their check digits differently<br /> (in fact, the check 'digit' on an <?php echo $eantype; ?> can be a digit or the letter X).</div>
    <table>
    <tr><td width="125">EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
-   <tr><td width="125"><?php echo $eantype; ?></td><td width="50"></td><td><?php echo $eanprint; ?></td></tr>
+   <tr><td width="125"><?php echo $eantype; ?></td><td width="50"></td><td><center><?php echo $eanprint; ?></center></td></tr>
    </table>
    <div><br /></div>
    <?php } if(!isset($_POST['upc'])&&
@@ -527,8 +530,8 @@ $upcinfo['validated'] = "no"; } } }
    <?php } if($ean13!==null&&validate_ean13($ean13)===true) { ?>
    <tr><td>EAN/UCC-13</td><td width="50"></td><td><img src="<?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<?php echo $ean13; ?>" alt="<?php echo $ean13; ?>" title="<?php echo $ean13; ?>" /></td></tr>
    <?php } ?>
-   <tr><td>Description</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['description']); ?></td></tr>
-   <tr><td>Size/Weight</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['sizeweight']); ?></td></tr>
+   <tr><td>Description</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td></tr>
+   <tr><td>Size/Weight</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td></tr>
    <tr><td>Issuing Country</td><td width="50"></td><td><?php echo get_gs1_prefix($ean13); ?></td></tr>
    <?php if($upcinfo['timestamp']<=$upcinfo['lastupdate']) { ?>
    <tr><td>Created</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['timestamp']); ?></td></tr>
@@ -710,12 +713,11 @@ $upcinfo['validated'] = "no"; } } }
    ?>
    <tr valign="top">
    <td><a href="<?php echo $website_url.$url_file; ?>?act=lookup&amp;upc=<?php echo $upcinfo['upc']; ?>"><?php echo $upcinfo['upc']; ?></a></td>
-   <td><?php echo htmlspecialchars($upcinfo['description']); ?></td>
-   <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight']); ?></td>
+   <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
+   <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
-   <?php } echo "   </table>   <div><br /></div>"; } ?>
-   <?php
+   <?php } echo "   </table>   <div><br /></div>"; }
    if($numrows>0) {
    if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
@@ -777,12 +779,11 @@ $upcinfo['validated'] = "no"; } } }
    ?>
    <tr valign="top">
    <td><a href="<?php echo $website_url.$url_file; ?>?act=lookup&amp;upc=<?php echo $upcinfo['upc']; ?>"><?php echo $upcinfo['upc']; ?></a></td>
-   <td><?php echo htmlspecialchars($upcinfo['description']); ?></td>
-   <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight']); ?></td>
+   <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
+   <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
-   <?php } echo "   </table>   <div><br /></div>"; } ?>
-   <?php
+   <?php } echo "   </table>   <div><br /></div>"; }
    if($numrows>0) {
    if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
@@ -802,4 +803,44 @@ $upcinfo['validated'] = "no"; } } }
   </center>
  </body>
 </html>
+<?php } if($_GET['act']=="csv"||$_GET['act']=="dumpcsv") { 
+@header("Content-Type: text/csv; charset=UTF-8"); 
+header("Content-Disposition: attachment; filename=\"".$sqlitedatabase.".csv\"");
+?>
+"upc", "description", "sizeweight"
+<?php
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+while ($upcinfo = sql_fetch_assoc($dumpupc)) {
+$upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
+$upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
+?>
+"<?php echo $upcinfo['upc']; ?>", "<?php echo $upcinfo['description']; ?>", "<?php echo $upcinfo['sizeweight']; ?>"
+<?php } } if($_GET['act']=="xml"||$_GET['act']=="dumpxml") { 
+@header("Content-Type: text/xml; charset=UTF-8"); 
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+?>
+<!DOCTYPE <?php echo $sqlitedatabase; ?> [
+<!ELEMENT <?php echo $sqlitedatabase; ?> (item*)>
+<!ELEMENT item (upc,description,sizeweight)>
+<!ELEMENT upc (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT sizeweight (#PCDATA)>
+]>
+
+<<?php echo $sqlitedatabase; ?>>
+
+<?php
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+while ($upcinfo = sql_fetch_assoc($dumpupc)) {
+$upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
+$upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
+?>
+<item>
+<upc><?php echo $upcinfo['upc']; ?></upc>
+<description><?php echo htmlspecialchars($upcinfo['description'], ENT_XML1, "UTF-8"); ?></description>
+<sizeweight><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_XML1, "UTF-8"); ?></sizeweight>
+</item>
+
+<?php } ?>
+</<?php echo $sqlitedatabase; ?>>
 <?php } sqlite3_close($slite3); ?>

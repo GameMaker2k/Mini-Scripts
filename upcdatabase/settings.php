@@ -35,7 +35,7 @@ $sitedescription = null;
 $table_prefix = $sqlitedatabase."_";
 $sdb_file = $sqlitedatabase.".sdb";
 
-@ob_start();
+@ob_start("ob_gzhandler");
 
 $File3Name = basename($_SERVER['SCRIPT_NAME']);
 if ($File3Name=="settings.php"||$File3Name=="/settings.php") {
@@ -47,7 +47,9 @@ $basecheck = parse_url($website_url);
 $basedir = $basecheck['path'];
 $cbasedir = $basedir;
 $cookieDomain = $basecheck['host'];
-$metatags = "<meta http-equiv=\"Content-Language\" content=\"en\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n  <meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />\n  <meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\" />\n  <meta name=\"generator\" content=\"".$sitename."\" />\n  <meta name=\"author\" content=\"".$siteauthor."\" />\n  <meta name=\"keywords\" content=\"".$sitekeywords."\" />\n  <meta name=\"description\" content=\"".$sitedescription."\" />\n";
+
+$metatags = "<meta http-equiv=\"Content-Language\" content=\"en\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n  <meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />\n  <meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\" />\n  <meta name=\"generator\" content=\"".$sitename."\" />\n  <meta name=\"author\" content=\"".$siteauthor."\" />\n  <meta name=\"keywords\" content=\"".$sitekeywords."\" />\n  <meta name=\"description\" content=\"".$sitedescription."\" />\n  <link rel=\"icon\" href=\"".$website_url."favicon.ico\" />\n  <link rel=\"shortcut icon\" href=\"".$website_url."favicon.ico\" />\n";
+
 $disfunc = @ini_get("disable_functions");
 $disfunc = @trim($disfunc);
 $disfunc = @preg_replace("/([\\s+|\\t+|\\n+|\\r+|\\0+|\\x0B+])/i", "", $disfunc);
