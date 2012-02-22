@@ -56,7 +56,7 @@ $disfunc = @preg_replace("/([\\s+|\\t+|\\n+|\\r+|\\0+|\\x0B+])/i", "", $disfunc)
 if($disfunc!="ini_set") { $disfunc = explode(",",$disfunc); }
 if($disfunc=="ini_set") { $disfunc = array("ini_set"); }
 
-/*if(!in_array("ini_set", $disfunc)) {
+if(!in_array("ini_set", $disfunc)) {
 @ini_set("html_errors", false);
 @ini_set("track_errors", false);
 @ini_set("display_errors", false);
@@ -76,7 +76,7 @@ if($disfunc=="ini_set") { $disfunc = array("ini_set"); }
 @ini_set("url_rewriter.tags",""); 
 @ini_set('zend.ze1_compatibility_mode', 0);
 @ini_set("ignore_user_abort", 1); }
-if(!defined("E_DEPRECATED")) { define("E_DEPRECATED", 0); }*/
+if(!defined("E_DEPRECATED")) { define("E_DEPRECATED", 0); }
 @error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 if(function_exists("date_default_timezone_set")) { 
 	@date_default_timezone_set("UTC"); }
