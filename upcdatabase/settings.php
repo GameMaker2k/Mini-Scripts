@@ -125,7 +125,7 @@ function sqlite3_open($filename, $mode = 0666) {
    $handle = sqlite_open($filename, $mode);
    return $handle; }
 function sqlite3_close($dbhandle) {
-   $dbhandle sqlite_close($dbhandle);
+   $dbhandle = sqlite_close($dbhandle);
    return true; }
 function sqlite3_escape_string($dbhandle, $string) {
    $string = sqlite_escape_string($string);
