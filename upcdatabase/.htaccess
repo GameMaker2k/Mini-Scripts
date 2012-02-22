@@ -1,5 +1,5 @@
 #RewriteEngine on
-#RewriteBase   /~cooldude2k/sqlite3/
+#RewriteBase   /upcdatabase/
 #RewriteRule   ^item/([0-9]{7,13})$    upc.php?act=lookup&upc=$1
 #RewriteRule   ^barcode/upce/([0-9]{8})$    barcode.php?act=upce&upc=$1
 #RewriteRule   ^barcode/upca/([0-9]{12})$    barcode.php?act=upca&upc=$1

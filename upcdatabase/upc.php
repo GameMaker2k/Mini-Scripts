@@ -67,7 +67,7 @@ if(($_GET['act']=="upca"||$_GET['act']=="upce"||$_GET['act']=="ean13")&&
 	!isset($_GET['upc'])) { $_GET['act'] = "lookup"; 
 	header("Location: ".$website_url.$url_file."?act=lookup"); }
 if($_GET['act']=="add"&&isset($_POST['upc'])) {
-$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"upcdatabase_items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
 $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows>0) { $_GET['act'] = "lookup"; 
@@ -121,12 +121,12 @@ if(isset($_POST['upc'])&&!is_numeric($_POST['upc'])) { $lookupupc = null; }
 if(!isset($_POST['upc'])) { $lookupupc = null; } }
 if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	isset($_POST['username'])&&isset($_POST['password'])) {
-	$findme = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"upcdatabase_members\" WHERE name='".sqlite3_escape_string($slite3, $_POST['username'])."';");
+	$findme = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_POST['username'])."';");
 	$numfindme = sql_fetch_assoc($findme);
 	$numfmrows = $numfindme['COUNT'];
 	if($numfmrows<1) { $_GET['act'] = "login"; }
 	if($numfmrows>0) {
-	$findme = sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_members\" WHERE name='".sqlite3_escape_string($slite3, $_POST['username'])."';"); 
+	$findme = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_POST['username'])."';"); 
 	$userinfo = sql_fetch_assoc($findme);
 	if($userinfo['hashtype']=="md2") { 
 	$PasswordCheck = b64e_hmac($_POST['password'],$userinfo['timestamp'],$userinfo['salt'],"md2"); }
@@ -167,7 +167,7 @@ if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	if($userinfo['password']!=$PasswordCheck) { $_GET['act'] = "login"; 
 	header("Location: ".$website_url.$url_file."?act=login"); } 
 	if($userinfo['password']==$PasswordCheck) {
-	sqlite3_query($slite3, "UPDATE \"upcdatabase_members\" SET \"lastactive\"='".time()."',\"ip\"='".$usersip."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"='".$userinfo['id']."';");
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"ip\"='".$usersip."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"='".$userinfo['id']."';");
 	setcookie("MemberName", $userinfo['name'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 	setcookie("MemberID", $userinfo['id'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 	setcookie("SessPass", $userinfo['password'], time() + (7 * 86400), $cbasedir, $cookieDomain); 
@@ -213,10 +213,10 @@ if($usehashtype=="gost") {
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"gost"); }
 if($usehashtype=="joaat") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"joaat"); }
-sqlite3_query($slite3, "INSERT INTO \"upcdatabase_members\" (\"name\", \"password\", \"hashtype\", \"email\", \"timestamp\", \"lastactive\", \"validated\", \"numitems\", \"numpending\", \"admin\", \"ip\", \"salt\") VALUES ('".sqlite3_escape_string($slite3, $_POST['username'])."', '".sqlite3_escape_string($slite3, $NewPassword)."', '".sqlite3_escape_string($slite3, $usehashtype)."', '".sqlite3_escape_string($slite3, $_POST['email'])."', ".sqlite3_escape_string($slite3, $UserJoined).", ".sqlite3_escape_string($slite3, $UserJoined).", 'no', 0, 0, 'no', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $HashSalt)."');"); 
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."members\" (\"name\", \"password\", \"hashtype\", \"email\", \"timestamp\", \"lastactive\", \"validated\", \"numitems\", \"numpending\", \"admin\", \"ip\", \"salt\") VALUES ('".sqlite3_escape_string($slite3, $_POST['username'])."', '".sqlite3_escape_string($slite3, $NewPassword)."', '".sqlite3_escape_string($slite3, $usehashtype)."', '".sqlite3_escape_string($slite3, $_POST['email'])."', ".sqlite3_escape_string($slite3, $UserJoined).", ".sqlite3_escape_string($slite3, $UserJoined).", 'no', 0, 0, 'no', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $HashSalt)."');"); 
 $usersid = sqlite3_last_insert_rowid($slite3);
-if($usersid>1&&$validate_members===false) { sqlite3_query($slite3, "UPDATE \"upcdatabase_members\" SET \"validated\"='yes' WHERE \"name\"='".$_POST['username']."' AND \"id\"=".$usersid.";"); }
-if($usersid==1) { sqlite3_query($slite3, "UPDATE \"upcdatabase_members\" SET \"validated\"='yes',\"admin\"='yes' WHERE \"name\"='".$_POST['username']."' AND \"id\"=1;"); }
+if($usersid>1&&$validate_members===false) { sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"validated\"='yes' WHERE \"name\"='".$_POST['username']."' AND \"id\"=".$usersid.";"); }
+if($usersid==1) { sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"validated\"='yes',\"admin\"='yes' WHERE \"name\"='".$_POST['username']."' AND \"id\"=1;"); }
 setcookie("MemberName", $_POST['username'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 setcookie("MemberID", $usersid, time() + (7 * 86400), $cbasedir, $cookieDomain);
 setcookie("SessPass", $NewPassword, time() + (7 * 86400), $cbasedir, $cookieDomain);
@@ -269,7 +269,7 @@ if($_GET['act']=="join"||$_GET['act']=="signup") { ?>
 </html>
 <?php } if($_GET['act']=="add"&&isset($_POST['upc'])&&
 	 isset($_POST['description'])&&isset($_POST['sizeweight'])) {
-$findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';"); 
+$findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';"); 
 $getuserinfo = sql_fetch_assoc($findusrinfo); 
 $newnumitems = $getuserinfo['numitems'];
 $newnumpending = $getuserinfo['numpending'];
@@ -279,34 +279,34 @@ if($usersiteinfo['admin']=="no"&&$validate_items===true) {
 $newnumpending = $getuserinfo['numpending'] + 1; }
 if($usersiteinfo['admin']=="no"&&$validate_items===false) {
 $newnumitems = $getuserinfo['numitems'] + 1; }
-sqlite3_query($slite3, "UPDATE \"upcdatabase_members\" SET \"lastactive\"='".time()."',\"numitems\"=".$newnumitems.", \"numpending\"=".$newnumpending.",\"ip\"='".$usersip."' WHERE \"name\"='".$_COOKIE['MemberName']."' AND \"id\"='".$_COOKIE['MemberID']."';");
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"numitems\"=".$newnumitems.", \"numpending\"=".$newnumpending.",\"ip\"='".$usersip."' WHERE \"name\"='".$_COOKIE['MemberName']."' AND \"id\"='".$_COOKIE['MemberID']."';");
 $itemvalidated = "no";
 if($_COOKIE['MemberID']==1) { $itemvalidated = "yes"; }
 if($usersiteinfo['admin']=="yes") { $itemvalidated = "yes"; }
 if($usersiteinfo['admin']=="no"&&$_COOKIE['MemberID']>1&&$validate_items===false) { $itemvalidated = "yes"; }
 if($usersiteinfo['admin']=="no"&&$_COOKIE['MemberID']>1&&$validate_items===true) { $itemvalidated = "no"; }
 if($usersiteinfo['admin']=="yes") {
-sqlite3_query($slite3, "INSERT INTO \"upcdatabase_items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); }
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); }
 if($usersiteinfo['admin']=="no"&&$validate_items===false) {
-sqlite3_query($slite3, "INSERT INTO \"upcdatabase_items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); }
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $usersip)."');"); }
 if($usersiteinfo['admin']=="no"&&$validate_items===true) {
-sqlite3_query($slite3, "INSERT INTO \"upcdatabase_pending\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"ip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", '".sqlite3_escape_string($slite3, $usersip)."');"); }
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."pending\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"ip\") VALUES ('".sqlite3_escape_string($slite3, $_POST['upc'])."', '".sqlite3_escape_string($slite3, $_POST['description'])."', '".sqlite3_escape_string($slite3, $_POST['sizeweight'])."', '".sqlite3_escape_string($slite3, $itemvalidated)."', 'no', ".sqlite3_escape_string($slite3, $_COOKIE['MemberID']).", '".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."', ".time().", ".time().", '".sqlite3_escape_string($slite3, $usersip)."');"); }
 $_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup&upc=".$_POST['upc']); }
 if($_GET['act']=="lookup") { 
 if(isset($_POST['upc'])) {
-$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"upcdatabase_items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
 $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows>0) {
-$findupc = sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
+$findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
 $upcinfo = sql_fetch_assoc($findupc); }
 $oldnumrows = $numrows;
 if($oldnumrows<1) {
-$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"upcdatabase_pending\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
 $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT']; 
 if($numrows>0) {
-$findupc = sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_pending\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
+$findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."pending\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
 $upcinfo = sql_fetch_assoc($findupc); 
 $upcinfo['validated'] = "no"; } } }
 ?>
@@ -558,6 +558,72 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td colspan="2"><a href="<?php echo $website_url.$url_file."?act=lookup&amp;upc=".$check_ean13; ?>">Click here</a> to look up this UPC in the database.</td></tr>
    </table>
    <?php } ?>
+  </center>
+ </body>
+</html>
+<?php } if($_GET['act']=="latest") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: Latest Submissions </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>Latest Submissions</h2>
+   <?php
+   if(!isset($_GET['page'])) { $_GET['page'] = 1; }
+   if(!is_numeric($_GET['page'])) { $_GET['page'] = 1; }
+   $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\" DESC;"); 
+   $numupc = sql_fetch_assoc($findupc);
+   $numrows = $numupc['COUNT'];
+   if($numrows>0) {
+   $maxpage = $_GET['page'] * 20;
+   if($maxpage>$numrows) { $maxpage = $numrows; }
+   $pagestart = $maxpage - 20;
+   if($pagestart<0) { $pagestart = 0; }
+   $pagestartshow = $pagestart + 1;
+   $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\" DESC LIMIT ".$pagestart.", ".$maxpage.";"); 
+   if($pagestart>20&&$_GET['page']>1) {
+   $backpage = $_GET['page'] - 1;
+   echo "<a href=\"".$website_url.$url_file."?act=latest&amp;page=".$backpage."\">Prev</a> --\n"; }
+   echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
+   if($pagestart<($numrows - 20)) {
+   $nextpage = $_GET['page'] + 1;
+   echo "\n-- <a href=\"".$website_url.$url_file."?act=latest&amp;page=".$nextpage."\">Next</a>"; }
+   ?>
+   <div><br /></div>
+   <table class="list">
+   <tr><th>EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <?php
+   while ($upcinfo = sql_fetch_assoc($findupc)) {
+   ?>
+   <tr valign="top">
+   <td><a href="<?php echo $website_url.$url_file; ?>?act=lookup&amp;upc=<?php echo $upcinfo['upc']; ?>"><?php echo $upcinfo['upc']; ?></a></td>
+   <td><?php echo htmlspecialchars($upcinfo['description']); ?></td>
+   <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight']); ?></td>
+   <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
+   </tr>
+   <?php } } ?>
+   </table>
+   <div><br /></div>
+   <?php
+   if($pagestart>20&&$_GET['page']>1) {
+   $backpage = $_GET['page'] - 1;
+   echo "<a href=\"".$website_url.$url_file."?act=latest&amp;page=".$backpage."\">Prev</a> --\n"; }
+   echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
+   if($pagestart<($numrows - 20)) {
+   $nextpage = $_GET['page'] + 1;
+   echo "\n-- <a href=\"".$website_url.$url_file."?act=latest&amp;page=".$nextpage."\">Next</a>"; }
+   ?>
+   <div><br /></div>
+   <form action="<?php echo $website_url.$url_file; ?>?act=lookup" method="get">
+    <input type="hidden" name="act" value="lookup" />
+    <table>
+    <tr><td style="text-align: center;"><input type="text" name="upc" size="16" maxlength="13" value="<?php echo $lookupupc; ?>" /> <input type="submit" value="Look Up UPC" /></td></tr>
+   </table>
+   </form>
   </center>
  </body>
 </html>

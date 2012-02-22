@@ -14,11 +14,11 @@
 
     $FileInfo: settings.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
 */
-$File3Name = basename($_SERVER['SCRIPT_NAME']);
 
-$website_url = "https://localhost/upcdatabase/";
+$website_url = "http://localhost/upcdatabase/";
 $url_file = "upc.php";
 $url_admin_file = "admin.php";
+$table_prefix = "upcdatabase_";
 $sdb_file = "upcdatabase.sdb";
 $usehashtype = "sha256";
 $validate_items = true;
@@ -35,6 +35,7 @@ $sitedescription = null;
 
 @ob_start();
 
+$File3Name = basename($_SERVER['SCRIPT_NAME']);
 if ($File3Name=="settings.php"||$File3Name=="/settings.php") {
 	header("Location: ".$website_url.$url_file."?act=lookup");
 	exit(); }
@@ -51,7 +52,7 @@ $disfunc = @preg_replace("/([\\s+|\\t+|\\n+|\\r+|\\0+|\\x0B+])/i", "", $disfunc)
 if($disfunc!="ini_set") { $disfunc = explode(",",$disfunc); }
 if($disfunc=="ini_set") { $disfunc = array("ini_set"); }
 
-if(!in_array("ini_set", $disfunc)) {
+/*if(!in_array("ini_set", $disfunc)) {
 @ini_set("html_errors", false);
 @ini_set("track_errors", false);
 @ini_set("display_errors", false);
@@ -71,7 +72,7 @@ if(!in_array("ini_set", $disfunc)) {
 @ini_set("url_rewriter.tags",""); 
 @ini_set('zend.ze1_compatibility_mode', 0);
 @ini_set("ignore_user_abort", 1); }
-if(!defined("E_DEPRECATED")) { define("E_DEPRECATED", 0); }
+if(!defined("E_DEPRECATED")) { define("E_DEPRECATED", 0); }*/
 @error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 if(function_exists("date_default_timezone_set")) { 
 	@date_default_timezone_set("UTC"); }
@@ -133,11 +134,11 @@ $appversion = version_info($appname,$appver[0],$appver[1],$appver[2],$appver[3].
 require("./functions.php");
 
 $slite3 = sqlite3_open($sdb_file);
-$tablecheck1 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_members\""); 
+$tablecheck1 = @sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\""); 
 if($tablecheck1===false) {
 sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
 sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_members\" (\n".
+$query = "CREATE TABLE \"".$table_prefix."members\" (\n".
 "  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
 "  \"name\" VARCHAR(150) UNIQUE NOT NULL default '',\n".
 "  \"password\" VARCHAR(250) NOT NULL default '',\n".
@@ -154,11 +155,11 @@ $query = "CREATE TABLE \"upcdatabase_members\" (\n".
 ");";
 sqlite3_query($slite3, $query); 
 sqlite3_query($slite3, "VACUUM;"); }
-$tablecheck2 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_items\""); 
+$tablecheck2 = @sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\""); 
 if($tablecheck2===false) {
 sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
 sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_items\" (\n".
+$query = "CREATE TABLE \"".$table_prefix."items\" (\n".
 "  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
 "  \"upc\" TEXT UNIQUE NOT NULL,\n".
 "  \"description\" TEXT NOT NULL,\n".
@@ -176,11 +177,11 @@ $query = "CREATE TABLE \"upcdatabase_items\" (\n".
 ");";
 sqlite3_query($slite3, $query); 
 sqlite3_query($slite3, "VACUUM;"); }
-$tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_pending\""); 
+$tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."pending\""); 
 if($tablecheck3===false) {
 sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
 sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_pending\" (\n".
+$query = "CREATE TABLE \"".$table_prefix."pending\" (\n".
 "  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
 "  \"upc\" TEXT UNIQUE NOT NULL,\n".
 "  \"description\" TEXT NOT NULL,\n".
@@ -195,11 +196,11 @@ $query = "CREATE TABLE \"upcdatabase_pending\" (\n".
 ");";
 sqlite3_query($slite3, $query); 
 sqlite3_query($slite3, "VACUUM;"); }
-$tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_modupc\""); 
+$tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."modupc\""); 
 if($tablecheck3===false) {
 sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
 sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
-$query = "CREATE TABLE \"upcdatabase_modupc\" (\n".
+$query = "CREATE TABLE \"".$table_prefix."modupc\" (\n".
 "  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
 "  \"upc\" TEXT UNIQUE NOT NULL,\n".
 "  \"description\" TEXT NOT NULL,\n".
@@ -225,7 +226,7 @@ if(!isset($_COOKIE['MemberName'])&&!isset($_COOKIE['MemberID'])&&isset($_COOKIE[
 	unset($_COOKIE['SessPass']); 
 	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain); }
 if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['SessPass'])) {
-	$findme = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"upcdatabase_members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';");
+	$findme = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';");
 	$numfindme = sql_fetch_assoc($findme);
 	$numfmrows = $numfindme['COUNT'];
 	if($numfmrows<1) {
@@ -236,7 +237,7 @@ if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['S
 	unset($_COOKIE['SessPass']); 
 	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain); }
 	if($numfmrows>0) {
-	$findme = sqlite3_query($slite3, "SELECT * FROM \"upcdatabase_members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';"); 
+	$findme = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_COOKIE['MemberName'])."';"); 
 	$userinfo = sql_fetch_assoc($findme); $usersiteinfo = $userinfo;
 	if($userinfo['password']!=$_COOKIE['SessPass']) {
 	unset($_COOKIE['MemberName']); 
@@ -250,9 +251,9 @@ if($usersiteinfo['admin']=="yes") { $adminlink = " | <a href=\"".$website_url.$u
 if($usersiteinfo['admin']=="yes") { $usersiteinfo['validated'] = "yes"; }
 $navbar = "<h1><big>".$sitename."</big></h1>\n   <div>";
 if(isset($_COOKIE['MemberName'])) { 
-	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink."<br />"; }
+	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a>".$adminlink; }
 if(!isset($_COOKIE['MemberName'])) { 
-	$navbar = $navbar."Welcome: Guest | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a><br />"; }
-$navbar = $navbar."</div>";
+	$navbar = $navbar."Welcome: Guest | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a>"; }
+$navbar = $navbar." | <a href=\"".$website_url.$url_file."?act=latest&amp;page=1\">Latest</a><br /></div>";
 
 ?>
