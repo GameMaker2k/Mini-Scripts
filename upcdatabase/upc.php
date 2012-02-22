@@ -139,7 +139,11 @@ if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	if($numfmrows<1) { $_GET['act'] = "login"; }
 	if($numfmrows>0) {
 	$findme = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE name='".sqlite3_escape_string($slite3, $_POST['username'])."';"); 
-	$userinfo = sql_fetch_assoc($findme);
+	$userinfo = sql_fetch_assoc($findme); $NewHashSalt = salt_hmac();
+	//Used if you forget your password will change on next login.
+	if($userinfo['hashtype']=="NoHash") { $PasswordCheck = $_POST['password']; }
+	if($userinfo['hashtype']=="NoHASH") { $PasswordCheck = $_POST['password']; }
+	if($userinfo['hashtype']=="PlainText") { $PasswordCheck = $_POST['password']; }
 	if($userinfo['hashtype']=="md2") { 
 	$PasswordCheck = b64e_hmac($_POST['password'],$userinfo['timestamp'],$userinfo['salt'],"md2"); }
 	if($userinfo['hashtype']=="md4") { 
@@ -176,13 +180,49 @@ if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	$PasswordCheck = b64e_hmac($_POST['password'],$userinfo['timestamp'],$userinfo['salt'],"gost"); }
 	if($userinfo['hashtype']=="joaat") { 
 	$PasswordCheck = b64e_hmac($_POST['password'],$userinfo['timestamp'],$userinfo['salt'],"joaat"); }
+	if($usehashtype=="md2") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"md2"); }
+	if($usehashtype=="md4") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"md4"); }
+	if($usehashtype=="md5") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"md5"); }
+	if($usehashtype=="sha1") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"sha1"); }
+	if($usehashtype=="sha224") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"sha224"); }
+	if($usehashtype=="sha256") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"sha256"); }
+	if($usehashtype=="sha384") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"sha384"); }
+	if($usehashtype=="sha512") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"sha512"); }
+	if($usehashtype=="ripemd128") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"ripemd128"); }
+	if($usehashtype=="ripemd160") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"ripemd160"); }
+	if($usehashtype=="ripemd256") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"ripemd256"); }
+	if($usehashtype=="ripemd320") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"ripemd320"); }
+	if($usehashtype=="salsa10") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"salsa10"); }
+	if($usehashtype=="salsa20") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"salsa20"); }
+	if($usehashtype=="snefru") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"snefru"); }
+	if($usehashtype=="snefru256") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"snefru256"); }
+	if($usehashtype=="gost") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"gost"); }
+	if($usehashtype=="joaat") { 
+	$NewPassword = b64e_hmac($_POST['password'],$userinfo['timestamp'],$NewHashSalt,"joaat"); }
 	if($userinfo['password']!=$PasswordCheck) { $_GET['act'] = "login"; 
 	header("Location: ".$website_url.$url_file."?act=login"); exit(); } 
 	if($userinfo['password']==$PasswordCheck) {
-	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"ip\"='".$usersip."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"='".$userinfo['id']."';");
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"ip\"='".sqlite3_escape_string($slite3, $usersip)."',\"password\"='".sqlite3_escape_string($slite3, $NewPassword)."',\"salt\"='".sqlite3_escape_string($slite3, $NewHashSalt)."',\"hashtype\"='".sqlite3_escape_string($slite3, $usehashtype)."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"='".$userinfo['id']."';");
 	setcookie("MemberName", $userinfo['name'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 	setcookie("MemberID", $userinfo['id'], time() + (7 * 86400), $cbasedir, $cookieDomain);
-	setcookie("SessPass", $userinfo['password'], time() + (7 * 86400), $cbasedir, $cookieDomain); 
+	setcookie("SessPass", $NewPassword, time() + (7 * 86400), $cbasedir, $cookieDomain); 
 	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); } } }
 if(($_GET['act']=="join"||$_GET['act']=="signup")&&
 	isset($_POST['username'])&&isset($_POST['email'])&&
@@ -201,41 +241,41 @@ if(($_GET['act']=="join"||$_GET['act']=="signup")&&
     if(strlen($_POST['password'])>60||$_POST['password']==""||$_POST['password']==null) {
     header("Location: ".$website_url.$url_file."?act=join"); exit(); }
 $UserJoined = time(); $HashSalt = salt_hmac();
-if($usehashtype=="md2") { 
+	if($usehashtype=="md2") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"md2"); }
-if($usehashtype=="md4") { 
+	if($usehashtype=="md4") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"md4"); }
-if($usehashtype=="md5") { 
+	if($usehashtype=="md5") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"md5"); }
-if($usehashtype=="sha1") { 
+	if($usehashtype=="sha1") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"sha1"); }
-if($usehashtype=="sha224") { 
+	if($usehashtype=="sha224") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"sha224"); }
-if($usehashtype=="sha256") { 
+	if($usehashtype=="sha256") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"sha256"); }
-if($usehashtype=="sha384") { 
+	if($usehashtype=="sha384") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"sha384"); }
-if($usehashtype=="sha512") { 
+	if($usehashtype=="sha512") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"sha512"); }
-if($usehashtype=="ripemd128") { 
+	if($usehashtype=="ripemd128") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"ripemd128"); }
-if($usehashtype=="ripemd160") { 
+	if($usehashtype=="ripemd160") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"ripemd160"); }
-if($usehashtype=="ripemd256") { 
+	if($usehashtype=="ripemd256") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"ripemd256"); }
-if($usehashtype=="ripemd320") { 
+	if($usehashtype=="ripemd320") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"ripemd320"); }
-if($usehashtype=="salsa10") { 
+	if($usehashtype=="salsa10") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"salsa10"); }
-if($usehashtype=="salsa20") { 
+	if($usehashtype=="salsa20") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"salsa20"); }
-if($usehashtype=="snefru") { 
+	if($usehashtype=="snefru") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"snefru"); }
-if($usehashtype=="snefru256") { 
+	if($usehashtype=="snefru256") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"snefru256"); }
-if($usehashtype=="gost") { 
+	if($usehashtype=="gost") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"gost"); }
-if($usehashtype=="joaat") { 
+	if($usehashtype=="joaat") { 
 	$NewPassword = b64e_hmac($_POST['password'],$UserJoined,$HashSalt,"joaat"); }
 sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."members\" (\"name\", \"password\", \"hashtype\", \"email\", \"timestamp\", \"lastactive\", \"validated\", \"numitems\", \"numpending\", \"admin\", \"ip\", \"salt\") VALUES ('".sqlite3_escape_string($slite3, $_POST['username'])."', '".sqlite3_escape_string($slite3, $NewPassword)."', '".sqlite3_escape_string($slite3, $usehashtype)."', '".sqlite3_escape_string($slite3, $_POST['email'])."', ".sqlite3_escape_string($slite3, $UserJoined).", ".sqlite3_escape_string($slite3, $UserJoined).", 'no', 0, 0, 'no', '".sqlite3_escape_string($slite3, $usersip)."', '".sqlite3_escape_string($slite3, $HashSalt)."');"); 
 $usersid = sqlite3_last_insert_rowid($slite3);

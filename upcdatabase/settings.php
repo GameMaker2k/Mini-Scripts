@@ -248,6 +248,13 @@ if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['S
 	setcookie("MemberID", NULL, -1, $cbasedir, $cookieDomain);
 	unset($_COOKIE['SessPass']); 
 	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain); } } }
+if(!isset($_COOKIE['LastVisit'])) { 
+setcookie("LastVisit", time(), time() + (7 * 86400), $cbasedir, $cookieDomain); } 
+if(date("Ymd", time())>date("Ymd", $_COOKIE['LastVisit'])) {
+setcookie("LastVisit", time(), time() + (7 * 86400), $cbasedir, $cookieDomain);
+setcookie("MemberName", $_COOKIE['MemberName'], time() + (7 * 86400), $cbasedir, $cookieDomain);
+setcookie("MemberID", $_COOKIE['MemberID'], time() + (7 * 86400), $cbasedir, $cookieDomain);
+setcookie("SessPass", $_COOKIE['SessPass'], time() + (7 * 86400), $cbasedir, $cookieDomain); }
 $adminlink = null;
 if($usersiteinfo['admin']=="yes") { $adminlink = " | <a href=\"".$website_url.$url_admin_file."\">AdminCP</a>"; }
 if($usersiteinfo['admin']=="yes") { $usersiteinfo['validated'] = "yes"; }
