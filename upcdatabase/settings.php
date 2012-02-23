@@ -241,6 +241,9 @@ $query = "CREATE TABLE \"".$table_prefix."modupc\" (\n".
 sqlite3_query($slite3, $query); 
 sqlite3_query($slite3, "VACUUM;"); }
 
+if(!is_numeric($_COOKIE['MemberID'])) {
+	unset($_COOKIE['MemberID']); 
+	setcookie("MemberID", NULL, -1, $cbasedir, $cookieDomain); }
 if(isset($_COOKIE['MemberName'])&&!isset($_COOKIE['MemberID'])&&!isset($_COOKIE['SessPass'])) {
 	unset($_COOKIE['MemberName']); 
 	setcookie("MemberName", NULL, -1, $cbasedir, $cookieDomain); }
@@ -271,6 +274,18 @@ if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['S
 	setcookie("MemberID", NULL, -1, $cbasedir, $cookieDomain);
 	unset($_COOKIE['SessPass']); 
 	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain); } } }
+if(!isset($usersiteinfo['admin'])) { 
+	$usersiteinfo['admin'] = "no"; }
+if($usersiteinfo['admin']!="yes"&&$usersiteinfo['admin']!="no") { 
+	$usersiteinfo['admin'] = "no"; }
+if(!isset($usersiteinfo['validated'])) { 
+	$usersiteinfo['validated'] = "no"; }
+if($usersiteinfo['validated']!="yes"&&$usersiteinfo['validated']!="no") { 
+	$usersiteinfo['validated'] = "no"; }
+if(!isset($usersiteinfo['validateitems'])) { 
+	$usersiteinfo['validateitems'] = "no"; }
+if($usersiteinfo['validateitems']!="yes"&&$usersiteinfo['validateitems']!="no") { 
+	$usersiteinfo['validateitems'] = "no"; }
 if(!isset($_COOKIE['LastVisit'])) { 
 setcookie("LastVisit", time(), time() + (7 * 86400), $cbasedir, $cookieDomain); } 
 if(date("Ymd", time())>date("Ymd", $_COOKIE['LastVisit'])) {
@@ -283,7 +298,7 @@ if($usersiteinfo['admin']=="yes") { $adminlink = " | <a href=\"".$website_url.$u
 if($usersiteinfo['admin']=="yes") { $usersiteinfo['validated'] = "yes"; }
 $navbar = "<h1><big><a style=\"text-decoration: none;\" href=\"".$website_url.$url_file."?act=lookup\">".$sitename."</a></big></h1>\n   <div>";
 if(isset($_COOKIE['MemberName'])) { 
-	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName']." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a> | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a>".$adminlink; }
+	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName'].$adminlink." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a> | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a>"; }
 if(!isset($_COOKIE['MemberName'])) { 
 	$navbar = $navbar."Welcome: Guest | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a>"; }
 $navbar = $navbar." | <a href=\"".$website_url.$url_file."?act=latest&amp;page=1\">Latest</a><br /></div>";

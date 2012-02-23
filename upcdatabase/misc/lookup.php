@@ -20,6 +20,20 @@ if ($File3Name=="lookup.php"||$File3Name=="/lookup.php") {
 	require("./upc.php");
 	exit(); }
 
+if($_GET['act']=="lookup"&&isset($_POST['upc'])&&strlen($_POST['upc'])==8&&
+	validate_upce($_POST['upc'])===false) { 
+	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
+if($_GET['act']=="lookup"&&isset($_POST['upc'])&&strlen($_POST['upc'])==12&&
+	validate_upca($_POST['upc'])===false) { 
+	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
+if($_GET['act']=="lookup"&&isset($_POST['upc'])&&strlen($_POST['upc'])==13&&
+	validate_ean13($_POST['upc'])===false) { 
+	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
+if($_GET['act']=="lookup") { 
+$lookupupc = NULL;
+if(isset($_POST['upc'])&&is_numeric($_POST['upc'])) { $lookupupc = $_POST['upc']; }
+if(isset($_POST['upc'])&&!is_numeric($_POST['upc'])) { $lookupupc = NULL; }
+if(!isset($_POST['upc'])) { $lookupupc = NULL; } }
 if($_GET['act']=="lookup") { 
 if(isset($_POST['upc'])) {
 $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
@@ -184,7 +198,7 @@ $upcinfo['validated'] = "no"; } } }
    <?php } ?>
    </table>
    <div><br /></div>
-   <a href="<?php echo $website_url.$url_file; ?>?act=neighbors&amp;upc=<?php echo $ean13; ?>">List Neighboring Items</a><br />
+   <a href="<?php echo $website_url.$url_file; ?>?act=neighbors&amp;upc=<?php echo $ean13; ?>&amp;page=1">List Neighboring Items</a><br />
    <!--<a href="/editform.asp?upc=0012345000065">Submit Modification Request</a><br />-->
    <!--<a href="/deleteform.asp?upc=0012345000065">Submit Deletion Request</a><br />-->
    <!--<br /><br /></div>-->
@@ -223,7 +237,7 @@ $upcinfo['validated'] = "no"; } } }
    <?php } ?>
    </table>
    <div><br />Even though this item is not on file here, looking at some of its
-   <a href="<?php echo $website_url.$url_file; ?>?act=neighbors&amp;upc=<?php echo $ean13; ?>">close neighbors</a>
+   <a href="<?php echo $website_url.$url_file; ?>?act=neighbors&amp;upc=<?php echo $ean13; ?>&amp;page=1">close neighbors</a>
    may give you an idea what this item might be, or who manufactures it.<br /></div>
    <div><br />If you know what this item is, and would like to contribute to the database
    by providing a description for this item, please
@@ -235,6 +249,51 @@ $upcinfo['validated'] = "no"; } } }
     <tr><td style="text-align: center;"><input type="text" name="upc" size="16" maxlength="13" value="<?php echo $lookupupc; ?>" /> <input type="submit" value="Look Up UPC" /></td></tr>
    </table>
    </form>
+  </center>
+ </body>
+</html>
+<?php } if($_GET['act']=="check"||$_GET['act']=="checkdigit") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: Check Digit Calculator </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>Check Digit Calculator</h2>
+   <form method="post" action="<?php echo $website_url.$url_file."?act=checkdigit"; ?>">
+   <b>EAN/UCC</b>: <input type="text" name="checkupc" size="15" maxlength="12" /><div><br /></div>
+   <div><input type="submit" value="Calculate Check Digit" /></div>
+   </form>
+   <div><br /></div>
+   <?php if(isset($_POST['checkupc'])&&is_numeric($_POST['checkupc'])&&
+   (strlen($_POST['checkupc'])==7||strlen($_POST['checkupc'])==11||strlen($_POST['checkupc'])==12)) { 
+   if(strlen($_POST['checkupc'])==7) {
+   $check_upce = fix_upce_checksum($_POST['checkupc']);
+   $check_upca = convert_upce_to_upca($check_upce);
+   $check_ean13 = convert_upca_to_ean13($check_upca); }
+   if(strlen($_POST['checkupc'])==11) {
+   $check_upca = fix_upca_checksum($_POST['checkupc']);
+   $check_upce = convert_upca_to_upce($check_upca);
+   $check_ean13 = convert_upca_to_ean13($check_upca); }
+   if(strlen($_POST['checkupc'])==12) {
+   $check_ean13 = fix_ean13_checksum($_POST['checkupc']);
+   $check_upca = convert_ean13_to_upca($check_ean13);
+   $check_upce = convert_upca_to_upce($check_upca); }
+   ?>
+   <table>
+   <?php if($check_ean13!==NULL&&validate_ean13($check_ean13)===true) { ?>
+   <tr><td>EAN/UCC-13:</td><td><?php echo $check_ean13; ?></td></tr>
+   <?php } if($check_upca!==NULL&&validate_upca($check_upca)===true) { ?>
+   <tr><td>UPC-A:</td><td><?php echo $check_upca; ?></td></tr>
+   <?php } if($check_upce!==NULL&&validate_upce($check_upce)===true) { ?>
+   <tr><td>UPC-E:</td><td><?php echo $check_upce; ?></td></tr>
+   <?php } ?>
+   <tr><td colspan="2"><a href="<?php echo $website_url.$url_file."?act=lookup&amp;upc=".$check_ean13; ?>">Click here</a> to look up this UPC in the database.</td></tr>
+   </table>
+   <?php } ?>
   </center>
  </body>
 </html>

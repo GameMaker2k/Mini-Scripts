@@ -20,6 +20,10 @@ if ($File3Name=="listitem.php"||$File3Name=="/listitem.php") {
 	require("./upc.php");
 	exit(); }
 
+if($_GET['act']=="neighbor"&&!isset($_POST['upc'])) { $_GET['act'] = "lookup"; 
+	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
+if($_GET['act']=="neighbors"&&!isset($_POST['upc'])) { $_GET['act'] = "lookup"; 
+	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if($_GET['act']=="latest") { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

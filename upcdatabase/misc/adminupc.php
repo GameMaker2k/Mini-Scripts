@@ -1,0 +1,207 @@
+<?php
+/*
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the Revised BSD License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    Revised BSD License for more details.
+
+    Copyright 2011-2012 Cool Dude 2k - http://idb.berlios.de/
+    Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
+    Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
+
+    $FileInfo: adminupc.php - Last Update: 02/13/2012 Ver. 2.2.5 RC 1 - Author: cooldude2k $
+*/
+$File3Name = basename($_SERVER['SCRIPT_NAME']);
+if ($File3Name=="adminupc.php"||$File3Name=="/adminupc.php") {
+	chdir("../");
+	require("./upc.php");
+	exit(); }
+
+if($_GET['act']=="deleteupc"&&isset($_GET['upc'])&&validate_ean13($_GET['upc'])===true) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';");
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
+$upcinfo = sql_fetch_assoc($findupc);
+$findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE \"id\"='".$upcinfo['userid']."';"); 
+$getuserinfo = sql_fetch_assoc($findusrinfo); 
+$getuserinfo['numitems'] = $getuserinfo['numitems'] - 1;
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$getuserinfo['numitems']." WHERE \"id\"='".$upcinfo['userid']."';");
+$delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';"); } 
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."modupc\" WHERE \"upc\"='".$_POST['upc']."';");
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."modupc\" WHERE \"upc\"='".$_POST['upc']."';"); } }
+if($_GET['act']=="deleteupc") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: AdminCP : Delete UPC </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>Delete UPC</h2>
+   <?php
+   $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\" DESC;"); 
+   $numupc = sql_fetch_assoc($findupc);
+   $numrows = $numupc['COUNT'];
+   if($numrows>0) {
+   $maxpage = $_GET['page'] * 20;
+   if($maxpage>$numrows) { $maxpage = $numrows; }
+   $pagestart = $maxpage - 20;
+   if($pagestart<0) { $pagestart = 0; }
+   $pagestartshow = $pagestart + 1;
+   $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\" ASC LIMIT ".$pagestart.", ".$maxpage.";"); 
+   if($maxpage>20&&$_GET['page']>1) {
+   $backpage = $_GET['page'] - 1;
+   echo "<a href=\"".$website_url.$url_admin_file."?act=deleteupc&amp;page=".$backpage."\">Prev</a> --\n"; }
+   echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
+   if($pagestart<($numrows - 20)) {
+   $nextpage = $_GET['page'] + 1;
+   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=deleteupc&amp;page=".$nextpage."\">Next</a>"; }
+   ?>
+   <div><br /></div>
+   <table class="list">
+   <tr><th>Delete EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <?php
+   while ($upcinfo = sql_fetch_assoc($findupc)) { ?>
+   <tr valign="top">
+   <td><a href="<?php echo $website_url.$url_admin_file; ?>?act=deleteupc&amp;upc=<?php echo $upcinfo['upc']; ?>&amp;page=1"><?php echo $upcinfo['upc']; ?></a></td>
+   <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
+   <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
+   </tr>
+   <?php } echo "   </table>   <div><br /></div>"; }
+   if($numrows>0) {
+   if($maxpage>20&&$_GET['page']>1) {
+   $backpage = $_GET['page'] - 1;
+   echo "<a href=\"".$website_url.$url_admin_file."?act=deleteupc&amp;page=".$backpage."\">Prev</a> --\n"; }
+   echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
+   if($pagestart<($numrows - 20)) {
+   $nextpage = $_GET['page'] + 1;
+   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=deleteupc&amp;page=".$nextpage."\">Next</a>"; } }
+   ?>
+  </center>
+ </body>
+</html>
+<?php } if($_GET['act']=="validateupc"&&isset($_GET['upc'])&&validate_ean13($_GET['upc'])===true) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE \"upc\"='".$_POST['upc']."';");
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."pending\" WHERE upc='".sqlite3_escape_string($slite3, $_POST['upc'])."';"); 
+$upcinfo = sql_fetch_assoc($findupc);  
+$findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE \"id\"='".$upcinfo['userid']."';"); 
+$getuserinfo = sql_fetch_assoc($findusrinfo); 
+$getuserinfo['numitems'] = $getuserinfo['numitems'] + 1;
+$getuserinfo['numpending'] = $getuserinfo['numpending'] - 1;
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$getuserinfo['numitems'].",\"numpending\"=".$getuserinfo['numpending']." WHERE \"id\"='".$upcinfo['userid']."';");
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $upcinfo['upc'])."', '".sqlite3_escape_string($slite3, $upcinfo['description'])."', '".sqlite3_escape_string($slite3, $upcinfo['sizeweight'])."', 'yes', 'no', ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', ".$upcinfo['timestamp'].", ".$upcinfo['lastupdate'].", ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."');");
+$delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."pending\" WHERE \"upc\"='".$_POST['upc']."';"); } }
+if($_GET['act']=="validateupc") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: AdminCP : Validate UPC </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>Validate UPC</h2>
+   <?php
+   $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" ORDER BY \"lastupdate\" DESC;"); 
+   $numupc = sql_fetch_assoc($findupc);
+   $numrows = $numupc['COUNT'];
+   if($numrows>0) {
+   $maxpage = $_GET['page'] * 20;
+   if($maxpage>$numrows) { $maxpage = $numrows; }
+   $pagestart = $maxpage - 20;
+   if($pagestart<0) { $pagestart = 0; }
+   $pagestartshow = $pagestart + 1;
+   $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."pending\" ORDER BY \"lastupdate\" ASC LIMIT ".$pagestart.", ".$maxpage.";"); 
+   if($maxpage>20&&$_GET['page']>1) {
+   $backpage = $_GET['page'] - 1;
+   echo "<a href=\"".$website_url.$url_admin_file."?act=deleteupc&amp;page=".$backpage."\">Prev</a> --\n"; }
+   echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
+   if($pagestart<($numrows - 20)) {
+   $nextpage = $_GET['page'] + 1;
+   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=deleteupc&amp;page=".$nextpage."\">Next</a>"; }
+   ?>
+   <div><br /></div>
+   <table class="list">
+   <tr><th>Validate EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <?php
+   while ($upcinfo = sql_fetch_assoc($findupc)) { ?>
+   <tr valign="top">
+   <td><a href="<?php echo $website_url.$url_admin_file; ?>?act=validateupc&amp;upc=<?php echo $upcinfo['upc']; ?>&amp;page=1"><?php echo $upcinfo['upc']; ?></a></td>
+   <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
+   <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
+   </tr>
+   <?php } echo "   </table>   <div><br /></div>"; }
+   if($numrows>0) {
+   if($maxpage>20&&$_GET['page']>1) {
+   $backpage = $_GET['page'] - 1;
+   echo "<a href=\"".$website_url.$url_admin_file."?act=validateupc&amp;page=".$backpage."\">Prev</a> --\n"; }
+   echo $numrows." items, displaying ".$pagestartshow." through ".$maxpage;
+   if($pagestart<($numrows - 20)) {
+   $nextpage = $_GET['page'] + 1;
+   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=validateupc&amp;page=".$nextpage."\">Next</a>"; } }
+   ?>
+  </center>
+ </body>
+</html>
+<?php }
+if($_GET['act']=="editupc") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: AdminCP : Edit UPC </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>Edit UPC</h2>
+  </center>
+ </body>
+</html>
+<?php }
+if($_GET['act']=="upcdelrequests") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: AdminCP : UPC Delete Requests </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>UPC Delete Requests</h2>
+  </center>
+ </body>
+</html>
+<?php }
+if($_GET['act']=="upceditrequests") { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: AdminCP : UPC Edit Requests </title>
+<?php echo $metatags; ?>
+ </head>
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>UPC Edit Requests</h2>
+  </center>
+ </body>
+</html>
+<?php } ?>

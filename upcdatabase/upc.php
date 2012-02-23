@@ -25,6 +25,7 @@ if(isset($_GET['act'])&&$_GET['act']=="view") { $_GET['act'] = "lookup"; }
 if(!isset($_GET['subact'])&&isset($_POST['subact'])) { $_POST['subact'] = $_GET['subact']; }
 if(!isset($_GET['subact'])) { $_GET['subact'] = NULL; }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
+if(!isset($_GET['upc'])&&isset($_POST['upc'])) { $_GET['upc'] = $_POST['upc']; }
 if(($_GET['act']=="upca"||$_GET['act']=="upce"||$_GET['act']=="ean8"||
 	$_GET['act']=="ean13"||$_GET['act']=="itf14")&&isset($_GET['upc'])) {
 	header("Location: ".$website_url.$barcode_file."?act=".$_GET['act']."&upc=".$_GET['upc']); exit(); }
@@ -71,47 +72,6 @@ if(isset($_GET['upc'])&&strlen($_GET['upc'])>13) {
 if(($_GET['act']=="upca"||$_GET['act']=="upce"||$_GET['act']=="ean8"||
 	$_GET['act']=="ean13"||$_GET['act']=="itf14")&&!isset($_GET['upc'])) {
 	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="add"&&isset($_POST['upc'])) {
-$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $ean13)."';"); 
-$numupc = sql_fetch_assoc($findupc);
-$numrows = $numupc['COUNT'];
-if($numrows>0) { $_GET['act'] = "lookup"; 
-	header("Location: ".$website_url.$url_file."?act=lookup&upc=".$_POST['upc']); exit(); } }
-if($_GET['act']=="add"&&!isset($_POST['upc'])) { $_GET['act'] = "lookup"; 
-	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="neighbor"&&!isset($_POST['upc'])) { $_GET['act'] = "lookup"; 
-	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="neighbors"&&!isset($_POST['upc'])) { $_GET['act'] = "lookup"; 
-	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="lookup"&&isset($_POST['upc'])&&strlen($_POST['upc'])==8&&
-	validate_upce($_POST['upc'])===false) { 
-	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="add"&&isset($_POST['upc'])&&strlen($_POST['upc'])==8&&
-	validate_upce($_POST['upc'])===false) { 
-	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="lookup"&&isset($_POST['upc'])&&strlen($_POST['upc'])==12&&
-	validate_upca($_POST['upc'])===false) { 
-	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="add"&&isset($_POST['upc'])&&strlen($_POST['upc'])==12&&
-	validate_upca($_POST['upc'])===false) { 
-	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="lookup"&&isset($_POST['upc'])&&strlen($_POST['upc'])==13&&
-	validate_ean13($_POST['upc'])===false) { 
-	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="add"&&isset($_POST['upc'])&&strlen($_POST['upc'])==13&&
-	validate_ean13($_POST['upc'])===false) { 
-	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
-if($_GET['act']=="add"&&isset($_POST['upc'])&&
-	(preg_match("/^02/", $_POST['upc'])||preg_match("/^04/", $_POST['upc'])||
-	preg_match("/^05/", $_POST['upc'])||preg_match("/^09/", $_POST['upc'])||
-	preg_match("/^(98[1-3])/", $_POST['upc'])||preg_match("/^(99[0-9])/", $_POST['upc'])||
-	preg_match("/^(97[7-9])/", $_POST['upc'])||preg_match("/^2/", $_POST['upc']))) { 
-	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup&upc=".$_POST['upc']); exit(); }
-if($_GET['act']=="add"&&!isset($_COOKIE['MemberName'])&&!isset($_COOKIE['MemberID'])&&
-	!isset($_COOKIE['SessPass'])) { $_GET['act'] = "lookup"; 
-	header("Location: ".$website_url.$url_file."?act=lookup&upc=".$_POST['upc']); exit(); }
-if($_GET['act']=="add"&&$usersiteinfo['validated']=="no") { $_GET['act'] = "lookup"; 
-	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if(isset($_COOKIE['MemberName'])&&isset($_COOKIE['MemberID'])&&isset($_COOKIE['SessPass'])) {
 if($_GET['act']=="login"||$_GET['act']=="signin"||$_GET['act']=="join"||$_GET['act']=="signup") {
 	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); } }
@@ -123,21 +83,16 @@ if($_GET['act']=="logout"||$_GET['act']=="signout") {
 	unset($_COOKIE['SessPass']); 
 	setcookie("SessPass", NULL, -1, $cbasedir, $cookieDomain);
 	$_GET['act'] = "login"; header("Location: ".$website_url.$url_file."?act=login"); exit(); }
-if($_GET['act']=="lookup") { 
-$lookupupc = NULL;
-if(isset($_POST['upc'])&&is_numeric($_POST['upc'])) { $lookupupc = $_POST['upc']; }
-if(isset($_POST['upc'])&&!is_numeric($_POST['upc'])) { $lookupupc = NULL; }
-if(!isset($_POST['upc'])) { $lookupupc = NULL; } }
+if(strlen($_POST['upc'])>0&&strlen($_POST['upc'])!=8&&strlen($_POST['upc'])!=12&&strlen($_POST['upc'])!=13) {
+	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if($_GET['act']=="login"||$_GET['act']=="signin"||
-	$_GET['act']=="join"||$_GET['act']=="signup"||
 	$_GET['act']=="join"||$_GET['act']=="signup") {
 require("./misc/members.php"); }
-if($_GET['act']=="lookup") {
+if($_GET['act']=="lookup"||$_GET['act']=="check"||$_GET['act']=="checkdigit") {
 require("./misc/lookup.php"); }
 if($_GET['act']=="add") {
 require("./misc/additem.php"); }
-if($_GET['act']=="latest"||$_GET['act']=="neighbor"||
-	$_GET['act']=="neighbors") {
+if($_GET['act']=="latest"||$_GET['act']=="neighbor"||$_GET['act']=="neighbors") {
 require("./misc/listitem.php"); }
 if($_GET['act']=="csv"||$_GET['act']=="dumpcsv"||
    $_GET['act']=="xml"||$_GET['act']=="dumpxml"||
