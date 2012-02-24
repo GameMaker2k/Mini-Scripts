@@ -228,4 +228,67 @@ if($_GET['act']=="join"||$_GET['act']=="signup") { ?>
   </center>
  </body>
 </html>
-<?php } ?>
+<?php } if($_GET['act']=="usr"||$_GET['act']=="user") { 
+if(!is_numeric($_GET['id'])&&!isset($_COOKIE['MemberID'])) {
+	$_GET['id'] = 1; }
+if(!is_numeric($_GET['id'])&&isset($_COOKIE['MemberID'])&&!is_numeric($_COOKIE['MemberID'])) {
+	$_GET['id'] = 1; }
+if(!is_numeric($_GET['id'])&&isset($_COOKIE['MemberID'])&&is_numeric($_COOKIE['MemberID'])) {
+	$_GET['id'] = $_COOKIE['MemberID']; }
+$findmem = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."members\" WHERE \"id\"=".$_GET['id'].";");
+$nummems = sql_fetch_assoc($findmem);
+$numrows = $nummems['COUNT'];
+if($numrows<=0) { $_GET['id'] = 1;
+$findmem = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."members\" WHERE \"id\"=".$_GET['id'].";");
+$nummems = sql_fetch_assoc($findmem);
+$numrows = $nummems['COUNT']; }
+if($numrows>0) { 
+$findmem = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE \"id\"=".$_GET['id'].";"); 
+$meminfo = sql_fetch_assoc($findmem);
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"userid\"='".$meminfo['id']."';");
+$nummems = sql_fetch_assoc($findupc);
+$nummyitems = $nummems['COUNT'];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE \"userid\"='".$meminfo['id']."';");
+$nummems = sql_fetch_assoc($findupc);
+$nummypendings = $nummems['COUNT'];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."modupc\" WHERE \"userid\"='".$meminfo['id']."';");
+$nummems = sql_fetch_assoc($findupc);
+$nummymods = $nummems['COUNT'];
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+<title> <?php echo $sitename; ?>: UPC Database User Info </title>
+<?php echo $metatags; ?>
+ </head>
+
+ <body>
+  <center>
+   <?php echo $navbar; ?>
+   <h2>UPC Database User Info</h2>
+    <table>
+     <tr><td>Username:</td><td><?php echo htmlspecialchars($meminfo['name'], ENT_HTML401, "UTF-8"); ?></td></tr>
+	 <?php if((isset($_COOKIE['MemberID'])&&$_COOKIE['MemberID']==$meminfo['id'])||
+			  ($usersiteinfo['admin']=="yes")) { ?>
+     <tr><td>Email:</td><td><?php echo htmlspecialchars($meminfo['email'], ENT_HTML401, "UTF-8"); ?></td></tr>
+	 <?php } ?>
+     <tr><td>Items Entered:</td><td><?php echo $nummyitems; ?></td></tr>
+     <tr><td>Items Entered:</td><td><?php echo $nummypendings; ?></td></tr>
+     <tr><td>Item Edit Requests:</td><td><?php echo $nummymods; ?></td></tr>
+     <tr><td>Last Active:</td><td><?php echo date("j M Y, g:i A T", $meminfo['lastactive']); ?></td></tr>
+	 <?php if((isset($_COOKIE['MemberID'])&&$_COOKIE['MemberID']==$meminfo['id'])||
+			  ($usersiteinfo['admin']=="yes")) { ?>
+     <tr><td>IP Address:</td><td><?php echo $meminfo['ip']; ?></td></tr>
+	 <?php } ?>
+    </table>
+    <form action="<?php echo $website_url.$url_file; ?>?act=lookup" method="get">
+    <input type="hidden" name="act" value="lookup" />
+    <div><br /></div>
+    <table>
+     <tr><td style="text-align: center;"><input type="text" name="upc" size="16" maxlength="13" value="<?php echo $lookupupc; ?>" /> <input type="submit" value="Look Up UPC" /></td></tr>
+    </table>
+   </form>
+  </center>
+ </body>
+</html>
+<?php } } ?>

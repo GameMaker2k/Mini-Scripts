@@ -64,7 +64,13 @@ if($_GET['act']=="view") { ?>
  <body>
   <center>
    <?php echo $navbar; ?>
-   <!--<h2>AdminCP</h2>-->
+   <h2>AdminCP</h2>
+   <form action="<?php echo $website_url.$url_file; ?>?act=lookup" method="get">
+    <input type="hidden" name="act" value="lookup" />
+    <table>
+     <tr><td style="text-align: center;"><input type="text" name="upc" size="16" maxlength="13" value="<?php echo $lookupupc; ?>" /> <input type="submit" value="Look Up UPC" /></td></tr>
+    </table>
+   </form>
   </center>
  </body>
 </html>

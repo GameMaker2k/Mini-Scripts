@@ -91,7 +91,8 @@ $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDE
 $upcinfo = sql_fetch_assoc($findupc);
 $_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup&upc=".$upcinfo['upc']); exit(); }
 if($_GET['act']=="login"||$_GET['act']=="signin"||
-	$_GET['act']=="join"||$_GET['act']=="signup") {
+	$_GET['act']=="join"||$_GET['act']=="signup"||
+	$_GET['act']=="usr"||$_GET['act']=="user") {
 require("./misc/members.php"); }
 if($_GET['act']=="lookup"||$_GET['act']=="check"||$_GET['act']=="checkdigit") {
 require("./misc/lookup.php"); }

@@ -191,11 +191,10 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td>Description</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td></tr>
    <tr><td>Size/Weight</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td></tr>
    <tr><td>Issuing Country</td><td width="50"></td><td><?php echo get_gs1_prefix($ean13); ?></td></tr>
-   <?php if($upcinfo['timestamp']<=$upcinfo['lastupdate']) { ?>
    <tr><td>Created</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['timestamp']); ?></td></tr>
-   <tr><td>Created By</td><td width="50"></td><td><?php echo $upcinfo['username']; ?></td></tr>
-   <?php } if($upcinfo['timestamp']>$upcinfo['lastupdate']) { ?>
-   <tr><td>Last Modified</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td></tr>
+   <tr><td>Created By</td><td width="50"></td><td><a href="<?php echo $website_url.$url_file."?act=user&id=".$upcinfo['userid']; ?>"><?php echo $upcinfo['username']; ?></a></td></tr>
+   <?php if($upcinfo['timestamp']>$upcinfo['lastupdate']) { ?>
+   <tr><td>Last Modified</td><td width="50"></td><td><a href="<?php echo $website_url.$url_file."?act=user&id=".$upcinfo['edituserid']; ?>"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></a></td></tr>
    <tr><td>Last Modified By</td><td width="50"></td><td><?php echo $upcinfo['editname']; ?></td></tr>
    <?php } ?>
    </table>

@@ -298,7 +298,7 @@ if($usersiteinfo['admin']=="yes") { $adminlink = " | <a href=\"".$website_url.$u
 if($usersiteinfo['admin']=="yes") { $usersiteinfo['validated'] = "yes"; }
 $navbar = "<h1><big><a style=\"text-decoration: none;\" href=\"".$website_url.$url_file."?act=lookup\">".$sitename."</a></big></h1>\n   <div>";
 if(isset($_COOKIE['MemberName'])) { 
-	$navbar = $navbar."Welcome: ".$_COOKIE['MemberName'].$adminlink." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a> | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a>"; }
+	$navbar = $navbar."Welcome: <a href=\"".$website_url.$url_file."?act=user\">".$_COOKIE['MemberName']."</a>".$adminlink." | <a href=\"".$website_url.$url_file."?act=logout\">Logout</a> | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a>"; }
 if(!isset($_COOKIE['MemberName'])) { 
 	$navbar = $navbar."Welcome: Guest | <a href=\"".$website_url.$url_file."?act=lookup\">Index Page</a> | <a href=\"".$website_url.$url_file."?act=join\">Join</a> | <a href=\"".$website_url.$url_file."?act=login\">Login</a>"; }
 $navbar = $navbar." | <a href=\"".$website_url.$url_file."?act=latest&amp;page=1\">Latest</a><br /></div>";
