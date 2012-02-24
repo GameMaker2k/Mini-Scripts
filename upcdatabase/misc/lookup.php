@@ -193,10 +193,16 @@ $upcinfo['validated'] = "no"; } } }
    <tr><td>Issuing Country</td><td width="50"></td><td><?php echo get_gs1_prefix($ean13); ?></td></tr>
    <tr><td>Created</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['timestamp']); ?></td></tr>
    <tr><td>Created By</td><td width="50"></td><td><a href="<?php echo $website_url.$url_file."?act=user&id=".$upcinfo['userid']; ?>"><?php echo $upcinfo['username']; ?></a></td></tr>
-   <?php if($upcinfo['timestamp']>$upcinfo['lastupdate']) { ?>
-   <tr><td>Last Modified</td><td width="50"></td><td><a href="<?php echo $website_url.$url_file."?act=user&id=".$upcinfo['edituserid']; ?>"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></a></td></tr>
-   <tr><td>Last Modified By</td><td width="50"></td><td><?php echo $upcinfo['editname']; ?></td></tr>
-   <?php } ?>
+   <?php if((isset($_COOKIE['MemberID'])&&$_COOKIE['MemberID']==$meminfo['id'])||
+			  ($usersiteinfo['admin']=="yes")) { ?>
+   <tr><td>Created By IP</td><td width="50"></td><td><?php echo $upcinfo['ip']; ?></td></tr>
+   <?php } if($upcinfo['timestamp']>$upcinfo['lastupdate']) { ?>
+   <tr><td>Last Modified</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td></tr>
+   <tr><td>Last Modified By</td><td width="50"></td><td><a href="<?php echo $website_url.$url_file."?act=user&id=".$upcinfo['edituserid']; ?>"><?php echo $upcinfo['editname']; ?></a></td></tr>
+   <?php if((isset($_COOKIE['MemberID'])&&$_COOKIE['MemberID']==$meminfo['id'])||
+			  ($usersiteinfo['admin']=="yes")) { ?>
+   <tr><td>Last Modified By IP</td><td width="50"></td><td><?php echo $upcinfo['editip']; ?></td></tr>
+   <?php } } ?>
    </table>
    <div><br /></div>
    <a href="<?php echo $website_url.$url_file; ?>?act=neighbors&amp;upc=<?php echo $ean13; ?>&amp;page=1">List Neighboring Items</a><br />

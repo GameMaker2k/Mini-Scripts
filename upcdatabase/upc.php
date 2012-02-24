@@ -98,7 +98,8 @@ if($_GET['act']=="lookup"||$_GET['act']=="check"||$_GET['act']=="checkdigit") {
 require("./misc/lookup.php"); }
 if($_GET['act']=="add") {
 require("./misc/additem.php"); }
-if($_GET['act']=="latest"||$_GET['act']=="neighbor"||$_GET['act']=="neighbors") {
+if($_GET['act']=="latest"||$_GET['act']=="neighbor"||
+	$_GET['act']=="neighbors"||$_GET['act']=="search") {
 require("./misc/listitem.php"); }
 if($_GET['act']=="csv"||$_GET['act']=="dumpcsv"||
    $_GET['act']=="xml"||$_GET['act']=="dumpxml"||
