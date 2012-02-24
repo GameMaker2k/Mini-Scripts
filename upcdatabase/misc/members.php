@@ -116,6 +116,18 @@ if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	if($userinfo['password']!=$PasswordCheck) { $_GET['act'] = "login"; 
 	header("Location: ".$website_url.$url_file."?act=login"); exit(); } 
 	if($userinfo['password']==$PasswordCheck) {
+	$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE \"userid\"='".$userinfo['id']."';");
+	$numupc = sql_fetch_assoc($findupc);
+	$nummypendings = $numupc['COUNT'];
+	$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"userid\"='".$userinfo['id']."';");
+	$numupc = sql_fetch_assoc($findupc);
+	$nummyitems = $numupc['COUNT'];
+	if($userinfo['numitems']!=$nummyitems&&$userinfo['numpending']==$nummypendings) {
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems." WHERE \"id\"=".$userinfo['id'].";");
+	if($userinfo['numitems']==$nummyitems&&$userinfo['numpending']!=$nummypendings) {
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numpending\"=".$nummypendings." WHERE \"id\"=".$userinfo['id'].";");
+	if($userinfo['numitems']!=$nummyitems&&$userinfo['numpending']!=$nummypendings) {
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems.",\"numpending\"=".$nummypendings." WHERE \"id\"=".$userinfo['id'].";");
 	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"ip\"='".sqlite3_escape_string($slite3, $usersip)."',\"password\"='".sqlite3_escape_string($slite3, $NewPassword)."',\"salt\"='".sqlite3_escape_string($slite3, $NewHashSalt)."',\"hashtype\"='".sqlite3_escape_string($slite3, $usehashtype)."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"=".$userinfo['id'].";");
 	setcookie("MemberName", $userinfo['name'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 	setcookie("MemberID", $userinfo['id'], time() + (7 * 86400), $cbasedir, $cookieDomain);
