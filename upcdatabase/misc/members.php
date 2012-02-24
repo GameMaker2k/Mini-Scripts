@@ -123,11 +123,11 @@ if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	$numupc = sql_fetch_assoc($findupc);
 	$nummyitems = $numupc['COUNT'];
 	if($userinfo['numitems']!=$nummyitems&&$userinfo['numpending']==$nummypendings) {
-	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems." WHERE \"id\"=".$userinfo['id'].";");
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems." WHERE \"id\"=".$userinfo['id'].";"); }
 	if($userinfo['numitems']==$nummyitems&&$userinfo['numpending']!=$nummypendings) {
-	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numpending\"=".$nummypendings." WHERE \"id\"=".$userinfo['id'].";");
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numpending\"=".$nummypendings." WHERE \"id\"=".$userinfo['id'].";"); }
 	if($userinfo['numitems']!=$nummyitems&&$userinfo['numpending']!=$nummypendings) {
-	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems.",\"numpending\"=".$nummypendings." WHERE \"id\"=".$userinfo['id'].";");
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems.",\"numpending\"=".$nummypendings." WHERE \"id\"=".$userinfo['id'].";"); }
 	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"ip\"='".sqlite3_escape_string($slite3, $usersip)."',\"password\"='".sqlite3_escape_string($slite3, $NewPassword)."',\"salt\"='".sqlite3_escape_string($slite3, $NewHashSalt)."',\"hashtype\"='".sqlite3_escape_string($slite3, $usehashtype)."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"=".$userinfo['id'].";");
 	setcookie("MemberName", $userinfo['name'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 	setcookie("MemberID", $userinfo['id'], time() + (7 * 86400), $cbasedir, $cookieDomain);
@@ -241,6 +241,7 @@ if($_GET['act']=="join"||$_GET['act']=="signup") { ?>
  </body>
 </html>
 <?php } if($_GET['act']=="usr"||$_GET['act']=="user") { 
+if($_GET['id']<=0) { $_GET['id'] = NULL; }
 if(!is_numeric($_GET['id'])&&!isset($_COOKIE['MemberID'])) {
 	$_GET['id'] = 1; }
 if(!is_numeric($_GET['id'])&&isset($_COOKIE['MemberID'])&&!is_numeric($_COOKIE['MemberID'])) {

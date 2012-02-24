@@ -74,4 +74,6 @@ if($_GET['act']=="view") { ?>
   </center>
  </body>
 </html>
-<?php } sqlite3_close($slite3); ?>
+<?php } 
+sqlite3_query($slite3, "VACUUM;");
+sqlite3_close($slite3); ?>

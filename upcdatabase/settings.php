@@ -178,8 +178,7 @@ $query = "CREATE TABLE \"".$table_prefix."members\" (\n".
 "  \"ip\" VARCHAR(50) NOT NULL default '',\n".
 "  \"salt\" VARCHAR(50) NOT NULL default ''\n".
 ");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
+sqlite3_query($slite3, $query); }
 $tablecheck2 = @sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\""); 
 if($tablecheck2===false) {
 sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
@@ -200,8 +199,7 @@ $query = "CREATE TABLE \"".$table_prefix."items\" (\n".
 "  \"ip\" VARCHAR(50) NOT NULL default '',\n".
 "  \"editip\" VARCHAR(50) NOT NULL default ''\n".
 ");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
+sqlite3_query($slite3, $query); }
 $tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."pending\""); 
 if($tablecheck3===false) {
 sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
@@ -219,8 +217,7 @@ $query = "CREATE TABLE \"".$table_prefix."pending\" (\n".
 "  \"lastupdate\" INTEGER NOT NULL default '0',\n".
 "  \"ip\" VARCHAR(50) NOT NULL default ''\n".
 ");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
+sqlite3_query($slite3, $query); }
 $tablecheck3 = @sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."modupc\""); 
 if($tablecheck3===false) {
 sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
@@ -238,8 +235,7 @@ $query = "CREATE TABLE \"".$table_prefix."modupc\" (\n".
 "  \"lastupdate\" INTEGER NOT NULL default '0',\n".
 "  \"ip\" VARCHAR(50) NOT NULL default ''\n".
 ");";
-sqlite3_query($slite3, $query); 
-sqlite3_query($slite3, "VACUUM;"); }
+sqlite3_query($slite3, $query); }
 
 if(!is_numeric($_COOKIE['MemberID'])) {
 	unset($_COOKIE['MemberID']); 

@@ -164,6 +164,18 @@ $meminfo = sql_fetch_assoc($findmem);
 $tryfindmem = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE \"name\"=".$_POST['username'].";"); 
 $trymeminfo = sql_fetch_assoc($findmem);
 if(!isset($trymeminfo['id'])) { $trymeminfo['id'] = $meminfo['id']; }
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE \"userid\"='".$meminfo['id']."';");
+$numupc = sql_fetch_assoc($findupc);
+$nummypendings = $numupc['COUNT'];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"userid\"='".$meminfo['id']."';");
+$numupc = sql_fetch_assoc($findupc);
+$nummyitems = $numupc['COUNT'];
+if($meminfo['numitems']!=$nummyitems&&$meminfo['numpending']==$nummypendings) {
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems." WHERE \"id\"=".$meminfo['id'].";"); }
+if($meminfo['numitems']==$nummyitems&&$meminfo['numpending']!=$nummypendings) {
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numpending\"=".$nummypendings." WHERE \"id\"=".$meminfo['id'].";"); }
+if($meminfo['numitems']!=$nummyitems&&$meminfo['numpending']!=$nummypendings) {
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems.",\"numpending\"=".$nummypendings." WHERE \"id\"=".$meminfo['id'].";"); }
 if($trymeminfo['id']!=$meminfo['id']) {
 sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"validateitems\"='".$_POST['validateitems']."',\"admin\"='".$_POST['admin']."' WHERE \"id\"=".$meminfo['id'].";"); 
 $_GET['id'] = NULL; $_GET['subact'] = NULL; }
