@@ -66,6 +66,16 @@ if($_POST['sizeweight']==""||$_POST['sizeweight']==NULL) {
 header("Location: ".$website_url.$url_file."?act=add&upc=".$_GET['upc']); exit(); }
 $findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE \"id\"=".$_COOKIE['MemberID'].";"); 
 $getuserinfo = sql_fetch_assoc($findusrinfo); 
+$fixcount = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE \"userid\"='".$getuserinfo['id']."';");
+$numfixcount = sql_fetch_assoc($fixcount);
+$nummypendings = $numfixcount['COUNT'];
+$fixcount = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"userid\"='".$getuserinfo['id']."';");
+$numfixcount = sql_fetch_assoc($fixcount);
+$nummyitems = $numfixcount['COUNT'];
+if($getuserinfo['numitems']!=$nummyitems) {
+	$getuserinfo['numitems'] = $nummyitems; }
+if($getuserinfo['numpending']!=$nummypendings) {
+	$getuserinfo['numpending'] = $nummypendings; }
 $newnumitems = $getuserinfo['numitems'];
 $newnumpending = $getuserinfo['numpending'];
 if($usersiteinfo['admin']=="yes") {
