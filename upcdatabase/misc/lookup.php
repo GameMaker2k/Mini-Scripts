@@ -149,9 +149,11 @@ $upcinfo['validated'] = "no"; } } }
    </table>
    <div><br /></div>
    <?php } if(isset($_POST['upc'])&&preg_match("/^(97[7-9])/", $_POST['upc'])) {
+   $eanhrefs = NULL; $eanhrefe = NULL;
    if(validate_isbn13($ean13)===true) {
    $eantype = "ISBN"; $eanprefix = "978";
-   $eanprint = print_convert_isbn13_to_isbn10($ean13); }
+   $eanprint = print_convert_isbn13_to_isbn10($ean13); 
+   $eanprint = "<a href=\"http://www.amazon.com/gp/search?keywords=".urlencode($eanprint)."&ie=UTF8\" onclick=\"window.open(this.href);return false;\">".$eanprint."</a>"; }
    if(validate_ismn13($ean13)===true) {
    $eantype = "ISMN"; $eanprefix = "977";
    $eanprint = print_convert_ismn13_to_ismn10($ean13); }

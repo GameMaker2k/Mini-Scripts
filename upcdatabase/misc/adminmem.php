@@ -66,19 +66,20 @@ if($_GET['act']=="deletemember") { ?>
    <?php
    while ($meminfo = sql_fetch_assoc($findupc)) { ?>
    <tr valign="top">
-   <td><a href="<?php echo $website_url.$url_admin_file; ?>?act=deletemember&amp;id=<?php echo $meminfo['id']; ?>&amp;page=1"><?php echo htmlspecialchars($meminfo['name'], ENT_HTML401, "UTF-8"); ?></a></td>
+   <td><a href="<?php echo $website_url.$url_admin_file; ?>?act=deletemember&amp;id=<?php echo $meminfo['id']; ?>&amp;page=1" onclick="if(!confirm('Are you sure you want to delete member <?php echo htmlspecialchars($meminfo['name'], ENT_HTML401, "UTF-8"); ?>?')) { return false; }"><?php echo htmlspecialchars($meminfo['name'], ENT_HTML401, "UTF-8"); ?></a></td>
    <td><?php echo htmlspecialchars($meminfo['email'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo $meminfo['ip']; ?></td>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $meminfo['lastactive']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }
+   if($numrows>0) {
    if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
    echo "<a href=\"".$website_url.$url_admin_file."?act=deletemember&amp;page=".$backpage."\">Prev</a> --\n"; }
    echo $numrows." members, displaying ".$pagestartshow." through ".$maxpage;
    if($pagestart<($numrows - 20)) {
    $nextpage = $_GET['page'] + 1;
-   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=deletemember&amp;page=".$nextpage."\">Next</a>"; }
+   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=deletemember&amp;page=".$nextpage."\">Next</a>"; } }
    ?>
   </center>
  </body>
@@ -131,19 +132,19 @@ if($_GET['act']=="validatemember") { ?>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $meminfo['lastactive']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }
+   if($numrows>0) {
    if($maxpage>20&&$_GET['page']>1) {
    $backpage = $_GET['page'] - 1;
    echo "<a href=\"".$website_url.$url_admin_file."?act=validatemember&amp;page=".$backpage."\">Prev</a> --\n"; }
    echo $numrows." members, displaying ".$pagestartshow." through ".$maxpage;
    if($pagestart<($numrows - 20)) {
    $nextpage = $_GET['page'] + 1;
-   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=validatemember&amp;page=".$nextpage."\">Next</a>"; }
+   echo "\n-- <a href=\"".$website_url.$url_admin_file."?act=validatemember&amp;page=".$nextpage."\">Next</a>"; } }
    ?>
   </center>
  </body>
 </html>
-<?php }
-if($_GET['act']=="editmember") { ?>
+<?php } if($_GET['act']=="editmember") { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>

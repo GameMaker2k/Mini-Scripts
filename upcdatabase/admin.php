@@ -25,7 +25,7 @@ if(!isset($_COOKIE['MemberName'])||!isset($_COOKIE['MemberID'])||!isset($_COOKIE
 
 if(!isset($_GET['act'])&&isset($_POST['act'])) { $_GET['act'] = $_POST['act']; }
 if(!isset($_GET['act'])) { $_GET['act'] = "view"; }
-if(!isset($_GET['subact'])&&isset($_POST['subact'])) { $_POST['subact'] = $_GET['subact']; }
+if(!isset($_GET['subact'])&&isset($_POST['subact'])) { $_GET['subact'] = $_POST['subact']; }
 if(!isset($_GET['subact'])) { $_GET['subact'] = NULL; }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
 if(!isset($_GET['upc'])&&isset($_POST['upc'])) { $_GET['upc'] = $_POST['upc']; }
@@ -43,7 +43,7 @@ if(!isset($_GET['page'])) { $_GET['page'] = 1; }
 if(!is_numeric($_GET['page'])) { $_GET['page'] = 1; }
 
 $navbar = $navbar."\n   <div><a href=\"".$website_url.$url_admin_file."?act=deleteupc\">Delete UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=validateupc\">Validate UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=editupc\">Edit UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=upcdelrequests\">UPC Delete Requests</a> | <a href=\"".$website_url.$url_admin_file."?act=upceditrequests\">UPC Edit Request</a></div>";
-$navbar = $navbar."\n   <div><a href=\"".$website_url.$url_admin_file."?act=deletemember\">Delete Member</a> | <a href=\"".$website_url.$url_admin_file."?act=validatemember\">Validate Member</a> | <a href=\"".$website_url.$url_admin_file."?act=editmember\">Edit MemberC</a></div>";
+$navbar = $navbar."\n   <div><a href=\"".$website_url.$url_admin_file."?act=deletemember\">Delete Member</a> | <a href=\"".$website_url.$url_admin_file."?act=validatemember\">Validate Member</a> | <a href=\"".$website_url.$url_admin_file."?act=editmember\">Edit Member</a></div>";
 
 if($_GET['act']=="deleteupc"||$_GET['act']=="validateupc"||
 	$_GET['act']=="editupc"||$_GET['act']=="upcdelrequests"||

@@ -116,7 +116,7 @@ if(($_GET['act']=="login"||$_GET['act']=="signin")&&
 	if($userinfo['password']!=$PasswordCheck) { $_GET['act'] = "login"; 
 	header("Location: ".$website_url.$url_file."?act=login"); exit(); } 
 	if($userinfo['password']==$PasswordCheck) {
-	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"ip\"='".sqlite3_escape_string($slite3, $usersip)."',\"password\"='".sqlite3_escape_string($slite3, $NewPassword)."',\"salt\"='".sqlite3_escape_string($slite3, $NewHashSalt)."',\"hashtype\"='".sqlite3_escape_string($slite3, $usehashtype)."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"='".$userinfo['id']."';");
+	sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"lastactive\"='".time()."',\"ip\"='".sqlite3_escape_string($slite3, $usersip)."',\"password\"='".sqlite3_escape_string($slite3, $NewPassword)."',\"salt\"='".sqlite3_escape_string($slite3, $NewHashSalt)."',\"hashtype\"='".sqlite3_escape_string($slite3, $usehashtype)."' WHERE \"name\"='".$userinfo['name']."' AND \"id\"=".$userinfo['id'].";");
 	setcookie("MemberName", $userinfo['name'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 	setcookie("MemberID", $userinfo['id'], time() + (7 * 86400), $cbasedir, $cookieDomain);
 	setcookie("SessPass", $NewPassword, time() + (7 * 86400), $cbasedir, $cookieDomain); 
