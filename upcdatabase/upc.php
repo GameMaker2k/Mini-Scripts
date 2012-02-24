@@ -23,6 +23,7 @@ if(!isset($_GET['act'])) { $_GET['act'] = "lookup";
 	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if(isset($_GET['act'])&&$_GET['act']=="view") { $_GET['act'] = "lookup"; }
 if(!isset($_GET['subact'])&&isset($_POST['subact'])) { $_POST['subact'] = $_GET['subact']; }
+if(!isset($_POST['subact'])&&isset($_GET['subact'])) { $_GET['subact'] = $_POST['subact']; }
 if(!isset($_GET['subact'])) { $_GET['subact'] = NULL; }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
 if(!isset($_GET['upc'])&&isset($_POST['upc'])) { $_GET['upc'] = $_POST['upc']; }
@@ -85,6 +86,10 @@ if($_GET['act']=="logout"||$_GET['act']=="signout") {
 	$_GET['act'] = "login"; header("Location: ".$website_url.$url_file."?act=login"); exit(); }
 if(strlen($_POST['upc'])>0&&strlen($_POST['upc'])!=8&&strlen($_POST['upc'])!=12&&strlen($_POST['upc'])!=13) {
 	$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
+if($_GET['act']=="random"||$_GET['act']=="rand") {
+$findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY RANDOM() LIMIT 1;"); 
+$upcinfo = sql_fetch_assoc($findupc);
+$_GET['act'] = "lookup"; header("Location: ".$website_url.$url_file."?act=lookup&upc=".$upcinfo['upc']); exit(); }
 if($_GET['act']=="login"||$_GET['act']=="signin"||
 	$_GET['act']=="join"||$_GET['act']=="signup") {
 require("./misc/members.php"); }

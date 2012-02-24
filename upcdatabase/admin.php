@@ -42,7 +42,7 @@ if(!isset($_GET['page'])&&isset($_POST['page'])) { $_GET['page'] = $_POST['page'
 if(!isset($_GET['page'])) { $_GET['page'] = 1; }
 if(!is_numeric($_GET['page'])) { $_GET['page'] = 1; }
 
-$navbar = $navbar."\n   <div><a href=\"".$website_url.$url_admin_file."?act=deleteupc\">Delete UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=validateupc\">Validate UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=editupc\">Edit UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=upcdelrequests\">UPC Delete Requests</a> | <a href=\"".$website_url.$url_admin_file."?act=upceditrequests\">UPC Edit Request</a></div>";
+$navbar = $navbar."<br />\n   <div><a href=\"".$website_url.$url_admin_file."?act=deleteupc\">Delete UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=validateupc\">Validate UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=editupc\">Edit UPC</a> | <a href=\"".$website_url.$url_admin_file."?act=upcdelrequests\">UPC Delete Requests</a> | <a href=\"".$website_url.$url_admin_file."?act=upceditrequests\">UPC Edit Request</a></div>";
 $navbar = $navbar."\n   <div><a href=\"".$website_url.$url_admin_file."?act=deletemember\">Delete Member</a> | <a href=\"".$website_url.$url_admin_file."?act=validatemember\">Validate Member</a> | <a href=\"".$website_url.$url_admin_file."?act=editmember\">Edit Member</a></div>";
 
 if($_GET['act']=="deleteupc"||$_GET['act']=="validateupc"||

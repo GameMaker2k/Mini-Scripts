@@ -27,11 +27,11 @@ $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE upc='".sqlite3_escape_string($slite3, $_POST['upc'])."';"); 
 $upcinfo = sql_fetch_assoc($findupc);
-$findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE \"id\"='".$upcinfo['userid']."';"); 
-$getuserinfo = sql_fetch_assoc($findusrinfo); 
-$getuserinfo['numitems'] = $getuserinfo['numitems'] - 1;
-sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$getuserinfo['numitems']." WHERE \"id\"=".$upcinfo['userid'].";");
-$delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';"); } 
+$delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';"); 
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"userid\"='".$upcinfo['userid']."';");
+$numupc = sql_fetch_assoc($findupc);
+$nummyitems = $numupc['COUNT'];
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems." WHERE \"id\"=".$upcinfo['userid'].";"); } 
 $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."modupc\" WHERE \"upc\"='".$_POST['upc']."';");
 $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
@@ -98,13 +98,15 @@ $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."pending\" WHERE upc='".sqlite3_escape_string($slite3, $_POST['upc'])."';"); 
 $upcinfo = sql_fetch_assoc($findupc);  
-$findusrinfo = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."members\" WHERE \"id\"=".$upcinfo['userid'].";"); 
-$getuserinfo = sql_fetch_assoc($findusrinfo); 
-$getuserinfo['numitems'] = $getuserinfo['numitems'] + 1;
-$getuserinfo['numpending'] = $getuserinfo['numpending'] - 1;
-sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$getuserinfo['numitems'].",\"numpending\"=".$getuserinfo['numpending']." WHERE \"id\"=".$upcinfo['userid'].";");
 sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $upcinfo['upc'])."', '".sqlite3_escape_string($slite3, $upcinfo['description'])."', '".sqlite3_escape_string($slite3, $upcinfo['sizeweight'])."', 'yes', 'no', ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', ".$upcinfo['timestamp'].", ".$upcinfo['lastupdate'].", ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."');");
-$delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."pending\" WHERE \"upc\"='".$_POST['upc']."';"); } }
+$delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."pending\" WHERE \"upc\"='".$_POST['upc']."';"); 
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE \"userid\"='".$upcinfo['userid']."';");
+$numupc = sql_fetch_assoc($findupc);
+$nummypendings = $numupc['COUNT'];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"userid\"='".$upcinfo['userid']."';");
+$numupc = sql_fetch_assoc($findupc);
+$nummyitems = $numupc['COUNT'];
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."members\" SET \"numitems\"=".$nummyitems.",\"numpending\"=".$nummypendings." WHERE \"id\"=".$upcinfo['userid'].";"); } }
 if($_GET['act']=="validateupc") { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
