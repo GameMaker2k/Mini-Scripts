@@ -36,6 +36,20 @@ $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="search"&&!isset($_GET['searchterms'])) {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$_GET['searchterms'] = trim($_GET['searchterms']);
+$_GET['searchterms'] = remove_spaces($_GET['searchterms']); }
+if((strlen($_GET['searchterms'])>100||strlen($_GET['searchterms'])<=3)&&
+	$_GET['subact']=="search") {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']=="lookup") {
 if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
 	$_POST['upc'] = null; $_GET['subact'] = NULL; }
@@ -88,6 +102,20 @@ $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="search"&&!isset($_GET['searchterms'])) {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$_GET['searchterms'] = trim($_GET['searchterms']);
+$_GET['searchterms'] = remove_spaces($_GET['searchterms']); }
+if((strlen($_GET['searchterms'])>100||strlen($_GET['searchterms'])<=3)&&
+	$_GET['subact']=="search") {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']=="lookup") {
 if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
 	$_POST['upc'] = null; $_GET['subact'] = NULL; }
@@ -141,6 +169,20 @@ $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="search"&&!isset($_GET['searchterms'])) {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$_GET['searchterms'] = trim($_GET['searchterms']);
+$_GET['searchterms'] = remove_spaces($_GET['searchterms']); }
+if((strlen($_GET['searchterms'])>100||strlen($_GET['searchterms'])<=3)&&
+	$_GET['subact']=="search") {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']=="lookup") {
 if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
 	$_POST['upc'] = null; $_GET['subact'] = NULL; }
@@ -187,6 +229,20 @@ $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="search"&&!isset($_GET['searchterms'])) {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$_GET['searchterms'] = trim($_GET['searchterms']);
+$_GET['searchterms'] = remove_spaces($_GET['searchterms']); }
+if((strlen($_GET['searchterms'])>100||strlen($_GET['searchterms'])<=3)&&
+	$_GET['subact']=="search") {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']=="lookup") {
 if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
 	$_POST['upc'] = null; $_GET['subact'] = NULL; }
@@ -233,6 +289,20 @@ $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="search"&&!isset($_GET['searchterms'])) {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$_GET['searchterms'] = trim($_GET['searchterms']);
+$_GET['searchterms'] = remove_spaces($_GET['searchterms']); }
+if((strlen($_GET['searchterms'])>100||strlen($_GET['searchterms'])<=3)&&
+	$_GET['subact']=="search") {
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+if($_GET['subact']=="search"&&isset($_GET['searchterms'])) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"description\" LIKE '%".sqlite3_escape_string($slite3, $_GET['searchterms'])."%' ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']=="lookup") {
 if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
 	$_POST['upc'] = null; $_GET['subact'] = NULL; }
