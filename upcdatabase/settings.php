@@ -31,6 +31,7 @@ $sitekeywords = null;
 $sitedescription = null;
 $site_encryption_key = null;
 $sqlite_version = 3;
+$add_quantity_row = false;
 
 $appver = array(2,2,5,"RC 1");
 $upcdatabase = "http://www.upcdatabase.com/item/%s";
@@ -56,6 +57,7 @@ if(!is_numeric($sqlite_version)) { $sqlite_version = 3; }
 if($sqlite_version>3||$sqlite_version<2) { $sqlite_version = 3; }
 if($sqlite_version==3&&!extension_loaded("sqlite3")) { $sqlite_version = 2; }
 if($sqlite_version==2&&!extension_loaded("sqlite")) { $sqlite_version = 3; }
+if(!is_bool($add_quantity_row)) { $add_quantity_row = false; }
 
 $metatags = "<meta http-equiv=\"Content-Language\" content=\"en\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n  <meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />\n  <meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\" />\n  <meta name=\"generator\" content=\"".$sitename."\" />\n  <meta name=\"author\" content=\"".$siteauthor."\" />\n  <meta name=\"keywords\" content=\"".$sitekeywords."\" />\n  <meta name=\"description\" content=\"".$sitedescription."\" />\n  <link rel=\"icon\" href=\"".$website_url."favicon.ico\" />\n  <link rel=\"shortcut icon\" href=\"".$website_url."favicon.ico\" />\n";
 
@@ -201,6 +203,7 @@ $query = "CREATE TABLE \"".$table_prefix."items\" (\n".
 "  \"upc\" TEXT UNIQUE NOT NULL,\n".
 "  \"description\" TEXT NOT NULL,\n".
 "  \"sizeweight\" TEXT NOT NULL,\n".
+"  \"quantity\" TEXT NOT NULL,\n".
 "  \"validated\" VARCHAR(20) NOT NULL default '',\n".
 "  \"delrequest\" VARCHAR(20) NOT NULL default '',\n".
 "  \"userid\" INTEGER NOT NULL default '0',\n".
@@ -222,6 +225,7 @@ $query = "CREATE TABLE \"".$table_prefix."pending\" (\n".
 "  \"upc\" TEXT UNIQUE NOT NULL,\n".
 "  \"description\" TEXT NOT NULL,\n".
 "  \"sizeweight\" TEXT NOT NULL,\n".
+"  \"quantity\" TEXT NOT NULL,\n".
 "  \"validated\" VARCHAR(20) NOT NULL default '',\n".
 "  \"delrequest\" VARCHAR(20) NOT NULL default '',\n".
 "  \"userid\" INTEGER NOT NULL default '0',\n".
@@ -240,6 +244,7 @@ $query = "CREATE TABLE \"".$table_prefix."modupc\" (\n".
 "  \"upc\" TEXT UNIQUE NOT NULL,\n".
 "  \"description\" TEXT NOT NULL,\n".
 "  \"sizeweight\" TEXT NOT NULL,\n".
+"  \"quantity\" TEXT NOT NULL,\n".
 "  \"validated\" VARCHAR(20) NOT NULL default '',\n".
 "  \"delrequest\" VARCHAR(20) NOT NULL default '',\n".
 "  \"userid\" INTEGER NOT NULL default '0',\n".

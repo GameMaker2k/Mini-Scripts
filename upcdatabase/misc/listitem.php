@@ -58,7 +58,7 @@ if($_GET['act']=="latest") { ?>
    ?>
    <div><br /></div>
    <table class="list">
-   <tr><th>EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <tr><th>EAN/UCC</th><th>Description</th><th>Size/Weight</th><?php if($add_quantity_row===true) { ?><th>Quantity</th><?php } ?><th>Last Mod</th></tr>
    <?php
    while ($upcinfo = sql_fetch_assoc($findupc)) {
    ?>
@@ -66,6 +66,7 @@ if($_GET['act']=="latest") { ?>
    <td><a href="<?php echo $website_url.$url_file; ?>?act=lookup&amp;upc=<?php echo $upcinfo['upc']; ?>"><?php echo $upcinfo['upc']; ?></a></td>
    <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <?php if($add_quantity_row===true) { ?><td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?></td><?php } ?>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }
@@ -124,7 +125,7 @@ if($_GET['act']=="latest") { ?>
    ?>
    <div><br /></div>
    <table class="list">
-   <tr><th>EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <tr><th>EAN/UCC</th><th>Description</th><th>Size/Weight</th><?php if($add_quantity_row===true) { ?><th>Quantity</th><?php } ?><th>Last Mod</th></tr>
    <?php
    while ($upcinfo = sql_fetch_assoc($findupc)) {
    ?>
@@ -132,6 +133,7 @@ if($_GET['act']=="latest") { ?>
    <td><a href="<?php echo $website_url.$url_file; ?>?act=lookup&amp;upc=<?php echo $upcinfo['upc']; ?>"><?php echo $upcinfo['upc']; ?></a></td>
    <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <?php if($add_quantity_row===true) { ?><td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?></td><?php } ?>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }
@@ -197,7 +199,7 @@ header("Location: ".$website_url.$url_file."?act=search"); exit(); }
    ?>
    <div><br /></div>
    <table class="list">
-   <tr><th>EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <tr><th>EAN/UCC</th><th>Description</th><th>Size/Weight</th><?php if($add_quantity_row===true) { ?><th>Quantity</th><?php } ?><th>Last Mod</th></tr>
    <?php
    while ($upcinfo = sql_fetch_assoc($findupc)) {
    ?>
@@ -205,6 +207,7 @@ header("Location: ".$website_url.$url_file."?act=search"); exit(); }
    <td><a href="<?php echo $website_url.$url_file; ?>?act=lookup&amp;upc=<?php echo $upcinfo['upc']; ?>"><?php echo $upcinfo['upc']; ?></a></td>
    <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <?php if($add_quantity_row===true) { ?><td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?></td><?php } ?>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }

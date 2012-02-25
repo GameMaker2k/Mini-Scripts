@@ -69,13 +69,14 @@ if($_GET['act']=="deleteupc") { ?>
    ?>
    <div><br /></div>
    <table class="list">
-   <tr><th>Delete EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <tr><th>Delete EAN/UCC</th><th>Description</th><th>Size/Weight</th><?php if($add_quantity_row===true) { ?><th>Quantity</th><?php } ?><th>Last Mod</th></tr>
    <?php
    while ($upcinfo = sql_fetch_assoc($findupc)) { ?>
    <tr valign="top">
    <td><a href="<?php echo $website_url.$url_admin_file; ?>?act=deleteupc&amp;upc=<?php echo $upcinfo['upc']; ?>&amp;page=1" onclick="if(!confirm('Are you sure you want to delete UPC <?php echo $upcinfo['upc']; ?>?')) { return false; }"><?php echo $upcinfo['upc']; ?></a></td>
    <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <?php if($add_quantity_row===true) { ?><td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?></td><?php } ?>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }
@@ -98,7 +99,7 @@ $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $findupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."pending\" WHERE upc='".sqlite3_escape_string($slite3, $_POST['upc'])."';"); 
 $upcinfo = sql_fetch_assoc($findupc);  
-sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $upcinfo['upc'])."', '".sqlite3_escape_string($slite3, $upcinfo['description'])."', '".sqlite3_escape_string($slite3, $upcinfo['sizeweight'])."', 'yes', 'no', ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', ".$upcinfo['timestamp'].", ".$upcinfo['lastupdate'].", ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."');");
+sqlite3_query($slite3, "INSERT INTO \"".$table_prefix."items\" (\"upc\", \"description\", \"sizeweight\", \"quantity\", \"validated\", \"delrequest\", \"userid\", \"username\", \"timestamp\", \"lastupdate\", \"edituserid\", \"editname\", \"ip\", \"editip\") VALUES ('".sqlite3_escape_string($slite3, $upcinfo['upc'])."', '".sqlite3_escape_string($slite3, $upcinfo['description'])."', '".sqlite3_escape_string($slite3, $upcinfo['sizeweight'])."', '".sqlite3_escape_string($slite3, $upcinfo['quantity'])."', 'yes', 'no', ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', ".$upcinfo['timestamp'].", ".$upcinfo['lastupdate'].", ".sqlite3_escape_string($slite3, $upcinfo['userid']).", '".sqlite3_escape_string($slite3, $upcinfo['username'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."', '".sqlite3_escape_string($slite3, $upcinfo['ip'])."');");
 $delupc = sqlite3_query($slite3, "DELETE FROM \"".$table_prefix."pending\" WHERE \"upc\"='".$_POST['upc']."';"); 
 $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."pending\" WHERE \"userid\"='".$upcinfo['userid']."';");
 $numupc = sql_fetch_assoc($findupc);
@@ -139,13 +140,14 @@ if($_GET['act']=="validateupc") { ?>
    ?>
    <div><br /></div>
    <table class="list">
-   <tr><th>Validate EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <tr><th>Validate EAN/UCC</th><th>Description</th><th>Size/Weight</th><?php if($add_quantity_row===true) { ?><th>Quantity</th><?php } ?><th>Last Mod</th></tr>
    <?php
    while ($upcinfo = sql_fetch_assoc($findupc)) { ?>
    <tr valign="top">
    <td><a href="<?php echo $website_url.$url_admin_file; ?>?act=validateupc&amp;upc=<?php echo $upcinfo['upc']; ?>&amp;page=1"><?php echo $upcinfo['upc']; ?></a></td>
    <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <?php if($add_quantity_row===true) { ?><td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?></td><?php } ?>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }
@@ -170,20 +172,31 @@ $_POST['description'] = trim($_POST['description']);
 $_POST['description'] = remove_spaces($_POST['description']);
 $_POST['sizeweight'] = trim($_POST['sizeweight']);
 $_POST['sizeweight'] = remove_spaces($_POST['sizeweight']);
+if($add_quantity_row===true) {
+$_POST['quantity'] = trim($_POST['quantity']);
+$_POST['quantity'] = remove_spaces($_POST['quantity']); }
+if($add_quantity_row===false) { $_POST['quantity'] = null; }
 if(strlen($_POST['description'])>150) {
 	$_GET['upc'] = NULL; $_GET['subact'] = NULL; }
 if(strlen($_POST['sizeweight'])>30) { 
 	$_GET['upc'] = NULL; $_GET['subact'] = NULL; }
+if(strlen($_POST['quantity'])>30&&$add_quantity_row===true) {
+	$_GET['upc'] = NULL; $_GET['subact'] = NULL; }
 if($_POST['description']==""||$_POST['description']==NULL) { 
 	$_GET['upc'] = NULL; $_GET['subact'] = NULL; }
 if($_POST['sizeweight']==""||$_POST['sizeweight']==NULL) { 
+	$_GET['upc'] = NULL; $_GET['subact'] = NULL; }
+if(($_POST['quantity']==""||$_POST['quantity']==NULL)&&$add_quantity_row===true) {
 	$_GET['upc'] = NULL; $_GET['subact'] = NULL; }
 $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';");
 $numupc = sql_fetch_assoc($findupc);
 $numrows = $numupc['COUNT'];
 if($numrows<=0) { $_GET['upc'] = NULL; $_GET['subact'] = NULL; }
 if($numrows>0) {
-sqlite3_query($slite3, "UPDATE \"".$table_prefix."items\" SET \"description\"='".$_POST['description']."',\"sizeweight\"='".$_POST['sizeweight']."' WHERE \"upc\"='".$_GET['upc']."';"); 
+if($add_quantity_row===true) {
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."items\" SET \"description\"='".sqlite3_escape_string($slite3, $_POST['description'])."',\"sizeweight\"='".sqlite3_escape_string($slite3, $_POST['sizeweight'])."',\"quantity\"='".sqlite3_escape_string($slite3, $_POST['quantity'])."' WHERE \"upc\"='".$_GET['upc']."';"); }
+if($add_quantity_row===false) {
+sqlite3_query($slite3, "UPDATE \"".$table_prefix."items\" SET \"description\"='".sqlite3_escape_string($slite3, $_POST['description'])."',\"sizeweight\"='".sqlite3_escape_string($slite3, $_POST['sizeweight'])."' WHERE \"upc\"='".$_GET['upc']."';"); }
 $_GET['upc'] = NULL; $_GET['subact'] = NULL; } }
 if($_GET['act']=="editupc"&&validate_ean13($_GET['upc'])===true&&$_GET['subact']===NULL) { 
 $findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_GET['upc']."';");
@@ -218,6 +231,7 @@ $upcinfo = sql_fetch_assoc($findupc);
     <table>
     <tr><td style="text-align: center;">Description: <input type="text" name="description" size="50" maxlength="150" value="<?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?>" /></td></tr>
     <tr><td style="text-align: center;">Size/Weight: <input type="text" name="sizeweight" size="30" maxlength="30" value="<?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?>" /></td></tr>
+    <?php if($add_quantity_row===true) { ?><tr><td style="text-align: center;">Quantity: <input type="text" name="quantity" size="30" maxlength="30"  value="<?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?>" /></td></tr><?php } ?>
    </table>
    <input type="hidden" name="upc" value="<?php echo $_GET['upc']; ?>" />
    <input type="hidden" name="subact" value="editupc" />
@@ -258,13 +272,14 @@ $upcinfo = sql_fetch_assoc($findupc);
    ?>
    <div><br /></div>
    <table class="list">
-   <tr><th>Edit EAN/UCC</th><th>Description</th><th>Size/Weight</th><th>Last Mod</th></tr>
+   <tr><th>Edit EAN/UCC</th><th>Description</th><th>Size/Weight</th><?php if($add_quantity_row===true) { ?><th>Quantity</th><?php } ?><th>Last Mod</th></tr>
    <?php
    while ($upcinfo = sql_fetch_assoc($findupc)) { ?>
    <tr valign="top">
    <td><a href="<?php echo $website_url.$url_admin_file; ?>?act=editupc&amp;upc=<?php echo $upcinfo['upc']; ?>&amp;page=1"><?php echo $upcinfo['upc']; ?></a></td>
    <td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td>
    <td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td>
+   <?php if($add_quantity_row===true) { ?><td nowrap="nowrap"><?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?></td><?php } ?>
    <td nowrap="nowrap"><?php echo date("j M Y, g:i A T", $upcinfo['lastupdate']); ?></td>
    </tr>
    <?php } echo "   </table>   <div><br /></div>"; }

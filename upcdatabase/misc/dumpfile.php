@@ -24,7 +24,7 @@ if($_GET['act']=="csv"||$_GET['act']=="dumpcsv") {
 @header("Content-Type: text/csv; charset=UTF-8"); 
 @header("Content-Disposition: attachment; filename=\"".$sqlitedatabase.".csv\"");
 ?>
-"upc", "description", "sizeweight"
+"upc", "description", "sizeweight"<?php if($add_quantity_row===true) { ?>, "quantity"<?php } ?>
 <?php
 if($_GET['subact']=="neighbor"||$_GET['subact']=="neighbors") {
 if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
@@ -58,8 +58,10 @@ if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
 $upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
 $upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
+if($add_quantity_row===true) {
+$upcinfo['quantity'] = str_replace("\"", "\"\"", $upcinfo['quantity']); }
 ?>
-"<?php echo $upcinfo['upc']; ?>", "<?php echo $upcinfo['description']; ?>", "<?php echo $upcinfo['sizeweight']; ?>"
+"<?php echo $upcinfo['upc']; ?>", "<?php echo $upcinfo['description']; ?>", "<?php echo $upcinfo['sizeweight']; ?>"<?php if($add_quantity_row===true) { ?>, "<?php echo $upcinfo['quantity']; ?>"<?php } ?>
 <?php } } } if($_GET['act']=="xml"||$_GET['act']=="dumpxml") { 
 @header("Content-Type: text/xml; charset=UTF-8"); 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -110,11 +112,14 @@ if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
 $upcinfo['description'] = str_replace("\"", "\\\"", $upcinfo['description']);
 $upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
+if($add_quantity_row===true) {
+$upcinfo['quantity'] = str_replace("\"", "\\\"", $upcinfo['quantity']); }
 ?>
 <item>
 <upc><?php echo $upcinfo['upc']; ?></upc>
 <description><?php echo htmlspecialchars($upcinfo['description'], ENT_XML1, "UTF-8"); ?></description>
 <sizeweight><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_XML1, "UTF-8"); ?></sizeweight>
+<?php if($add_quantity_row===true) { ?><sizeweight><?php echo htmlspecialchars($upcinfo['quantity'], ENT_XML1, "UTF-8"); ?></sizeweight><?php } ?>
 </item>
 
 <?php } } ?>
@@ -157,11 +162,14 @@ $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDE
 if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
 /*$upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
-$upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);*/
+$upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
+if($add_quantity_row===true) {
+$upcinfo['quantity'] = str_replace("\"", "\"\"", $upcinfo['quantity']); } */
 ?>
    - upc:           <?php echo $upcinfo['upc']."\n"; ?>
      description:   <?php echo $upcinfo['description']."\n"; ?>
      sizeweight:    <?php echo $upcinfo['sizeweight']."\n"; ?>
+<?php if($add_quantity_row===true) { ?>     quantity:      <?php echo $upcinfo['quantity']."\n"; } ?>
 
 <?php } } } if($_GET['act']=="json"||$_GET['act']=="dumpjson") { 
 @header("Content-Type: application/json; charset=UTF-8"); 
@@ -201,10 +209,13 @@ if($dumpupc!=NULL) { $numcount = 1;
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
 $upcinfo['description'] = str_replace("\"", "\\\"", $upcinfo['description']);
 $upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
+if($add_quantity_row===true) {
+$upcinfo['quantity'] = str_replace("\"", "\\\"", $upcinfo['quantity']); }
 echo "    {\n";
 echo "      \"upc\": \"".$upcinfo['upc']."\",\n";
 echo "      \"description\": \"".$upcinfo['description']."\",\n";
 echo "      \"sizeweight\": \"".$upcinfo['sizeweight']."\"\n";
+if($add_quantity_row===true) { echo "      \"quantity\": \"".$upcinfo['quantity']."\"\n"; }
 if($numcount<$numrows) { echo "    },\n"; }
 if($numcount==$numrows) { echo "    }\n"; }
 ++$numcount; } ?>
@@ -244,10 +255,16 @@ if($dumpupc!=NULL) {
 $items = array();
 $ari = 0;
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
-//$upcinfo['description'] = str_replace("\"", "\\\"", $upcinfo['description']);
-//$upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
+/*$upcinfo['description'] = str_replace("\"", "\\\"", $upcinfo['description']);
+$upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
+if($add_quantity_row===true) {
+$upcinfo['quantity'] = str_replace("\"", "\\\"", $upcinfo['quantity']); }*/
 $arkeys[$ari] = $upcinfo['upc'];
-$arvalues[$ari] = array("upc" => $upcinfo['upc'], "description" => $upcinfo['description'], "sizeweight" => $upcinfo['sizeweight']); ++$ari; }
+if($add_quantity_row===false) {
+$arvalues[$ari] = array("upc" => $upcinfo['upc'], "description" => $upcinfo['description'], "sizeweight" => $upcinfo['sizeweight']); }
+if($add_quantity_row===true) {
+$arvalues[$ari] = array("upc" => $upcinfo['upc'], "description" => $upcinfo['description'], "sizeweight" => $upcinfo['sizeweight'], "quantity" => $upcinfo['quantity']); }
+++$ari; }
 $items = array_combine($arkeys, $arvalues);
 $items = array_merge($items, $arvalues);
 echo serialize($items); } } if($_GET['act']=="xslt") { 
@@ -263,6 +280,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
      <xsl:element name="tr"><xsl:element name="td">EAN/UCC-13</xsl:element><xsl:element name="td"><xsl:element name="img"><xsl:attribute name="src"><?php echo $website_url.$barcode_file; ?>?act=ean13&amp;upc=<xsl:value-of select="upc"/></xsl:attribute><xsl:attribute name="title"><xsl:value-of select="upc"/></xsl:attribute><xsl:attribute name="alt"><xsl:value-of select="upc"/></xsl:attribute></xsl:element></xsl:element></xsl:element>
      <xsl:element name="tr"><xsl:element name="td">Description</xsl:element><xsl:element name="td"><xsl:value-of select="description"/></xsl:element></xsl:element>
      <xsl:element name="tr"><xsl:element name="td">Size/Weight</xsl:element><xsl:element name="td"><xsl:value-of select="sizeweight"/></xsl:element></xsl:element>
+     <?php if($add_quantity_row===true) { ?><xsl:element name="tr"><xsl:element name="td">Quantity</xsl:element><xsl:element name="td"><xsl:value-of select="quantity"/></xsl:element></xsl:element><?php } ?>
     </xsl:element>
     <xsl:element name="div"><br /></xsl:element>
    </xsl:for-each>

@@ -190,6 +190,7 @@ $upcinfo['validated'] = "no"; } } }
    <?php } ?>
    <tr><td>Description</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['description'], ENT_HTML401, "UTF-8"); ?></td></tr>
    <tr><td>Size/Weight</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['sizeweight'], ENT_HTML401, "UTF-8"); ?></td></tr>
+   <?php if($add_quantity_row===true) { ?><tr><td>Quantity</td><td width="50"></td><td><?php echo htmlspecialchars($upcinfo['quantity'], ENT_HTML401, "UTF-8"); ?></td></tr><?php } ?>
    <tr><td>Issuing Country</td><td width="50"></td><td><?php echo get_gs1_prefix($ean13); ?></td></tr>
    <tr><td>Created</td><td width="50"></td><td><?php echo date("j M Y, g:i A T", $upcinfo['timestamp']); ?></td></tr>
    <tr><td>Created By</td><td width="50"></td><td><a href="<?php echo $website_url.$url_file."?act=user&id=".$upcinfo['userid']; ?>"><?php echo $upcinfo['username']; ?></a></td></tr>
