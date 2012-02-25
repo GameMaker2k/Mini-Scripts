@@ -204,7 +204,7 @@ $upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
 echo "    {\n";
 echo "      \"upc\": \"".$upcinfo['upc']."\",\n";
 echo "      \"description\": \"".$upcinfo['description']."\",\n";
-echo "      \"sizeweight\": \"".$upcinfo['sizeweight']."\",\n";
+echo "      \"sizeweight\": \"".$upcinfo['sizeweight']."\"\n";
 if($numcount<$numrows) { echo "    },\n"; }
 if($numcount==$numrows) { echo "    }\n"; }
 ++$numcount; } ?>
