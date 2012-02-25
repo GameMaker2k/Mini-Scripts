@@ -22,8 +22,8 @@ if(!isset($_GET['act'])&&isset($_POST['act'])) { $_GET['act'] = $_POST['act']; }
 if(!isset($_GET['act'])) { $_GET['act'] = "lookup"; 
 	header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
 if(isset($_GET['act'])&&$_GET['act']=="view") { $_GET['act'] = "lookup"; }
-if(!isset($_GET['subact'])&&isset($_POST['subact'])) { $_POST['subact'] = $_GET['subact']; }
-if(!isset($_POST['subact'])&&isset($_GET['subact'])) { $_GET['subact'] = $_POST['subact']; }
+if(!isset($_GET['subact'])&&isset($_POST['subact'])) { $_GET['subact'] = $_POST['subact']; }
+if(!isset($_POST['subact'])&&isset($_GET['subact'])) { $_POST['subact'] = $_GET['subact']; }
 if(!isset($_GET['subact'])) { $_GET['subact'] = NULL; }
 if(!isset($_POST['upc'])&&isset($_GET['upc'])) { $_POST['upc'] = $_GET['upc']; }
 if(!isset($_GET['upc'])&&isset($_POST['upc'])) { $_GET['upc'] = $_POST['upc']; }
@@ -103,6 +103,8 @@ if($_GET['act']=="latest"||$_GET['act']=="neighbor"||
 require("./misc/listitem.php"); }
 if($_GET['act']=="csv"||$_GET['act']=="dumpcsv"||
    $_GET['act']=="xml"||$_GET['act']=="dumpxml"||
+   $_GET['act']=="yml"||$_GET['act']=="dumpyml"||
+   $_GET['act']=="json"||$_GET['act']=="dumpjson"||
    $_GET['act']=="yaml"||$_GET['act']=="dumpyaml") { 
    require("./misc/dumpfile.php"); }
 sqlite3_query($slite3, "VACUUM;");

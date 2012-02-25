@@ -45,8 +45,14 @@ $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."'  ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']==NULL) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); } 
 if($_GET['subact']=="latest") {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); } 
 if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
@@ -89,15 +95,21 @@ $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."'  ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']==NULL) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); } 
 if($_GET['subact']=="latest") {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); } 
 if($dumpupc==NULL) {
 echo "<item>\n</item>\n\n"; }
 if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
-$upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
-$upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
+$upcinfo['description'] = str_replace("\"", "\\\"", $upcinfo['description']);
+$upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
 ?>
 <item>
 <upc><?php echo $upcinfo['upc']; ?></upc>
@@ -107,7 +119,8 @@ $upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
 
 <?php } } ?>
 </<?php echo $sqlitedatabase; ?>>
-<?php } if($_GET['act']=="yaml"||$_GET['act']=="dumpyaml") { 
+<?php } if($_GET['act']=="yaml"||$_GET['act']=="dumpyaml"||
+		   $_GET['act']=="yml"||$_GET['act']=="dumpyml") { 
 @header("Content-Type: text/x-yaml; charset=UTF-8"); 
 @header("Content-Disposition: attachment; filename=\"".$sqlitedatabase.".yaml\"");
 ?>
@@ -132,20 +145,72 @@ $numrows = $numupc['COUNT'];
 if($numrows>0) {
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."'  ORDER BY \"upc\" ASC;"); } }
 if($_GET['subact']==NULL) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); } 
 if($_GET['subact']=="latest") {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
 $dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); } 
 if($dumpupc!=NULL) {
 while ($upcinfo = sql_fetch_assoc($dumpupc)) {
-$upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
-$upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);
+/*$upcinfo['description'] = str_replace("\"", "\"\"", $upcinfo['description']);
+$upcinfo['sizeweight'] = str_replace("\"", "\"\"", $upcinfo['sizeweight']);*/
 ?>
    - upc:           <?php echo $upcinfo['upc']."\n"; ?>
      description:   <?php echo $upcinfo['description']."\n"; ?>
      sizeweight:    <?php echo $upcinfo['sizeweight']."\n"; ?>
 
-<?php } } } 
-if($_GET['act']=="xslt") { 
+<?php } } } if($_GET['act']=="json"||$_GET['act']=="dumpjson") { 
+@header("Content-Type: application/json; charset=UTF-8"); 
+?>
+{
+  "item": [
+<?php
+if($_GET['subact']=="neighbor"||$_GET['subact']=="neighbors") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+preg_match("/^(\d{7})/", $_GET['upc'], $fix_matches); 
+$findprefix = $fix_matches[1];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="lookup") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']==NULL) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); } 
+if($_GET['subact']=="latest") {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); } 
+if($dumpupc!=NULL) { $numcount = 1;
+while ($upcinfo = sql_fetch_assoc($dumpupc)) {
+$upcinfo['description'] = str_replace("\"", "\\\"", $upcinfo['description']);
+$upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
+echo "    {\n";
+echo "      \"upc\": \"".$upcinfo['upc']."\",\n";
+echo "      \"description\": \"".$upcinfo['description']."\",\n";
+echo "      \"sizeweight\": \"".$upcinfo['sizeweight']."\",\n";
+if($numcount<$numrows) { echo "    },\n"; }
+if($numcount==$numrows) { echo "    }\n"; }
+++$numcount; } ?>
+  ]
+}
+<?php } } if($_GET['act']=="xslt") { 
 @header("Content-Type: text/xml; charset=UTF-8"); 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>
