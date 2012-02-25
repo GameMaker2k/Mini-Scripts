@@ -105,7 +105,8 @@ if($_GET['act']=="csv"||$_GET['act']=="dumpcsv"||
    $_GET['act']=="xml"||$_GET['act']=="dumpxml"||
    $_GET['act']=="yml"||$_GET['act']=="dumpyml"||
    $_GET['act']=="json"||$_GET['act']=="dumpjson"||
-   $_GET['act']=="yaml"||$_GET['act']=="dumpyaml") { 
+   $_GET['act']=="yaml"||$_GET['act']=="dumpyaml"||
+   $_GET['act']=="serialize"||$_GET['act']=="dumpserialize") { 
    require("./misc/dumpfile.php"); }
 sqlite3_query($slite3, "VACUUM;");
 sqlite3_close($slite3); ?>

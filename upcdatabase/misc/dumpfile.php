@@ -210,7 +210,47 @@ if($numcount==$numrows) { echo "    }\n"; }
 ++$numcount; } ?>
   ]
 }
-<?php } } if($_GET['act']=="xslt") { 
+<?php } } if($_GET['act']=="serialize"||$_GET['act']=="dumpserialize") { 
+@header("Content-Type: text/plain; charset=UTF-8"); 
+if($_GET['subact']=="neighbor"||$_GET['subact']=="neighbors") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+preg_match("/^(\d{7})/", $_GET['upc'], $fix_matches); 
+$findprefix = $fix_matches[1];
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\" LIKE '".$findprefix."%'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']=="lookup") {
+if(!isset($_GET['upc'])||!is_numeric($_POST['upc'])) { 
+	$_POST['upc'] = null; $_GET['subact'] = NULL; }
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."';"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+if($numrows>0) {
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" WHERE \"upc\"='".$_POST['upc']."'  ORDER BY \"upc\" ASC;"); } }
+if($_GET['subact']==NULL) {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"upc\" ASC;"); } 
+if($_GET['subact']=="latest") {
+$findupc = sqlite3_query($slite3, "SELECT COUNT(*) AS COUNT FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); 
+$numupc = sql_fetch_assoc($findupc);
+$numrows = $numupc['COUNT'];
+$dumpupc = sqlite3_query($slite3, "SELECT * FROM \"".$table_prefix."items\" ORDER BY \"lastupdate\";"); } 
+if($dumpupc!=NULL) { 
+$items = array();
+$ari = 0;
+while ($upcinfo = sql_fetch_assoc($dumpupc)) {
+//$upcinfo['description'] = str_replace("\"", "\\\"", $upcinfo['description']);
+//$upcinfo['sizeweight'] = str_replace("\"", "\\\"", $upcinfo['sizeweight']);
+$arkeys[$ari] = $upcinfo['upc'];
+$arvalues[$ari] = array("upc" => $upcinfo['upc'], "description" => $upcinfo['description'], "sizeweight" => $upcinfo['sizeweight']); ++$ari; }
+$items = array_combine($arkeys, $arvalues);
+$items = array_merge($items, $arvalues);
+echo serialize($items); } } if($_GET['act']=="xslt") { 
 @header("Content-Type: text/xml; charset=UTF-8"); 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 ?>
