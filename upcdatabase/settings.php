@@ -29,6 +29,8 @@ $validate_members = true;
 $disable_dumps = false;
 $sitekeywords = null;
 $sitedescription = null;
+$site_encryption_key = null;
+$sqlite_version = 3;
 
 $appver = array(2,2,5,"RC 1");
 $upcdatabase = "http://www.upcdatabase.com/item/%s";
@@ -49,6 +51,11 @@ $basecheck = parse_url($website_url);
 $basedir = $basecheck['path'];
 $cbasedir = $basedir;
 $cookieDomain = $basecheck['host'];
+
+if(!is_numeric($sqlite_version)) { $sqlite_version = 3; }
+if($sqlite_version>3||$sqlite_version<2) { $sqlite_version = 3; }
+if($sqlite_version==3&&!extension_loaded("sqlite3")) { $sqlite_version = 2; }
+if($sqlite_version==2&&!extension_loaded("sqlite")) { $sqlite_version = 3; }
 
 $metatags = "<meta http-equiv=\"Content-Language\" content=\"en\" />\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n  <meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />\n  <meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\" />\n  <meta name=\"generator\" content=\"".$sitename."\" />\n  <meta name=\"author\" content=\"".$siteauthor."\" />\n  <meta name=\"keywords\" content=\"".$sitekeywords."\" />\n  <meta name=\"description\" content=\"".$sitedescription."\" />\n  <link rel=\"icon\" href=\"".$website_url."favicon.ico\" />\n  <link rel=\"shortcut icon\" href=\"".$website_url."favicon.ico\" />\n";
 
@@ -98,9 +105,13 @@ if(strpos($_SERVER['HTTP_USER_AGENT'], "chromeframe")) {
 @header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
 @header("Expires: ".gmdate("D, d M Y H:i:s")." GMT");
 
-if(extension_loaded("sqlite3")) {
+if(extension_loaded("sqlite3")&&$sqlite_version==3) {
 function sqlite3_open($filename, $mode = 0666) {
-   $handle = new SQLite3($filename);
+   global $site_encryption_key;
+   if($site_encryption_key===null) {
+   $handle = new SQLite3($filename, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE); }
+   if($site_encryption_key!==null) {
+   $handle = new SQLite3($filename, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE, $site_encryption_key); }
    return $handle; }
 function sqlite3_close($dbhandle) {
    $dbhandle->close();
@@ -124,7 +135,7 @@ function sqlite3_libversion($dbhandle) {
 	$dbversion = $dbhandle->version();
 	return $dbversion['versionString']; } }
 
-if(!extension_loaded("sqlite3")&&extension_loaded("sqlite")) {
+if(extension_loaded("sqlite")&&$sqlite_version==2) {
 function sqlite3_open($filename, $mode = 0666) {
    $handle = sqlite_open($filename, $mode);
    return $handle; }
