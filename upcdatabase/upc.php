@@ -107,6 +107,8 @@ if($_GET['act']=="csv"||$_GET['act']=="dumpcsv"||
    $_GET['act']=="json"||$_GET['act']=="dumpjson"||
    $_GET['act']=="yaml"||$_GET['act']=="dumpyaml"||
    $_GET['act']=="serialize"||$_GET['act']=="dumpserialize") { 
+   if($disable_dumps===true) { $_GET['act'] = "lookup";
+   header("Location: ".$website_url.$url_file."?act=lookup"); exit(); }
    require("./misc/dumpfile.php"); }
 sqlite3_query($slite3, "VACUUM;");
 sqlite3_close($slite3); ?>

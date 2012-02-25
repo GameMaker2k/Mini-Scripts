@@ -26,12 +26,14 @@ $appmakerurl = "https://github.com/KazukiPrzyborowski/UPC-A-EAN-13-Maker";
 $appmaker = htmlspecialchars("Game Maker 2k");
 $validate_items = true;
 $validate_members = true;
+$disable_dumps = false;
+$sitekeywords = null;
+$sitedescription = null;
+
 $appver = array(2,2,5,"RC 1");
 $upcdatabase = "http://www.upcdatabase.com/item/%s";
 $sitename = $appname;
 $siteauthor = $appmaker;
-$sitekeywords = null;
-$sitedescription = null;
 $table_prefix = $sqlitedatabase."_";
 $sdb_file = $sqlitedatabase.".sdb";
 
@@ -339,5 +341,4 @@ $Text = preg_replace("/(^\s+|\s+$)/","",$Text);
 $Text = trim($Text, "\x00..\x1F");
 $Text = remove_bad_entities($Text);
 return $Text; }
-
 ?>
