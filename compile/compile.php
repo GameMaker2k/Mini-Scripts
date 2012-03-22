@@ -54,6 +54,7 @@ $use_pty = false;
 $other_options = array('suppress_errors' => TRUE, 'bypass_shell' => TRUE);
 $sysname = @php_uname("s")." ".@php_uname("r")." ".@php_uname("m");
 if($sysname=="") { $sysname = PHP_OS; }
+if(file_exists($out_dir."tmp")) { unlink($out_dir."tmp"); }
 
 @ini_set("html_errors", false);
 @ini_set("track_errors", false);
