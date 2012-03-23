@@ -12,7 +12,7 @@
     Copyright 2011-2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2011-2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: compile.php - Last Update: 03/22/2012 Ver. 1.0.0 RC 11 - Author: cooldude2k $
+    $FileInfo: compile.php - Last Update: 03/22/2012 Ver. 1.0.0 RC 12 - Author: cooldude2k $
 */
 
 @ini_set("memory_limit", "-1");
@@ -58,6 +58,10 @@ $other_options = array('suppress_errors' => TRUE, 'bypass_shell' => TRUE);
 $sysname = @php_uname("s")." ".@php_uname("r")." ".@php_uname("m");
 if($sysname=="") { $sysname = PHP_OS; }
 if(file_exists($out_dir."tmp")) { unlink($out_dir."tmp"); }
+$appver = array(1,0,0,"RC 12");
+$appname = htmlspecialchars("GNU GCC Compiler Test");
+$appmakerurl = "https://github.com/GameMaker2k/Mini-Scripts/tree/master/compile";
+$appmaker = htmlspecialchars("Game Maker 2k");
 
 @ini_set("html_errors", false);
 @ini_set("track_errors", false);
@@ -117,6 +121,15 @@ function _format_bytes($a_bytes)
         return round($a_bytes / 1208925819614629174706176, 2) .' YiB';
     }
 }
+
+function version_info($proname,$subver,$ver,$supver,$reltype,$svnver,$showsvn) {
+	$return_var = $proname." ".$reltype." ".$subver.".".$ver.".".$supver;
+	if($showsvn==false) { $showsvn = null; }
+	if($showsvn==true) { $return_var .= " SVN ".$svnver; }
+	if($showsvn!=true&&$showsvn!=null) { $return_var .= " ".$showsvn." ".$svnver; }
+	return $return_var; }
+$appversion = version_info($appname,$appver[0],$appver[1],$appver[2],$appver[3]." Ver.",null,false);
+
 function getTime() {
 $a = explode (' ',microtime());
 return(double) $a[0] + $a[1]; }
@@ -268,7 +281,7 @@ if($_POST['lang']=="other") {
 $cprocess = proc_open(sprintf($_POST['comother'], $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
 $cprocinfo = proc_get_status($cprocess);
 if(is_resource($cprocess)) {
-echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecrunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hidecrunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecrunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecrunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
 echo "Source Code File Size "._format_bytes(filesize($cfname))."<br />\n"; }
 
 /*
@@ -319,7 +332,7 @@ if(is_resource($cprocess)) {
 	//if($clogoutread==""||$clogoutread==null) {
 	//echo "<br />\n"; }
 	if($clogoutread!=""&&$clogoutread!=null) {
-	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideclog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hideclog\">".htmlspecialchars(file_get_contents($clogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
+	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideclog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hideclog\">".htmlspecialchars(file_get_contents($clogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
 
     // It is important that you close any pipes before calling
     // proc_close in order to avoid a deadlock
@@ -334,7 +347,7 @@ if(is_resource($cprocess)) {
 	if($crunout==""||$crunout==null) {
 	echo "<br />\n"; }
 	if($crunout!=""&&$crunout!=null) {
-    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hidecout\">".$crunout."</pre><br />\n<br />\n"; }
+    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecout\">".$crunout."</pre><br />\n<br />\n"; }
 
 echo "<hr /><br />\n";
 
@@ -363,7 +376,7 @@ $old_fsize = filesize($cfout);
 $cprocess = proc_open(sprintf($strip_cmd, $cfout), $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
 $cprocinfo = proc_get_status($cprocess);
 if(is_resource($cprocess)) {
-echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecstripro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hidecstripro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
+echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecstripro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecstripro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
 echo "Old Binary File Size "._format_bytes($old_fsize)."<br />\n";
 clearstatcache();
 
@@ -383,7 +396,7 @@ if(is_resource($cprocess)) {
 	//if($cslogoutread==""||$cslogoutread==null) {
 	//echo "<br />\n"; }
 	if($cslogoutread!=""&&$cslogoutread!=null) {
-	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecslog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hidecslog\">".htmlspecialchars(file_get_contents($cslogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
+	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecslog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecslog\">".htmlspecialchars(file_get_contents($cslogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
 
     // It is important that you close any pipes before calling
     // proc_close in order to avoid a deadlock
@@ -400,7 +413,7 @@ if(is_resource($cprocess)) {
 	if($crunout==""||$crunout==null) {
 	echo "<br />\n"; }
 	if($crunout!=""&&$crunout!=null) {
-    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecsout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hidecsout\">".$crunout."</pre><br />\n<br />\n"; }
+    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecsout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecsout\">".$crunout."</pre><br />\n<br />\n"; }
 
 echo "<hr /><br />\n";
 
@@ -429,7 +442,7 @@ if(!isset($_POST['arg'])) {
 $cprocess = proc_open("\"".$cfout."\"", $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
 if(is_resource($cprocess)) {
 $cprocinfo = proc_get_status($cprocess);
-echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hiderunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hiderunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hiderunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hiderunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
 echo "Binary File Size "._format_bytes(filesize($cfout))."<br />\n"; }
 
 /*
@@ -480,7 +493,7 @@ if(is_resource($cprocess)) {
 	//if($cstdoutread==""||$cstdoutread==null) {
 	//echo "<br />\n"; }
 	if($cstdoutread!=""&&$cstdoutread!=null) {
-	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidestdout'); return false;\">Show Program Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hidestdout\">".htmlspecialchars(file_get_contents($cstdout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
+	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidestdout'); return false;\">Show Program Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidestdout\">".htmlspecialchars(file_get_contents($cstdout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
 
     // It is important that you close any pipes before calling
     // proc_close in order to avoid a deadlock
@@ -495,7 +508,7 @@ if(is_resource($cprocess)) {
 	if($crunout==""||$crunout==null) {
 	echo "<br />\n"; }
 	if($crunout!=""&&$crunout!=null) {
-    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideprout'); return false;\">Show Program Output</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none;\" id=\"hideprout\">".$crunout."</pre><br />\n"; }
+    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideprout'); return false;\">Show Program Output</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hideprout\">".$crunout."</pre><br />\n"; }
 
 echo "<hr /><br />\n";
 
@@ -572,6 +585,8 @@ EOD;
 <input style="display: none;" type="hidden" id="act" name="act" value="compile" />
 <br /><input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="submit" />
 </form>
+
+<div style="text-align: center; vertical-align: middle;"><address><a href="<?php echo $appmakerurl; ?>" title="<?php echo $appname; ?> by <?php echo $appmaker; ?>"><?php echo $appname; ?></a> ver. <?php echo $appver[0].".".$appver[1].".".$appver[2]." ".$appver[3]; ?></address></div>
 
  </body>
 </html>
