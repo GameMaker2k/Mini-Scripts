@@ -35,7 +35,7 @@ $gpp_cmd = "\"C:\MinGW\bin\g++.exe\" -pass-exit-codes -v -x c++ \"%s\" -o \"%s\"
 $strip_cmd = "\"C:\MinGW\bin\strip.exe\" -v --verbose --preserve-dates --strip-all --strip-unneeded --discard-all --discard-locals \"%s\"";
 $fortran_cmd = "\"C:\MinGW\bin\gfortran.exe\" -pass-exit-codes -v -x none \"%s\" -o \"%s\"";
 $cmd_path = "C:\MinGW\bin;C:\Windows\;C:\Windows\system32;"; 
-$cmd_env_vars = array(null); }
+$cmd_env_vars = array("COMSPEC" => getenv("COMSPEC"), "HOMEDRIVE" => getenv("HOMEDRIVE"), "PROGRAMFILES" => getenv("PROGRAMFILES"), "PATHEXT" => getenv("PATHEXT"), "SYSTEMDRIVE" => getenv("SYSTEMDRIVE"), "SYSTEMROOT" => getenv("SYSTEMROOT"), "TMP" => getenv("TMP"), "TEMP" => getenv("TEMP")); }
 if(PHP_OS!="WINNT"&&PHP_OS!="WIN32") {
 $file_ext = "";
 $gcc_cmd = "\"/usr/bin/gcc\" -pass-exit-codes -v -x c \"%s\" -o \"%s\"";
