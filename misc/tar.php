@@ -78,6 +78,6 @@ function tar($tarfile,$indir1="./",$indir2="") {
 function itar($tarfile,$indir1="./",$indir2="") {
 	return tar($tarfile,$indir1,$indir2); }
 echo "<pre>\n<hr />";
-itar("./iDB.tar", "iDB/*", "");
+itar("./iDB.tar", "InTar/*", "");
 echo "</pre>";
 ?>
