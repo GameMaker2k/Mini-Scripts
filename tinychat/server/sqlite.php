@@ -12,7 +12,7 @@
     Copyright 2012 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2012 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: sqlite.php - Last Update: 12/22/2012 Ver. 1.0.0 - Author: cooldude2k $
+    $FileInfo: sqlite.php - Last Update: 12/24/2012 Ver. 1.0.0 - Author: cooldude2k $
 */
 
 $ScriptFileName = basename($_SERVER['SCRIPT_NAME']);
@@ -84,11 +84,11 @@ if($_GET['act']=="message"&&(!isset($_SESSION['userid'])||!isset($_SESSION['user
 	echo "{error:message};"; exit(); }
 if($_GET['act']=="view"&&(!isset($_SESSION['userid'])||!isset($_SESSION['username'])||!isset($roomname))) { 
 	echo "{error:room};"; exit(); }
-$slite3 = sqlite3_open("./".$roomname.".sdb");
-$tablecheck1 = @sqlite3_query($slite3, "SELECT * FROM \"".$sqlprefix."members\""); 
+$sqlite_tinychat = sqlite3_open("./".$roomname.".sdb");
+$tablecheck1 = @sqlite3_query($sqlite_tinychat, "SELECT * FROM \"".$sqlprefix."members\""); 
 if($tablecheck1===false) {
-sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
-sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
+sqlite3_query($sqlite_tinychat, "PRAGMA auto_vacuum = 1;");
+sqlite3_query($sqlite_tinychat, "PRAGMA encoding = \"UTF-8\";");
 $query = "CREATE TABLE \"".$sqlprefix."members\" (\n".
 "  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
 "  \"name\" VARCHAR(150) UNIQUE NOT NULL default '',\n".
@@ -101,11 +101,11 @@ $query = "CREATE TABLE \"".$sqlprefix."members\" (\n".
 "  \"admin\" VARCHAR(20) NOT NULL default '',\n".
 "  \"ip\" VARCHAR(50) NOT NULL default ''\n".
 ");";
-sqlite3_query($slite3, $query); }
-$tablecheck2 = @sqlite3_query($slite3, "SELECT * FROM \"".$sqlprefix."messages\""); 
+sqlite3_query($sqlite_tinychat, $query); }
+$tablecheck2 = @sqlite3_query($sqlite_tinychat, "SELECT * FROM \"".$sqlprefix."messages\""); 
 if($tablecheck2===false) {
-sqlite3_query($slite3, "PRAGMA auto_vacuum = 1;");
-sqlite3_query($slite3, "PRAGMA encoding = \"UTF-8\";");
+sqlite3_query($sqlite_tinychat, "PRAGMA auto_vacuum = 1;");
+sqlite3_query($sqlite_tinychat, "PRAGMA encoding = \"UTF-8\";");
 $query = "CREATE TABLE \"".$sqlprefix."messages\" (\n".
 "  \"id\" INTEGER PRIMARY KEY NOT NULL,\n".
 "  \"userid\" INTEGER NOT NULL default '0',\n".
@@ -114,5 +114,5 @@ $query = "CREATE TABLE \"".$sqlprefix."messages\" (\n".
 "  \"message\" TEXT NOT NULL,\n".
 "  \"ip\" VARCHAR(50) NOT NULL default ''\n".
 ");";
-sqlite3_query($slite3, $query); }
+sqlite3_query($sqlite_tinychat, $query); }
 ?>
