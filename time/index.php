@@ -1,11 +1,11 @@
 <?php
-header("Content-type: text/html; charset=ISO-8859-1"); 
+header("Content-type: text/html; charset=UTF-8"); 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title> The World Time Server Test </title>
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="generator" content="Bluefish 1.0.7"/>
   <meta name="author" content="Cool Dude 2k"/>
   <meta name="keywords" content="The World Time Server, iDB, Test, Site, URLs, iDB Test Site URLs, Cool Dude 2k" />
@@ -14,10 +14,12 @@ header("Content-type: text/html; charset=ISO-8859-1");
 
  <body>
 <?php
-$WorldTime = file_get_contents("http://www.worldtimeserver.com/city.html");
+$opts = array('http'=>array('header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0\r\n")); 
+$context = stream_context_create($opts);
+$WorldTime = file_get_contents("http://www.worldtimeserver.com/city.html",false,$context);
 $WorldTime = preg_replace("/aspxcity/", "aspx?city", $WorldTime);
 $WorldTime = preg_replace('/\s\s+/', " ", $WorldTime);
-$prepreg[1] = preg_quote("<a href=\"current_time_in_","/"); $prepreg[2] = preg_quote(".aspx?city=","/");
+$prepreg[1] = preg_quote("<a href=\"/current_time_in_","/"); $prepreg[2] = preg_quote(".aspx?city=","/");
 $prepreg[3] = preg_quote("\">","/"); $prepreg[4] = preg_quote("</a><br />","/");
 preg_match_all("/".$prepreg[1]."(.*)".$prepreg[2]."(.*)".$prepreg[3]."(.*)".$prepreg[4]."/isU", $WorldTime, $clist);
 $CCode = $clist[1];
@@ -41,7 +43,9 @@ echo "<option value=\"".$CCode[$i]."&amp;".$SCode[$i]."\">".$LCode[$i]."</option
 <?php if(isset($_GET['CTimeGet'])) {
 $WorldTime = null; $prepreg = null;
 $CTimeExp = explode("&",$_GET['CTimeGet']);
-$WorldTime = file_get_contents("http://www.worldtimeserver.com/current_time_in_".$CTimeExp[0].".aspx?city=".$CTimeExp[1]);
+$opts = array('http'=>array('header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0\r\n")); 
+$context = stream_context_create($opts);
+$WorldTime = file_get_contents("http://www.worldtimeserver.com/current_time_in_".$CTimeExp[0].".aspx?city=".$CTimeExp[1],false,$context);
 $prepreg[1] = preg_quote("<td valign=\"top\">","/"); $prepreg[2] = preg_quote("</td>","/");
 preg_match_all("/".$prepreg[1]."(.*)".$prepreg[2]."/isU", $WorldTime, $timeget);
 $EUpreg["PL"] = preg_quote("images/maps/","/");
