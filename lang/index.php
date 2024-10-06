@@ -13,29 +13,54 @@
 
     $FileInfo: belarus.php - Last Update: 8/22/2009 Version 8 - Author: cooldude2k $
 */
-@ob_clean(); @ini_set('default_charset', 'iso-8859-1');
-@header("Content-Type: text/html; charset=iso-8859-1"); 
-if(isset($_GET['act'])&&!isset($_POST['act'])) { $_POST['act'] = $_GET['act']; }
-if(!isset($_GET['act'])) { $_GET['act'] = null; }
-if(!isset($_POST['act'])) { $_POST['act'] = null; }
-if($_POST['act']=="en_be"||$_POST['act']=="be_en"||$_GET['act']=="lang:be") {
-	require("belarus.php"); die(); }
-if($_POST['act']=="en_bg"||$_POST['act']=="bg_en"||$_GET['act']=="lang:bg") {
-	require("bulgaria.php"); die(); }
-if($_POST['act']=="en_ky"||$_POST['act']=="ky_en"||$_GET['act']=="lang:ky") {
-	require("kyrgyzstan.php"); die(); }
-if($_POST['act']=="en_mk"||$_POST['act']=="mk_en"||$_GET['act']=="lang:mk") {
-	require("macedonia.php"); die(); }
-if($_POST['act']=="en_ru"||$_POST['act']=="ru_en"||$_GET['act']=="lang:ru") {
-	require("russia.php"); die(); }
-if($_POST['act']=="en_uk"||$_POST['act']=="uk_en"||$_GET['act']=="lang:uk") {
-	require("ukraine.php"); die(); }
-if($_POST['act']=="en_cy"||$_POST['act']=="cy_en"||$_GET['act']=="lang:cy") {
-	require("test.php"); die(); } 
-if($_POST['act']=="en_sla"||$_POST['act']=="sla_en"||$_GET['act']=="lang:sla") {
-	require("rusyn.php"); die(); }
-if($_POST['act']=="en_sr"||$_POST['act']=="sr_en"||$_GET['act']=="lang:sr") {
-	require("serbia.php"); die(); }
+@ob_clean();
+@ini_set('default_charset', 'iso-8859-1');
+@header("Content-Type: text/html; charset=iso-8859-1");
+if (isset($_GET['act']) && !isset($_POST['act'])) {
+    $_POST['act'] = $_GET['act'];
+}
+if (!isset($_GET['act'])) {
+    $_GET['act'] = null;
+}
+if (!isset($_POST['act'])) {
+    $_POST['act'] = null;
+}
+if ($_POST['act'] == "en_be" || $_POST['act'] == "be_en" || $_GET['act'] == "lang:be") {
+    require("belarus.php");
+    die();
+}
+if ($_POST['act'] == "en_bg" || $_POST['act'] == "bg_en" || $_GET['act'] == "lang:bg") {
+    require("bulgaria.php");
+    die();
+}
+if ($_POST['act'] == "en_ky" || $_POST['act'] == "ky_en" || $_GET['act'] == "lang:ky") {
+    require("kyrgyzstan.php");
+    die();
+}
+if ($_POST['act'] == "en_mk" || $_POST['act'] == "mk_en" || $_GET['act'] == "lang:mk") {
+    require("macedonia.php");
+    die();
+}
+if ($_POST['act'] == "en_ru" || $_POST['act'] == "ru_en" || $_GET['act'] == "lang:ru") {
+    require("russia.php");
+    die();
+}
+if ($_POST['act'] == "en_uk" || $_POST['act'] == "uk_en" || $_GET['act'] == "lang:uk") {
+    require("ukraine.php");
+    die();
+}
+if ($_POST['act'] == "en_cy" || $_POST['act'] == "cy_en" || $_GET['act'] == "lang:cy") {
+    require("test.php");
+    die();
+}
+if ($_POST['act'] == "en_sla" || $_POST['act'] == "sla_en" || $_GET['act'] == "lang:sla") {
+    require("rusyn.php");
+    die();
+}
+if ($_POST['act'] == "en_sr" || $_POST['act'] == "sr_en" || $_GET['act'] == "lang:sr") {
+    require("serbia.php");
+    die();
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

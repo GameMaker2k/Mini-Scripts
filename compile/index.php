@@ -16,4 +16,3 @@
 */
 
 require("./compile.php");
-?>

@@ -24,26 +24,34 @@
 @header("Content-Type: text/html; charset=UTF-8");
 $clang = "en_US";
 @setlocale(LC_CTYPE, $clang.".UTF-8");
-@ini_set("date.timezone","UTC"); 
-if(!isset($_GET['act'])) { $_GET['act'] = null; }
-if(!isset($_POST['act'])) { $_POST['act'] = null; }
-if(!isset($_POST['code'])) { $_POST['code'] = null; }
-if(PHP_OS=="WINNT"||PHP_OS=="WIN32") {
-$file_ext = ".exe";
-$gcc_cmd = "\"C:\MinGW\bin\gcc.exe\" -pass-exit-codes -v -x c \"%s\" -o \"%s\"";
-$gpp_cmd = "\"C:\MinGW\bin\g++.exe\" -pass-exit-codes -v -x c++ \"%s\" -o \"%s\"";
-$strip_cmd = "\"C:\MinGW\bin\strip.exe\" -v --verbose --preserve-dates --strip-all --strip-unneeded --discard-all --discard-locals \"%s\"";
-$fortran_cmd = "\"C:\MinGW\bin\gfortran.exe\" -pass-exit-codes -v -x none \"%s\" -o \"%s\"";
-$cmd_path = "C:\MinGW\bin;C:\Windows\;C:\Windows\system32;"; 
-$cmd_env_vars = array("COMSPEC" => getenv("COMSPEC"), "HOMEDRIVE" => getenv("HOMEDRIVE"), "PROGRAMFILES" => getenv("PROGRAMFILES"), "PATHEXT" => getenv("PATHEXT"), "SYSTEMDRIVE" => getenv("SYSTEMDRIVE"), "SYSTEMROOT" => getenv("SYSTEMROOT"), "TMP" => getenv("TMP"), "TEMP" => getenv("TEMP")); }
-if(PHP_OS!="WINNT"&&PHP_OS!="WIN32") {
-$file_ext = "";
-$gcc_cmd = "\"/usr/bin/gcc\" -pass-exit-codes -v -x c \"%s\" -o \"%s\"";
-$gpp_cmd = "\"/usr/bin/g++\" -pass-exit-codes -v -x c++ \"%s\" -o \"%s\"";
-$strip_cmd = "\"/usr/bin/strip\" -v --verbose --preserve-dates --strip-all --strip-unneeded --discard-all --discard-locals \"%s\"";
-$fortran_cmd = "\"/usr/bin/gfortran\" -pass-exit-codes -v -x none \"%s\" -o \"%s\"";
-$cmd_path = getenv("PATH");
-$cmd_env_vars = array("TERM" => "xterm", "LANG" => $clang.".UTF-8", "LC_ALL" => $clang.".UTF-8", "TZ" => "UTC"); }
+@ini_set("date.timezone", "UTC");
+if (!isset($_GET['act'])) {
+    $_GET['act'] = null;
+}
+if (!isset($_POST['act'])) {
+    $_POST['act'] = null;
+}
+if (!isset($_POST['code'])) {
+    $_POST['code'] = null;
+}
+if (PHP_OS == "WINNT" || PHP_OS == "WIN32") {
+    $file_ext = ".exe";
+    $gcc_cmd = "\"C:\MinGW\bin\gcc.exe\" -pass-exit-codes -v -x c \"%s\" -o \"%s\"";
+    $gpp_cmd = "\"C:\MinGW\bin\g++.exe\" -pass-exit-codes -v -x c++ \"%s\" -o \"%s\"";
+    $strip_cmd = "\"C:\MinGW\bin\strip.exe\" -v --verbose --preserve-dates --strip-all --strip-unneeded --discard-all --discard-locals \"%s\"";
+    $fortran_cmd = "\"C:\MinGW\bin\gfortran.exe\" -pass-exit-codes -v -x none \"%s\" -o \"%s\"";
+    $cmd_path = "C:\MinGW\bin;C:\Windows\;C:\Windows\system32;";
+    $cmd_env_vars = array("COMSPEC" => getenv("COMSPEC"), "HOMEDRIVE" => getenv("HOMEDRIVE"), "PROGRAMFILES" => getenv("PROGRAMFILES"), "PATHEXT" => getenv("PATHEXT"), "SYSTEMDRIVE" => getenv("SYSTEMDRIVE"), "SYSTEMROOT" => getenv("SYSTEMROOT"), "TMP" => getenv("TMP"), "TEMP" => getenv("TEMP"));
+}
+if (PHP_OS != "WINNT" && PHP_OS != "WIN32") {
+    $file_ext = "";
+    $gcc_cmd = "\"/usr/bin/gcc\" -pass-exit-codes -v -x c \"%s\" -o \"%s\"";
+    $gpp_cmd = "\"/usr/bin/g++\" -pass-exit-codes -v -x c++ \"%s\" -o \"%s\"";
+    $strip_cmd = "\"/usr/bin/strip\" -v --verbose --preserve-dates --strip-all --strip-unneeded --discard-all --discard-locals \"%s\"";
+    $fortran_cmd = "\"/usr/bin/gfortran\" -pass-exit-codes -v -x none \"%s\" -o \"%s\"";
+    $cmd_path = getenv("PATH");
+    $cmd_env_vars = array("TERM" => "xterm", "LANG" => $clang.".UTF-8", "LC_ALL" => $clang.".UTF-8", "TZ" => "UTC");
+}
 $c_ext = ".c";
 $cpp_ext = ".cxx";
 $fortran_ext = ".f";
@@ -54,10 +62,14 @@ $out_dir = "./tmp/";
 $other_cmd = $gcc_cmd;
 $other_ext = $c_ext;
 $use_pty = false;
-$other_options = array('suppress_errors' => TRUE, 'bypass_shell' => TRUE);
+$other_options = array('suppress_errors' => true, 'bypass_shell' => true);
 $sysname = @php_uname("s")." ".@php_uname("r")." ".@php_uname("m");
-if($sysname=="") { $sysname = PHP_OS; }
-if(file_exists($out_dir."tmp")) { unlink($out_dir."tmp"); }
+if ($sysname == "") {
+    $sysname = PHP_OS;
+}
+if (file_exists($out_dir."tmp")) {
+    unlink($out_dir."tmp");
+}
 $appver = array(1,0,0,"RC 12");
 $appname = htmlspecialchars("GNU GCC Compiler Test");
 $appmakerurl = "https://github.com/GameMaker2k/Mini-Scripts/tree/master/compile";
@@ -70,25 +82,31 @@ $appmaker = htmlspecialchars("Game Maker 2k");
 @ini_set("display_startup_errors", false);
 @ini_set("docref_ext", "");
 @ini_set("docref_root", "http://php.net/");
-if(!defined("E_DEPRECATED")) { define("E_DEPRECATED", 0); }
+if (!defined("E_DEPRECATED")) {
+    define("E_DEPRECATED", 0);
+}
 @error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-@ini_set("default_mimetype","text/html"); 
+@ini_set("default_mimetype", "text/html");
 @ini_set("session.use_trans_sid", false);
 @ini_set("session.use_cookies", true);
 @ini_set("session.use_only_cookies", true);
-@ini_set("url_rewriter.tags",""); 
+@ini_set("url_rewriter.tags", "");
 @ini_set('zend.ze1_compatibility_mode', 0);
 @ini_set("ignore_user_abort", 1);
-if(function_exists("date_default_timezone_set")) { 
-	@date_default_timezone_set("UTC"); }
+if (function_exists("date_default_timezone_set")) {
+    @date_default_timezone_set("UTC");
+}
 
-if(!isset($_SERVER['HTTP_USER_AGENT'])) {
-	$_SERVER['HTTP_USER_AGENT'] = ""; }
-if(strpos($_SERVER['HTTP_USER_AGENT'], "msie") && 
-	!strpos($_SERVER['HTTP_USER_AGENT'], "opera")){
-	@header("X-UA-Compatible: IE=Edge"); }
-if(strpos($_SERVER['HTTP_USER_AGENT'], "chromeframe")) {
-	@header("X-UA-Compatible: IE=Edge,chrome=1"); }
+if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+    $_SERVER['HTTP_USER_AGENT'] = "";
+}
+if (strpos($_SERVER['HTTP_USER_AGENT'], "msie") &&
+    !strpos($_SERVER['HTTP_USER_AGENT'], "opera")) {
+    @header("X-UA-Compatible: IE=Edge");
+}
+if (strpos($_SERVER['HTTP_USER_AGENT'], "chromeframe")) {
+    @header("X-UA-Compatible: IE=Edge,chrome=1");
+}
 @header("Cache-Control: private, no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0");
 @header("Pragma: private, no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0");
 @header("P3P: CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\"");
@@ -122,17 +140,27 @@ function _format_bytes($a_bytes)
     }
 }
 
-function version_info($proname,$subver,$ver,$supver,$reltype,$svnver,$showsvn) {
-	$return_var = $proname." ".$reltype." ".$subver.".".$ver.".".$supver;
-	if($showsvn==false) { $showsvn = null; }
-	if($showsvn==true) { $return_var .= " SVN ".$svnver; }
-	if($showsvn!=true&&$showsvn!=null) { $return_var .= " ".$showsvn." ".$svnver; }
-	return $return_var; }
-$appversion = version_info($appname,$appver[0],$appver[1],$appver[2],$appver[3]." Ver.",null,false);
+function version_info($proname, $subver, $ver, $supver, $reltype, $svnver, $showsvn)
+{
+    $return_var = $proname." ".$reltype." ".$subver.".".$ver.".".$supver;
+    if ($showsvn == false) {
+        $showsvn = null;
+    }
+    if ($showsvn == true) {
+        $return_var .= " SVN ".$svnver;
+    }
+    if ($showsvn != true && $showsvn != null) {
+        $return_var .= " ".$showsvn." ".$svnver;
+    }
+    return $return_var;
+}
+$appversion = version_info($appname, $appver[0], $appver[1], $appver[2], $appver[3]." Ver.", null, false);
 
-function getTime() {
-$a = explode (' ',microtime());
-return(double) $a[0] + $a[1]; }
+function getTime()
+{
+    $a = explode(' ', microtime());
+    return(float) $a[0] + $a[1];
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -196,338 +224,425 @@ return(double) $a[0] + $a[1]; }
 <?php
 $filechck = str_replace("/", DIRECTORY_SEPARATOR, preg_replace("/(\/$|\\$)/is", "", $out_dir));
 $windirfix = str_replace("/", DIRECTORY_SEPARATOR, $out_dir);
-if(!file_exists($out_dir)&&!file_exists($filechck)) { 
-	mkdir(str_replace("/", DIRECTORY_SEPARATOR, $out_dir), 0777); }
-if(file_exists($filechck)&&!file_exists($out_dir)&&!is_dir($filechck)) { 
-	unlink($filechck); 
-	mkdir($windirfix, 0777); }
-if(!isset($_GET['act'])) { $_GET['act'] = null; }
-if(!isset($_POST['act'])) { $_POST['act'] = null; }
-if(!isset($_POST['code'])) { $_POST['code'] = null; }
-if(!isset($_POST['lang'])) { $_POST['lang'] = null; }
-if(isset($_GET['act'])&&isset($_POST['act'])&&isset($_POST['code'])&&isset($_POST['lang'])) {
-function make_seed()
-{
-  list($usec, $sec) = explode(' ', microtime());
-  return (float) $sec + ((float) $usec * 100000);
+if (!file_exists($out_dir) && !file_exists($filechck)) {
+    mkdir(str_replace("/", DIRECTORY_SEPARATOR, $out_dir), 0777);
 }
-srand(make_seed());
-$filechck = str_replace("/", DIRECTORY_SEPARATOR, preg_replace("/(\/$|\\$)/is", "", $out_dir));
-$windirfix = str_replace("/", DIRECTORY_SEPARATOR, $out_dir);
-if(!file_exists($out_dir)&&!file_exists($filechck)) { 
-	mkdir(str_replace("/", DIRECTORY_SEPARATOR, $out_dir), 0777); }
-if(file_exists($filechck)&&!file_exists($out_dir)&&!is_dir($filechck)) { 
-	unlink($filechck); 
-	mkdir($windirfix, 0777); }
-$cfname = tempnam($out_dir, uniqid(dechex(rand()), true));
-if(DIRECTORY_SEPARATOR!="/") {
-$cfname = str_replace(DIRECTORY_SEPARATOR, "/", $cfname); }
-$oldcfile = $cfname;
-$cfname_parts = pathinfo($cfname);
-if($_POST['lang']=="c") {
-$cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$c_ext; }
-if($_POST['lang']=="cpp") {
-$cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$cpp_ext; }
-if($_POST['lang']=="fortran") {
-$cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$fortran_ext; }
-if($_POST['lang']=="other") {
-$cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$_POST['extother']; }
-if(file_exists($cfname)) { unlink($cfname); }
-$cfout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$file_ext;
-if(file_exists($cfout)) { unlink($cfout); }
-$clogout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$log_ext;
-if(file_exists($clogout)) { unlink($clogout); } 
-$cslogout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$strip_log_ext;
-if(file_exists($cslogout)) { unlink($cslogout); } 
-$cstdout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$file_stdout;
-if(file_exists($cstdout)) { unlink($cstdout); } 
-$fsize = strlen($_POST['code']);
-chmod($oldcfile, 0666);
-rename($oldcfile, $cfname); 
-chmod($cfname, 0666);
-if(file_exists($oldcfile)) { unlink($oldcfile); }
-if(is_writable($cfname)) {
-if(!$chandle = fopen($cfname, 'a')) {
-echo "Cannot open file ".$cfname; }
-if(fwrite($chandle, $_POST['code'], $fsize) === FALSE) {
-echo "Cannot write to file ".$cfname; }
-fclose($chandle); } 
-else { echo "The file ".$cfname." is not writable"; }
-if(file_exists($cfname)) {
-$pre_cenv = array("PATH" => $cmd_path);
-$cenv = array_merge($cmd_env_vars, $pre_cenv);
-if($use_pty===false||$use_pty==null) {
-$descriptorspec = array(
-   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-   2 => array("file", $clogout, "w+") // stderr is a file to write to
-); }
-if($use_pty===true) {
-$descriptorspec = array(
-   0 => array('pty'),
-   1 => array('pty'),
-   2 => array('pty')
-); }
-if(!isset($_POST['comparg'])) { $_POST['comparg'] = null; }
-$CStart = getTime();
-$cprocess = null;
-if($_POST['lang']=="c") {
-$cprocess = proc_open(sprintf($gcc_cmd, $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
-if($_POST['lang']=="cpp") {
-$cprocess = proc_open(sprintf($gpp_cmd, $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
-if($_POST['lang']=="fortran") {
-$cprocess = proc_open(sprintf($fortran_cmd, $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
-if($_POST['lang']=="other") {
-$cprocess = proc_open(sprintf($_POST['comother'], $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
-$cprocinfo = proc_get_status($cprocess);
-if(is_resource($cprocess)) {
-echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecrunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecrunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
-echo "Source Code File Size "._format_bytes(filesize($cfname))."<br />\n"; }
+if (file_exists($filechck) && !file_exists($out_dir) && !is_dir($filechck)) {
+    unlink($filechck);
+    mkdir($windirfix, 0777);
+}
+if (!isset($_GET['act'])) {
+    $_GET['act'] = null;
+}
+if (!isset($_POST['act'])) {
+    $_POST['act'] = null;
+}
+if (!isset($_POST['code'])) {
+    $_POST['code'] = null;
+}
+if (!isset($_POST['lang'])) {
+    $_POST['lang'] = null;
+}
+if (isset($_GET['act']) && isset($_POST['act']) && isset($_POST['code']) && isset($_POST['lang'])) {
+    function make_seed()
+    {
+        list($usec, $sec) = explode(' ', microtime());
+        return (float) $sec + ((float) $usec * 100000);
+    }
+    srand(make_seed());
+    $filechck = str_replace("/", DIRECTORY_SEPARATOR, preg_replace("/(\/$|\\$)/is", "", $out_dir));
+    $windirfix = str_replace("/", DIRECTORY_SEPARATOR, $out_dir);
+    if (!file_exists($out_dir) && !file_exists($filechck)) {
+        mkdir(str_replace("/", DIRECTORY_SEPARATOR, $out_dir), 0777);
+    }
+    if (file_exists($filechck) && !file_exists($out_dir) && !is_dir($filechck)) {
+        unlink($filechck);
+        mkdir($windirfix, 0777);
+    }
+    $cfname = tempnam($out_dir, uniqid(dechex(rand()), true));
+    if (DIRECTORY_SEPARATOR != "/") {
+        $cfname = str_replace(DIRECTORY_SEPARATOR, "/", $cfname);
+    }
+    $oldcfile = $cfname;
+    $cfname_parts = pathinfo($cfname);
+    if ($_POST['lang'] == "c") {
+        $cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$c_ext;
+    }
+    if ($_POST['lang'] == "cpp") {
+        $cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$cpp_ext;
+    }
+    if ($_POST['lang'] == "fortran") {
+        $cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$fortran_ext;
+    }
+    if ($_POST['lang'] == "other") {
+        $cfname = $cfname_parts['dirname']."/".$cfname_parts['filename'].$_POST['extother'];
+    }
+    if (file_exists($cfname)) {
+        unlink($cfname);
+    }
+    $cfout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$file_ext;
+    if (file_exists($cfout)) {
+        unlink($cfout);
+    }
+    $clogout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$log_ext;
+    if (file_exists($clogout)) {
+        unlink($clogout);
+    }
+    $cslogout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$strip_log_ext;
+    if (file_exists($cslogout)) {
+        unlink($cslogout);
+    }
+    $cstdout = $cfname_parts['dirname']."/".$cfname_parts['filename'].$file_stdout;
+    if (file_exists($cstdout)) {
+        unlink($cstdout);
+    }
+    $fsize = strlen($_POST['code']);
+    chmod($oldcfile, 0666);
+    rename($oldcfile, $cfname);
+    chmod($cfname, 0666);
+    if (file_exists($oldcfile)) {
+        unlink($oldcfile);
+    }
+    if (is_writable($cfname)) {
+        if (!$chandle = fopen($cfname, 'a')) {
+            echo "Cannot open file ".$cfname;
+        }
+        if (fwrite($chandle, $_POST['code'], $fsize) === false) {
+            echo "Cannot write to file ".$cfname;
+        }
+        fclose($chandle);
+    } else {
+        echo "The file ".$cfname." is not writable";
+    }
+    if (file_exists($cfname)) {
+        $pre_cenv = array("PATH" => $cmd_path);
+        $cenv = array_merge($cmd_env_vars, $pre_cenv);
+        if ($use_pty === false || $use_pty == null) {
+            $descriptorspec = array(
+               0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+               1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+               2 => array("file", $clogout, "w+") // stderr is a file to write to
+            );
+        }
+        if ($use_pty === true) {
+            $descriptorspec = array(
+               0 => array('pty'),
+               1 => array('pty'),
+               2 => array('pty')
+            );
+        }
+        if (!isset($_POST['comparg'])) {
+            $_POST['comparg'] = null;
+        }
+        $CStart = getTime();
+        $cprocess = null;
+        if ($_POST['lang'] == "c") {
+            $cprocess = proc_open(sprintf($gcc_cmd, $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
+        }
+        if ($_POST['lang'] == "cpp") {
+            $cprocess = proc_open(sprintf($gpp_cmd, $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
+        }
+        if ($_POST['lang'] == "fortran") {
+            $cprocess = proc_open(sprintf($fortran_cmd, $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
+        }
+        if ($_POST['lang'] == "other") {
+            $cprocess = proc_open(sprintf($_POST['comother'], $cfname, $cfout)." ".$_POST['comparg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
+        }
+        $cprocinfo = proc_get_status($cprocess);
+        if (is_resource($cprocess)) {
+            echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecrunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecrunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+            echo "Source Code File Size "._format_bytes(filesize($cfname))."<br />\n";
+        }
 
-/*
-$ci = 0;
-if(!isset($_POST['comstdin'])) {
-$comstdinexp = null;
-$cprocount = 0; }
-if(isset($_POST['comstdin'])) {
-$comstdinexp = explode("\n", $_POST['comstdin']); 
-$cprocount = count($comstdinexp); }
-*/
-$ci = 0;
-if(isset($_POST['comstdin'])) {
-$comstdinexp = explode("\n", $_POST['comstdin']); 
-$cprocount = count($comstdinexp);
-while ($ci < $cprocount) {
-$comstdinexp[$ci] = trim($comstdinexp[$ci]);
-	++$ci; } 
-$_POST['comstdin'] = implode("\n", $comstdinexp); }
-if(is_resource($cprocess)) {
-    // $pipes now looks like this:
-    // 0 => writeable handle connected to child stdin
-    // 1 => readable handle connected to child stdout
-    // Any error output will be appended to /tmp/error-output.txt
-
-
-/*
-	while ($ci < $cprocount) {
-    fwrite($pipes[0], trim($comstdinexp[$ci]));
-	++$ci; }
-
-    fwrite($pipes[0], null);
-    fclose($pipes[0]);
-*/
-
-	if(isset($_POST['comstdin'])) {
-    fwrite($pipes[0], $_POST['comstdin']);
-    fclose($pipes[0]); }
-
-	if(!isset($_POST['comstdin'])) {
-    fwrite($pipes[0], null);
-    fclose($pipes[0]); }
-
-    $crunout = htmlspecialchars(stream_get_contents($pipes[1]), ENT_COMPAT | ENT_HTML401, "UTF-8");
-    fclose($pipes[1]);
-
-	$clogoutread = file_get_contents($clogout);
-	//if($clogoutread==""||$clogoutread==null) {
-	//echo "<br />\n"; }
-	if($clogoutread!=""&&$clogoutread!=null) {
-	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideclog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hideclog\">".htmlspecialchars(file_get_contents($clogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
-
-    // It is important that you close any pipes before calling
-    // proc_close in order to avoid a deadlock
-    $return_value = proc_close($cprocess);
-
-	echo "System Info ".$sysname."<br />\n";
-	echo "Current Process ID ".$cprocinfo['pid']."<br />\n";
-    echo "Command Returned ".$return_value."<br />\n";
-    $CEnd = getTime();
-    echo "Execution Time ".number_format(($CEnd - $CStart),2)." secs<br />\n";
-
-	if($crunout==""||$crunout==null) {
-	echo "<br />\n"; }
-	if($crunout!=""&&$crunout!=null) {
-    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecout\">".$crunout."</pre><br />\n<br />\n"; }
-
-echo "<hr /><br />\n";
-
-} }
-
-if(file_exists($cfout)) {
-
-if($_POST['runstrip']=="yes") {
-$pre_cenv = array("PATH" => $cmd_path);
-$cenv = array_merge($cmd_env_vars, $pre_cenv);
-if($use_pty===false||$use_pty==null) {
-$descriptorspec = array(
-   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-   2 => array("file", $cslogout, "w+") // stderr is a file to write to
-); }
-if($use_pty===true) {
-$descriptorspec = array(
-   0 => array('pty'),
-   1 => array('pty'),
-   2 => array('pty')
-); }
-$CStart = getTime();
-$cprocess = null;
-$old_fsize = filesize($cfout);
-$cprocess = proc_open(sprintf($strip_cmd, $cfout), $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
-$cprocinfo = proc_get_status($cprocess);
-if(is_resource($cprocess)) {
-echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecstripro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecstripro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
-echo "Old Binary File Size "._format_bytes($old_fsize)."<br />\n";
-clearstatcache();
-
-if(is_resource($cprocess)) {
-    // $pipes now looks like this:
-    // 0 => writeable handle connected to child stdin
-    // 1 => readable handle connected to child stdout
-    // Any error output will be appended to /tmp/error-output.txt
-
-    fwrite($pipes[0], null);
-    fclose($pipes[0]);
-
-    $crunout = htmlspecialchars(stream_get_contents($pipes[1]), ENT_COMPAT | ENT_HTML401, "UTF-8");
-    fclose($pipes[1]);
-
-	$cslogoutread = file_get_contents($cslogout);
-	//if($cslogoutread==""||$cslogoutread==null) {
-	//echo "<br />\n"; }
-	if($cslogoutread!=""&&$cslogoutread!=null) {
-	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecslog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecslog\">".htmlspecialchars(file_get_contents($cslogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
-
-    // It is important that you close any pipes before calling
-    // proc_close in order to avoid a deadlock
-    $return_value = proc_close($cprocess);
-
-    echo "New Binary File Size "._format_bytes(filesize($cfout))."<br />\n";
-    clearstatcache();
-	echo "System Info ".$sysname."<br />\n";
-	echo "Current Process ID ".$cprocinfo['pid']."<br />\n";
-    echo "Command Returned ".$return_value."<br />\n";
-    $CEnd = getTime();
-    echo "Execution Time ".number_format(($CEnd - $CStart),2)." secs<br />\n";
-
-	if($crunout==""||$crunout==null) {
-	echo "<br />\n"; }
-	if($crunout!=""&&$crunout!=null) {
-    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecsout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecsout\">".$crunout."</pre><br />\n<br />\n"; }
-
-echo "<hr /><br />\n";
-
-} }
-
-chmod($cfname, 0777);
-$pre_cenv = array("PATH" => $cfname_parts['dirname'].PATH_SEPARATOR.$cmd_path);
-$cenv = array_merge($cmd_env_vars, $pre_cenv);
-if($use_pty===false||$use_pty==null) {
-$descriptorspec = array(
-   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-   2 => array("file", $clogout, "w+") // stderr is a file to write to
-); }
-if($use_pty===true) {
-$descriptorspec = array(
-   0 => array('pty'),
-   1 => array('pty'),
-   2 => array('pty')
-); }
-$ProStart = getTime();
-$cprocess = null;
-if(isset($_POST['arg'])) {
-$cprocess = proc_open("\"".$cfout."\" ".$_POST['arg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
-if(!isset($_POST['arg'])) {
-$cprocess = proc_open("\"".$cfout."\"", $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options); }
-if(is_resource($cprocess)) {
-$cprocinfo = proc_get_status($cprocess);
-echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hiderunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hiderunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
-echo "Binary File Size "._format_bytes(filesize($cfout))."<br />\n"; }
-
-/*
-$ci = 0;
-if(!isset($_POST['stdin'])) {
-$stdinexp = null;
-$cprocount = 0; }
-if(isset($_POST['stdin'])) {
-$stdinexp = explode("\n", $_POST['stdin']); 
-$cprocount = count($stdinexp); }
-*/
-$ci = 0;
-if(isset($_POST['stdin'])) {
-$stdinexp = explode("\n", $_POST['stdin']); 
-$cprocount = count($stdinexp);
-while ($ci < $cprocount) {
-$stdinexp[$ci] = trim($stdinexp[$ci]);
-	++$ci; } 
-$_POST['stdin'] = implode("\n", $stdinexp); }
-if(is_resource($cprocess)) {
-    // $pipes now looks like this:
-    // 0 => writeable handle connected to child stdin
-    // 1 => readable handle connected to child stdout
-    // Any error output will be appended to /tmp/error-output.txt
+        /*
+        $ci = 0;
+        if(!isset($_POST['comstdin'])) {
+        $comstdinexp = null;
+        $cprocount = 0; }
+        if(isset($_POST['comstdin'])) {
+        $comstdinexp = explode("\n", $_POST['comstdin']);
+        $cprocount = count($comstdinexp); }
+        */
+        $ci = 0;
+        if (isset($_POST['comstdin'])) {
+            $comstdinexp = explode("\n", $_POST['comstdin']);
+            $cprocount = count($comstdinexp);
+            while ($ci < $cprocount) {
+                $comstdinexp[$ci] = trim($comstdinexp[$ci]);
+                ++$ci;
+            }
+            $_POST['comstdin'] = implode("\n", $comstdinexp);
+        }
+        if (is_resource($cprocess)) {
+            // $pipes now looks like this:
+            // 0 => writeable handle connected to child stdin
+            // 1 => readable handle connected to child stdout
+            // Any error output will be appended to /tmp/error-output.txt
 
 
-/*
-	while ($ci < $cprocount) {
-    fwrite($pipes[0], trim($stdinexp[$ci]));
-	++$ci; }
+            /*
+                while ($ci < $cprocount) {
+                fwrite($pipes[0], trim($comstdinexp[$ci]));
+                ++$ci; }
 
-    fwrite($pipes[0], null);
-    fclose($pipes[0]);
-*/
+                fwrite($pipes[0], null);
+                fclose($pipes[0]);
+            */
 
-	if(isset($_POST['stdin'])) {
-    fwrite($pipes[0], $_POST['stdin']);
-    fclose($pipes[0]); }
+            if (isset($_POST['comstdin'])) {
+                fwrite($pipes[0], $_POST['comstdin']);
+                fclose($pipes[0]);
+            }
 
-	if(!isset($_POST['stdin'])) {
-    fwrite($pipes[0], null);
-    fclose($pipes[0]); }
+            if (!isset($_POST['comstdin'])) {
+                fwrite($pipes[0], null);
+                fclose($pipes[0]);
+            }
 
-    $crunout = htmlspecialchars(stream_get_contents($pipes[1]), ENT_COMPAT | ENT_HTML401, "UTF-8");
-    fclose($pipes[1]);
+            $crunout = htmlspecialchars(stream_get_contents($pipes[1]), ENT_COMPAT | ENT_HTML401, "UTF-8");
+            fclose($pipes[1]);
 
-	$cstdoutread = file_get_contents($cstdout);
-	//if($cstdoutread==""||$cstdoutread==null) {
-	//echo "<br />\n"; }
-	if($cstdoutread!=""&&$cstdoutread!=null) {
-	echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidestdout'); return false;\">Show Program Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidestdout\">".htmlspecialchars(file_get_contents($cstdout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n"; }
+            $clogoutread = file_get_contents($clogout);
+            //if($clogoutread==""||$clogoutread==null) {
+            //echo "<br />\n"; }
+            if ($clogoutread != "" && $clogoutread != null) {
+                echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideclog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hideclog\">".htmlspecialchars(file_get_contents($clogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+            }
 
-    // It is important that you close any pipes before calling
-    // proc_close in order to avoid a deadlock
-    $return_value = proc_close($cprocess);
+            // It is important that you close any pipes before calling
+            // proc_close in order to avoid a deadlock
+            $return_value = proc_close($cprocess);
 
-	echo "System Info ".$sysname."<br />\n";
-	echo "Current Process ID ".$cprocinfo['pid']."<br />\n";
-    echo "Command Returned ".$return_value."<br />\n";
-    $ProEnd = getTime();
-    echo "Execution Time ".number_format(($ProEnd - $ProStart),2)." secs<br />\n";
+            echo "System Info ".$sysname."<br />\n";
+            echo "Current Process ID ".$cprocinfo['pid']."<br />\n";
+            echo "Command Returned ".$return_value."<br />\n";
+            $CEnd = getTime();
+            echo "Execution Time ".number_format(($CEnd - $CStart), 2)." secs<br />\n";
 
-	if($crunout==""||$crunout==null) {
-	echo "<br />\n"; }
-	if($crunout!=""&&$crunout!=null) {
-    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideprout'); return false;\">Show Program Output</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hideprout\">".$crunout."</pre><br />\n"; }
+            if ($crunout == "" || $crunout == null) {
+                echo "<br />\n";
+            }
+            if ($crunout != "" && $crunout != null) {
+                echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecout\">".$crunout."</pre><br />\n<br />\n";
+            }
 
-echo "<hr /><br />\n";
+            echo "<hr /><br />\n";
 
-} }
+        }
+    }
 
-if(file_exists($cfname)) { unlink($cfname); }
-if(file_exists($cfout)) { unlink($cfout); }
-if(file_exists($clogout)) { unlink($clogout); } 
-if(file_exists($cslogout)) { unlink($cslogout); } 
-if(file_exists($cstdout)) { unlink($cstdout); } }
+    if (file_exists($cfout)) {
+
+        if ($_POST['runstrip'] == "yes") {
+            $pre_cenv = array("PATH" => $cmd_path);
+            $cenv = array_merge($cmd_env_vars, $pre_cenv);
+            if ($use_pty === false || $use_pty == null) {
+                $descriptorspec = array(
+                   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+                   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+                   2 => array("file", $cslogout, "w+") // stderr is a file to write to
+                );
+            }
+            if ($use_pty === true) {
+                $descriptorspec = array(
+                   0 => array('pty'),
+                   1 => array('pty'),
+                   2 => array('pty')
+                );
+            }
+            $CStart = getTime();
+            $cprocess = null;
+            $old_fsize = filesize($cfout);
+            $cprocess = proc_open(sprintf($strip_cmd, $cfout), $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
+            $cprocinfo = proc_get_status($cprocess);
+            if (is_resource($cprocess)) {
+                echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecstripro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecstripro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+            }
+            echo "Old Binary File Size "._format_bytes($old_fsize)."<br />\n";
+            clearstatcache();
+
+            if (is_resource($cprocess)) {
+                // $pipes now looks like this:
+                // 0 => writeable handle connected to child stdin
+                // 1 => readable handle connected to child stdout
+                // Any error output will be appended to /tmp/error-output.txt
+
+                fwrite($pipes[0], null);
+                fclose($pipes[0]);
+
+                $crunout = htmlspecialchars(stream_get_contents($pipes[1]), ENT_COMPAT | ENT_HTML401, "UTF-8");
+                fclose($pipes[1]);
+
+                $cslogoutread = file_get_contents($cslogout);
+                //if($cslogoutread==""||$cslogoutread==null) {
+                //echo "<br />\n"; }
+                if ($cslogoutread != "" && $cslogoutread != null) {
+                    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecslog'); return false;\">Show Compile Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecslog\">".htmlspecialchars(file_get_contents($cslogout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+                }
+
+                // It is important that you close any pipes before calling
+                // proc_close in order to avoid a deadlock
+                $return_value = proc_close($cprocess);
+
+                echo "New Binary File Size "._format_bytes(filesize($cfout))."<br />\n";
+                clearstatcache();
+                echo "System Info ".$sysname."<br />\n";
+                echo "Current Process ID ".$cprocinfo['pid']."<br />\n";
+                echo "Command Returned ".$return_value."<br />\n";
+                $CEnd = getTime();
+                echo "Execution Time ".number_format(($CEnd - $CStart), 2)." secs<br />\n";
+
+                if ($crunout == "" || $crunout == null) {
+                    echo "<br />\n";
+                }
+                if ($crunout != "" && $crunout != null) {
+                    echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidecsout'); return false;\">Show Compile Output</a><pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidecsout\">".$crunout."</pre><br />\n<br />\n";
+                }
+
+                echo "<hr /><br />\n";
+
+            }
+        }
+
+        chmod($cfname, 0777);
+        $pre_cenv = array("PATH" => $cfname_parts['dirname'].PATH_SEPARATOR.$cmd_path);
+        $cenv = array_merge($cmd_env_vars, $pre_cenv);
+        if ($use_pty === false || $use_pty == null) {
+            $descriptorspec = array(
+               0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+               1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+               2 => array("file", $clogout, "w+") // stderr is a file to write to
+            );
+        }
+        if ($use_pty === true) {
+            $descriptorspec = array(
+               0 => array('pty'),
+               1 => array('pty'),
+               2 => array('pty')
+            );
+        }
+        $ProStart = getTime();
+        $cprocess = null;
+        if (isset($_POST['arg'])) {
+            $cprocess = proc_open("\"".$cfout."\" ".$_POST['arg'], $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
+        }
+        if (!isset($_POST['arg'])) {
+            $cprocess = proc_open("\"".$cfout."\"", $descriptorspec, $pipes, $cfname_parts['dirname'], $cenv, $other_options);
+        }
+        if (is_resource($cprocess)) {
+            $cprocinfo = proc_get_status($cprocess);
+            echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hiderunpro'); return false;\">Show Command Running</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hiderunpro\">".htmlspecialchars($cprocinfo['command'], ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+            echo "Binary File Size "._format_bytes(filesize($cfout))."<br />\n";
+        }
+
+        /*
+        $ci = 0;
+        if(!isset($_POST['stdin'])) {
+        $stdinexp = null;
+        $cprocount = 0; }
+        if(isset($_POST['stdin'])) {
+        $stdinexp = explode("\n", $_POST['stdin']);
+        $cprocount = count($stdinexp); }
+        */
+        $ci = 0;
+        if (isset($_POST['stdin'])) {
+            $stdinexp = explode("\n", $_POST['stdin']);
+            $cprocount = count($stdinexp);
+            while ($ci < $cprocount) {
+                $stdinexp[$ci] = trim($stdinexp[$ci]);
+                ++$ci;
+            }
+            $_POST['stdin'] = implode("\n", $stdinexp);
+        }
+        if (is_resource($cprocess)) {
+            // $pipes now looks like this:
+            // 0 => writeable handle connected to child stdin
+            // 1 => readable handle connected to child stdout
+            // Any error output will be appended to /tmp/error-output.txt
+
+
+            /*
+                while ($ci < $cprocount) {
+                fwrite($pipes[0], trim($stdinexp[$ci]));
+                ++$ci; }
+
+                fwrite($pipes[0], null);
+                fclose($pipes[0]);
+            */
+
+            if (isset($_POST['stdin'])) {
+                fwrite($pipes[0], $_POST['stdin']);
+                fclose($pipes[0]);
+            }
+
+            if (!isset($_POST['stdin'])) {
+                fwrite($pipes[0], null);
+                fclose($pipes[0]);
+            }
+
+            $crunout = htmlspecialchars(stream_get_contents($pipes[1]), ENT_COMPAT | ENT_HTML401, "UTF-8");
+            fclose($pipes[1]);
+
+            $cstdoutread = file_get_contents($cstdout);
+            //if($cstdoutread==""||$cstdoutread==null) {
+            //echo "<br />\n"; }
+            if ($cstdoutread != "" && $cstdoutread != null) {
+                echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hidestdout'); return false;\">Show Program Log</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hidestdout\">".htmlspecialchars(file_get_contents($cstdout), ENT_COMPAT | ENT_HTML401, "UTF-8")."</pre>\n";
+            }
+
+            // It is important that you close any pipes before calling
+            // proc_close in order to avoid a deadlock
+            $return_value = proc_close($cprocess);
+
+            echo "System Info ".$sysname."<br />\n";
+            echo "Current Process ID ".$cprocinfo['pid']."<br />\n";
+            echo "Command Returned ".$return_value."<br />\n";
+            $ProEnd = getTime();
+            echo "Execution Time ".number_format(($ProEnd - $ProStart), 2)." secs<br />\n";
+
+            if ($crunout == "" || $crunout == null) {
+                echo "<br />\n";
+            }
+            if ($crunout != "" && $crunout != null) {
+                echo "<a href=\"compile.php?act=compile&amp;#\" onclick=\"toggletag('hideprout'); return false;\">Show Program Output</a><br />\n<pre style=\"border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff; display: none; text-overflow: ellipsis; max-height: 560px; min-height: 10px; overflow: auto; overflow-y: auto; overflow-x: hidden;\" id=\"hideprout\">".$crunout."</pre><br />\n";
+            }
+
+            echo "<hr /><br />\n";
+
+        }
+    }
+
+    if (file_exists($cfname)) {
+        unlink($cfname);
+    }
+    if (file_exists($cfout)) {
+        unlink($cfout);
+    }
+    if (file_exists($clogout)) {
+        unlink($clogout);
+    }
+    if (file_exists($cslogout)) {
+        unlink($cslogout);
+    }
+    if (file_exists($cstdout)) {
+        unlink($cstdout);
+    }
+}
 $showother = " style=\"display: none;\"";
-if(!isset($_POST['lang'])) { $showother = " style=\"display: none;\""; }
-if(isset($_POST['lang'])&&$_POST['lang']!="other") { $showother = " style=\"display: none;\""; }
-if(isset($_POST['lang'])&&$_POST['lang']=="other") { $showother = ""; }
+if (!isset($_POST['lang'])) {
+    $showother = " style=\"display: none;\"";
+}
+if (isset($_POST['lang']) && $_POST['lang'] != "other") {
+    $showother = " style=\"display: none;\"";
+}
+if (isset($_POST['lang']) && $_POST['lang'] == "other") {
+    $showother = "";
+}
 ?>
 
 <form id="compilecmd" name="compilecmd" method="post" action="compile.php?act=compile">
-<?php if(!isset($_POST['code'])) { 
-$c_code = <<<EOD
+<?php if (!isset($_POST['code'])) {
+    $c_code = <<<EOD
 #include <stdio.h>
 
 int main(int argc, char *argv[])
@@ -537,49 +652,49 @@ int main(int argc, char *argv[])
 }
 
 EOD;
-?>
+    ?>
 <textarea style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" name="code" rows="33" cols="138"><?php echo htmlspecialchars($c_code, ENT_COMPAT | ENT_HTML401, "UTF-8"); ?></textarea>
-<?php } if(isset($_POST['code'])) { ?>
+<?php } if (isset($_POST['code'])) { ?>
 <textarea style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="code" name="code" rows="33" cols="138"><?php echo htmlspecialchars($_POST['code'], ENT_COMPAT | ENT_HTML401, "UTF-8"); ?></textarea>
 <?php } ?><br /><label for="lang">Language:</label>&nbsp;
-<?php if(!isset($_POST['lang'])) { ?>
+<?php if (!isset($_POST['lang'])) { ?>
 <select style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" onchange="if(document.compilecmd.lang.value=='other') { change_display('comothers', ''); change_display('extothers', ''); change_display('comstdins', ''); } if(document.compilecmd.lang.value!='other') { change_display('comothers', 'none'); change_display('extothers', 'none'); change_display('comstdins', 'none'); }" id="lang" name="lang"><option value="c">C</option><option value="cpp">C++</option><option value="fortran">Fortran</option><option value="other">Other</option></select>
-<?php } if(isset($_POST['lang'])) { ?>
-<select style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" onchange="if(document.compilecmd.lang.value=='other') { change_display('comothers', ''); change_display('extothers', ''); change_display('comstdins', ''); } if(document.compilecmd.lang.value!='other') { change_display('comothers', 'none'); change_display('extothers', 'none'); change_display('comstdins', 'none'); }" id="lang" name="lang"><option value="c"<?php if($_POST['lang']=="c") { ?> selected="selected"<?php } ?>>C</option><option value="cpp"<?php if($_POST['lang']=="cpp") { ?> selected="selected"<?php } ?>>C++</option><option value="fortran"<?php if($_POST['lang']=="fortran") { ?> selected="selected"<?php } ?>>Fortran</option><option value="other"<?php if($_POST['lang']=="other") { ?> selected="selected"<?php } ?>>Other</option></select>
+<?php } if (isset($_POST['lang'])) { ?>
+<select style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" onchange="if(document.compilecmd.lang.value=='other') { change_display('comothers', ''); change_display('extothers', ''); change_display('comstdins', ''); } if(document.compilecmd.lang.value!='other') { change_display('comothers', 'none'); change_display('extothers', 'none'); change_display('comstdins', 'none'); }" id="lang" name="lang"><option value="c"<?php if ($_POST['lang'] == "c") { ?> selected="selected"<?php } ?>>C</option><option value="cpp"<?php if ($_POST['lang'] == "cpp") { ?> selected="selected"<?php } ?>>C++</option><option value="fortran"<?php if ($_POST['lang'] == "fortran") { ?> selected="selected"<?php } ?>>Fortran</option><option value="other"<?php if ($_POST['lang'] == "other") { ?> selected="selected"<?php } ?>>Other</option></select>
 <?php } ?><br /><label for="lang">Run Strip:</label>&nbsp;
-<?php if(!isset($_POST['runstrip'])) { ?>
+<?php if (!isset($_POST['runstrip'])) { ?>
 <select style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="runstrip" name="runstrip"><option value="no">off</option><option value="yes">on</option></select>
-<?php } if(isset($_POST['runstrip'])) { ?>
-<select style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="runstrip" name="runstrip"><option value="no"<?php if($_POST['runstrip']=="no") { ?> selected="selected"<?php } ?>>off</option><option value="yes"<?php if($_POST['runstrip']=="yes") { ?> selected="selected"<?php } ?>>on</option></select>
+<?php } if (isset($_POST['runstrip'])) { ?>
+<select style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="runstrip" name="runstrip"><option value="no"<?php if ($_POST['runstrip'] == "no") { ?> selected="selected"<?php } ?>>off</option><option value="yes"<?php if ($_POST['runstrip'] == "yes") { ?> selected="selected"<?php } ?>>on</option></select>
 <?php } ?><br /><span id="comothers"<?php echo $showother; ?>><label for="comother">Other Compiler Command:</label>&nbsp;
-<?php if(!isset($_POST['comother'])) { ?>
+<?php if (!isset($_POST['comother'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="comother" name="comother" size="115" value="<?php echo htmlspecialchars($other_cmd, ENT_COMPAT | ENT_HTML401, "UTF-8"); ?>" />
-<?php } if(isset($_POST['comother'])) { ?>
+<?php } if (isset($_POST['comother'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="comother" name="comother" size="115" value="<?php echo htmlspecialchars($_POST['comother'], ENT_COMPAT | ENT_HTML401, "UTF-8"); ?>" />
 <?php } ?><br /></span><span id="extothers"<?php echo $showother; ?>><label for="extother">Other File Extension:</label>&nbsp;
-<?php if(!isset($_POST['extother'])) { ?>
+<?php if (!isset($_POST['extother'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="extother" name="extother" size="120" value="<?php echo htmlspecialchars($other_ext, ENT_COMPAT | ENT_HTML401, "UTF-8"); ?>" />
-<?php } if(isset($_POST['extother'])) { ?>
+<?php } if (isset($_POST['extother'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="extother" name="extother" size="120" value="<?php echo htmlspecialchars($_POST['extother'], ENT_COMPAT | ENT_HTML401, "UTF-8"); ?>" />
 <?php } ?><br /></span><label for="comparg">Compiler Arguments:</label>&nbsp;
-<?php if(!isset($_POST['comparg'])) { ?>
+<?php if (!isset($_POST['comparg'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="comparg" name="comparg" size="120" />
-<?php } if(isset($_POST['comparg'])) { ?>
+<?php } if (isset($_POST['comparg'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="comparg" size="120" name="comparg" value="<?php echo htmlspecialchars($_POST['comparg'], ENT_COMPAT | ENT_HTML401, "UTF-8"); ?>" />
 <?php } ?><br /><label for="arg">Command Arguments:</label>&nbsp;
-<?php if(!isset($_POST['arg'])) { ?>
+<?php if (!isset($_POST['arg'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="arg" name="arg" size="119" />
-<?php } if(isset($_POST['arg'])) { ?>
+<?php } if (isset($_POST['arg'])) { ?>
 <input style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" type="text" id="arg" name="arg" size="119" value="<?php echo htmlspecialchars($_POST['arg'], ENT_COMPAT | ENT_HTML401, "UTF-8"); ?>" />
 <?php } ?><br /><span id="comstdins"<?php echo $showother; ?>><label for="comstdin">Compiler Standard-In:</label><br />
-<?php if(!isset($_POST['comstdin'])) { ?>
+<?php if (!isset($_POST['comstdin'])) { ?>
 <textarea style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="comstdin" name="comstdin" rows="5" cols="138"></textarea>
-<?php } if(isset($_POST['comstdin'])) { ?>
+<?php } if (isset($_POST['comstdin'])) { ?>
 <textarea style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="comstdin" name="comstdin" rows="5" cols="138"><?php echo htmlspecialchars($_POST['comstdin'], ENT_COMPAT | ENT_HTML401, "UTF-8"); ?></textarea>
 <?php } ?></span><label for="stdin">Command Standard-In:</label><br />
-<?php if(!isset($_POST['stdin'])) { ?>
+<?php if (!isset($_POST['stdin'])) { ?>
 <textarea style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="stdin" name="stdin" rows="5" cols="138"></textarea>
-<?php } if(isset($_POST['stdin'])) { ?>
+<?php } if (isset($_POST['stdin'])) { ?>
 <textarea style="border: 1px solid #2E8B57; font-family: System, sans-serif, Terminal, monospace; background: #000000; color: #ffffff;" id="stdin" name="stdin" rows="5" cols="138"><?php echo htmlspecialchars($_POST['stdin'], ENT_COMPAT | ENT_HTML401, "UTF-8"); ?></textarea>
 <?php } ?>
 <input style="display: none;" type="hidden" id="act" name="act" value="compile" />

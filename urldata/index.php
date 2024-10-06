@@ -15,4 +15,3 @@
 */
 
 require('data.php');
-?>

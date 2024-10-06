@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
     This program is free software; you can redistribute it and/or modify
     it under the terms of the Revised BSD License.
@@ -13,22 +13,29 @@
 
     $FileInfo: rusyn.php - Last Update: 8/22/2009 Version 8 - Author: cooldude2k $
 */
-@ob_clean(); @ini_set('default_charset', 'iso-8859-1');
-@header("Content-Type: text/html; charset=iso-8859-1"); 
-function stripslashes_if_gpc_magic_quotes( $string ) {
-    if(get_magic_quotes_gpc()) {
+@ob_clean();
+@ini_set('default_charset', 'iso-8859-1');
+@header("Content-Type: text/html; charset=iso-8859-1");
+function stripslashes_if_gpc_magic_quotes($string)
+{
+    if (get_magic_quotes_gpc()) {
         return stripslashes($string);
     } else {
         return $string;
     }
 }
-if(!isset($_POST['text'])&&isset($_GET['text'])) { 
-	$_POST['text'] = $_GET['text']; }
-if(!isset($_POST['act'])&&isset($_GET['act'])) { 
-	$_POST['act'] = $_GET['act']; }
-if(!isset($_POST['text'])) { $_POST['text'] = null; }
-if(isset($_POST['text'])) {
-$_POST['text'] = stripslashes_if_gpc_magic_quotes($_POST['text']); }
+if (!isset($_POST['text']) && isset($_GET['text'])) {
+    $_POST['text'] = $_GET['text'];
+}
+if (!isset($_POST['act']) && isset($_GET['act'])) {
+    $_POST['act'] = $_GET['act'];
+}
+if (!isset($_POST['text'])) {
+    $_POST['text'] = null;
+}
+if (isset($_POST['text'])) {
+    $_POST['text'] = stripslashes_if_gpc_magic_quotes($_POST['text']);
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -126,27 +133,37 @@ $en_sla = array("&#".hexdec("0160").";&#".hexdec("010D").";=&#".hexdec("0429")."
 $tmp_lang = $en_sla;
 $en_to_new = null;
 $lang_to_en = null;
-$i=0; $num=count($tmp_lang); $l = 1;
+$i = 0;
+$num = count($tmp_lang);
+$l = 1;
 while ($i < $num) {
-$lang_exp = explode("=",$tmp_lang[$i]);
-if($l < $num) {
-$en_to_new = $en_to_new.$lang_exp[0].",";
-$lang_to_en = $lang_to_en.$lang_exp[1].","; }
-if($l >= $num) {
-$en_to_new = $en_to_new.$lang_exp[0];
-$lang_to_en = $lang_to_en.$lang_exp[1]; }
-++$l; ++$i; }
-$en_sla = explode(",",$lang_to_en);
-$sla_en = explode(",",$en_to_new);
-if(!isset($_POST['act'])) {
-	$_POST['act'] = "en_sla"; }
-if(isset($_POST['act'])) {
-if(isset($_POST['text'])&&$_POST['act']=="en_sla") {
-	$_POST['text'] = str_replace($sla_en, $en_sla, $_POST['text']);
-	echo str_replace("<br>", "<br />", nl2br($_POST['text'])); }
-if(isset($_POST['text'])&&$_POST['act']=="sla_en") {
-	$_POST['text'] = str_replace($en_sla, $sla_en, $_POST['text']);
-	echo str_replace("<br>", "<br />", nl2br($_POST['text'])); } }
+    $lang_exp = explode("=", $tmp_lang[$i]);
+    if ($l < $num) {
+        $en_to_new = $en_to_new.$lang_exp[0].",";
+        $lang_to_en = $lang_to_en.$lang_exp[1].",";
+    }
+    if ($l >= $num) {
+        $en_to_new = $en_to_new.$lang_exp[0];
+        $lang_to_en = $lang_to_en.$lang_exp[1];
+    }
+    ++$l;
+    ++$i;
+}
+$en_sla = explode(",", $lang_to_en);
+$sla_en = explode(",", $en_to_new);
+if (!isset($_POST['act'])) {
+    $_POST['act'] = "en_sla";
+}
+if (isset($_POST['act'])) {
+    if (isset($_POST['text']) && $_POST['act'] == "en_sla") {
+        $_POST['text'] = str_replace($sla_en, $en_sla, $_POST['text']);
+        echo str_replace("<br>", "<br />", nl2br($_POST['text']));
+    }
+    if (isset($_POST['text']) && $_POST['act'] == "sla_en") {
+        $_POST['text'] = str_replace($en_sla, $sla_en, $_POST['text']);
+        echo str_replace("<br>", "<br />", nl2br($_POST['text']));
+    }
+}
 ?>
 <div class="copyright"><br /><a href="http://idb.berlios.de/">Game Maker 2k</a> @ 2009</div>
  </body>
