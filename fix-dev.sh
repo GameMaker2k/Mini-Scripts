@@ -1,4 +1,5 @@
 #!/bin/bash
+# /usr/local/bin/fix-dev.sh
 for dev in null zero full random urandom tty; do
     case $dev in
         null)    major=1 minor=3 ;;
